@@ -15,7 +15,6 @@ RUN dotnet publish "./CarService.Api/CarService.Api.csproj" -c Release -o "../di
 
 FROM microsoft/aspnetcore:2.0.5-jessie
 WORKDIR /app  
-ENV ASPNETCORE_ENVIRONMENT Local  
 ENTRYPOINT ["dotnet", "CarService.Api.dll"]  
 COPY --from=builder /sln/dist .  
 

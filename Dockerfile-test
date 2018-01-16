@@ -13,4 +13,4 @@ RUN dotnet build "./CarService.DbAccess/CarService.DbAccess.csproj" -c Release -
 RUN dotnet build "./CarService.Api/CarService.Api.csproj" -c Release --no-restore
 RUN dotnet build "./CarService.Tests/CarService.Tests.csproj" -c Release --no-restore
 
-RUN cd CarService.Tests && dotnet test
+CMD cd CarService.Tests && dotnet test
