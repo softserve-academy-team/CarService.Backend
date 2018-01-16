@@ -1,0 +1,16 @@
+FROM microsoft/dotnet:2.0.5-sdk-2.1.4-jessie AS builder
+WORKDIR /sln
+
+COPY ./CarService.Api ./CarService.Api  
+COPY ./CarService.DbAccess ./CarService.DbAccess
+COPY ./CarService.Tests ./CarService.Tests    
+
+RUN dotnet restore "./CarService.Api/CarService.Api.csproj"
+RUN dotnet restore "./CarService.DbAccess/CarService.DbAccess.csproj"
+RUN dotnet restore "./CarService.Tests/CarService.Tests.csproj"
+
+RUN dotnet build "./CarService.DbAccess/CarService.DbAccess.csproj" -c Release --no-restore
+RUN dotnet build "./CarService.Api/CarService.Api.csproj" -c Release --no-restore
+RUN dotnet build "./CarService.Tests/CarService.Tests.csproj" -c Release --no-restore
+
+RUN cd CarService.Tests && dotnet test
