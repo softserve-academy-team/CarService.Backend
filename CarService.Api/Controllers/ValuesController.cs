@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CarService.DataAccess.Model;
+using CarService.DbAccess.EF;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarService.Api.Controllers
@@ -13,6 +15,11 @@ namespace CarService.Api.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
+            using (CarServiceDbContext db = new CarServiceDbContext())
+            {
+                db.Autos.Add(new Auto { AutoRiaId = "1", Info = "Info" });
+                db.SaveChanges();
+            }
             return new string[] { "value1", "value2" };
         }
 
