@@ -1,4 +1,4 @@
-﻿namespace CarService.DataAccess.Model
+﻿namespace CarService.DbAccess.Entities
 {
     public enum UserStatus 
     {

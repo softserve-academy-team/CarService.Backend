@@ -1,9 +1,6 @@
-﻿using CarService.DataAccess.Model;
-using CarService.DbAccess.Entities;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
 
-namespace CarService.DataAccess.Model
+namespace CarService.DbAccess.Entities
 {
     public class Auto : IEntity
     {

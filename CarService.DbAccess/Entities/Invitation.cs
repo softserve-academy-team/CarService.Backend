@@ -1,8 +1,6 @@
-﻿using CarService.DataAccess.Model;
-using CarService.DbAccess.Entities;
-using System;
+﻿using System;
 
-namespace CarService.DataAccess.Model
+namespace CarService.DbAccess.Entities
 {
     public class Invitation : IEntity
     {
