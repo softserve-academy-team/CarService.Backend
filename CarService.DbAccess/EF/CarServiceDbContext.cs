@@ -1,4 +1,4 @@
-using CarService.DataAccess.Model;
+using CarService.DbAccess.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CarService.DbAccess.EF

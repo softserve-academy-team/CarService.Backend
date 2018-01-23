@@ -1,10 +1,6 @@
-﻿using CarService.DataAccess.Model;
-using CarService.DbAccess.Entities;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
 
-namespace CarService.DataAccess.Model
+namespace CarService.DbAccess.Entities
 {
     public class Review : IEntity
     {
