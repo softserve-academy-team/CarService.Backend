@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CarService.DataAccess.Model
+﻿namespace CarService.DbAccess.Entities
 {
     public class CustomerAuto
     {

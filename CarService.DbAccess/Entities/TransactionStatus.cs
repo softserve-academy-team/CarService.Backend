@@ -1,6 +1,4 @@
-﻿using CarService.DataAccess.Model;
-
-namespace CarService.DataAccess.Model
+﻿namespace CarService.DbAccess.Entities
 {
     public enum TransactionStatus
     {
