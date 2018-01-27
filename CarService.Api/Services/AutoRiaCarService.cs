@@ -38,21 +38,36 @@ namespace CarService.Api.Services
             carParameters.Add("сategory_id", "1");
             return await GetListOfCarIds(carParameters);
         }
-        public async Task<IEnumerable<BaseCarInfo>> GetBaseInfoAboutCars(IEnumerable<int> ids)
+        public async Task<IEnumerable<BaseCarInfo>> GetBaseInfoAboutCars(IEnumerable<int> autoIds)
         {
             var res = new List<BaseCarInfo>();
-            foreach (var id in ids)
+            foreach (var id in autoIds)
             {
                 var allInfo = await GetAllCarInfo(id);
                 res.Add(_carMapper.MapToBaseCarInfoObject(allInfo));
             }
             return res;
         }
+        public async Task<DetailedCarInfo> GetDetailedCarInfo(int autoId)
+        {
+            var detailedInfo = await GetAllCarInfo(autoId);
+            return _carMapper.MapToDetailedCarInfoObject(detailedInfo);
+        }
+        public async Task<string> GetCarsPhotos(int autoId)
+        {
+            var carParameters = new Dictionary<string, string>();
+            carParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
+            string url = _carUrlBuilder.Build($"{_configuration["AutoRiaApi:AutoPhotosUrl"]}/{autoId}", carParameters);
+
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
 
         private async Task<string> GetAllCarInfo(int autoId)
         {
             var carParameters = new Dictionary<string, string>();
-            carParameters.Add("auto_id", autoId.ToString());            
+            carParameters.Add("auto_id", autoId.ToString());
             carParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
             string url = _carUrlBuilder.Build(_configuration["AutoRiaApi:AutoInfoUrl"], carParameters);
 

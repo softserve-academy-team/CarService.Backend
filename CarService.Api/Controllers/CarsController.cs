@@ -16,13 +16,27 @@ namespace CarService.Api.Controllers
             _carService = carService;
         }
 
-        // GET api/cars/random
+        // GET api/cars/base-info/random
         [HttpGet]
-        [Route("random")]
+        [Route("base-info/random")]
         public async Task<IEnumerable<BaseCarInfo>> GetListOfRandomCars()
         {
             var randomCarIds = await _carService.GetListOfRandomCarIds();
             return await _carService.GetBaseInfoAboutCars(randomCarIds);
+        }
+
+        // GET api/cars/detailed-info/{autoId}
+        [HttpGet("detailed-info/{autoId}")]
+        public async Task<DetailedCarInfo> GetDetailedCarInfo(int autoId)
+        {
+            return await _carService.GetDetailedCarInfo(autoId);
+        }
+
+        // GET api/cars/detailed-info/{autoId}/photos
+        [HttpGet("detailed-info/{autoId}/photos")]
+        public async Task<string> GetCarsPhotos(int autoId)
+        {
+            return await _carService.GetCarsPhotos(autoId);
         }
     }
 }
