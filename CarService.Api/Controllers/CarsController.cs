@@ -25,18 +25,18 @@ namespace CarService.Api.Controllers
             return await _carService.GetBaseInfoAboutCars(randomCarIds);
         }
 
-        // GET api/cars/detailed-info/{id}
-        [HttpGet("detailed-info/{id}")]
-        public async Task<DetailedCarInfo> GetDetailedCarInfoById(int id)
+        // GET api/cars/detailed-info/{autoId}
+        [HttpGet("detailed-info/{autoId}")]
+        public async Task<DetailedCarInfo> GetDetailedCarInfo(int autoId)
         {
-            return await _carService.GetDetailedCarInfoById(id);
+            return await _carService.GetDetailedCarInfo(autoId);
         }
 
-        // GET api/cars/detailed-info/{id}/photos
-        [HttpGet("detailed-info/{id}/photos")]
-        public async Task<string> GetCarsPhotosById(int id)
+        // GET api/cars/detailed-info/{autoId}/photos
+        [HttpGet("detailed-info/{autoId}/photos")]
+        public async Task<string> GetCarsPhotos(int autoId)
         {
-            return await _carService.GetCarsPhotosById(id);
+            return await _carService.GetCarsPhotos(autoId);
         }
     }
 }
