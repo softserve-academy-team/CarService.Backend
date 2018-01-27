@@ -5,5 +5,6 @@ namespace CarService.Api.Services
     public interface ICarMapper
     {
         BaseCarInfo MapToBaseCarInfoObject(string jsonString);
+        DetailedCarInfo MapToDetailedCarInfoObject(string jsonString);
     }
 }
