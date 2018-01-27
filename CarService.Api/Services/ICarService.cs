@@ -9,5 +9,7 @@ namespace CarService.Api.Services
         Task<IEnumerable<int>> GetListOfCarIds(IDictionary<string, string> carParameters);
         Task<IEnumerable<int>> GetListOfRandomCarIds();
         Task<IEnumerable<BaseCarInfo>> GetBaseInfoAboutCars(IEnumerable<int> ids);
+        Task<DetailedCarInfo> GetDetailedCarInfoById(int id);
+        Task<string> GetCarsPhotosById(int id);
     }
 }

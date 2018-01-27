@@ -48,11 +48,26 @@ namespace CarService.Api.Services
             }
             return res;
         }
+        public async Task<DetailedCarInfo> GetDetailedCarInfoById(int autoId)
+        {
+            var detailedInfo = await GetAllCarInfo(autoId);
+            return _carMapper.MapToDetailedCarInfoObject(detailedInfo);
+        }
+        public async Task<string> GetCarsPhotosById(int autoId)
+        {
+            var carParameters = new Dictionary<string, string>();
+            carParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
+            string url = _carUrlBuilder.Build($"{_configuration["AutoRiaApi:AutoPhotosUrl"]}/{autoId}", carParameters);
+
+            var response = await _httpClient.GetAsync(url);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
 
         private async Task<string> GetAllCarInfo(int autoId)
         {
             var carParameters = new Dictionary<string, string>();
-            carParameters.Add("auto_id", autoId.ToString());            
+            carParameters.Add("auto_id", autoId.ToString());
             carParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
             string url = _carUrlBuilder.Build(_configuration["AutoRiaApi:AutoInfoUrl"], carParameters);
 
