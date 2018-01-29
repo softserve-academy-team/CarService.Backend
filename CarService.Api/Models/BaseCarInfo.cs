@@ -13,5 +13,7 @@ namespace CarService.Api.Models
         public string Race { get; set; }
         public int RaceInt { get; set; }
         public string City { get; set; }
+        public string FuelName { get; set; }
+        public string GearBoxName { get; set; }
     }
 }

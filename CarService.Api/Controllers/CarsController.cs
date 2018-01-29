@@ -1,8 +1,6 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CarService.Api.Services;
-using CarService.Api.Models;
 
 namespace CarService.Api.Controllers
 {
@@ -19,24 +17,48 @@ namespace CarService.Api.Controllers
         // GET api/cars/base-info/random
         [HttpGet]
         [Route("base-info/random")]
-        public async Task<IEnumerable<BaseCarInfo>> GetListOfRandomCars()
+        public async Task<IActionResult> GetListOfRandomCars()
         {
-            var randomCarIds = await _carService.GetListOfRandomCarIds();
-            return await _carService.GetBaseInfoAboutCars(randomCarIds);
+            try
+            {
+                var randomCarsIds = await _carService.GetListOfRandomCarsIds();
+                var res = await _carService.GetBaseInfoAboutCars(randomCarsIds);
+                return Ok(res);
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
 
         // GET api/cars/detailed-info/{autoId}
         [HttpGet("detailed-info/{autoId}")]
-        public async Task<DetailedCarInfo> GetDetailedCarInfo(int autoId)
+        public async Task<IActionResult> GetDetailedCarInfo(int autoId)
         {
-            return await _carService.GetDetailedCarInfo(autoId);
+            try
+            {
+                var res = await _carService.GetDetailedCarInfo(autoId);
+                return Ok(res);
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
 
         // GET api/cars/detailed-info/{autoId}/photos
         [HttpGet("detailed-info/{autoId}/photos")]
-        public async Task<string> GetCarsPhotos(int autoId)
+        public async Task<IActionResult> GetCarsPhotos(int autoId)
         {
-            return await _carService.GetCarsPhotos(autoId);
+            try
+            {
+                var res = await _carService.GetCarsPhotos(autoId);
+                return Ok(res);
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
     }
 }
