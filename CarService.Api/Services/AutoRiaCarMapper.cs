@@ -14,13 +14,15 @@ namespace CarService.Api.Services
                 MarkName = jObject.SelectToken("markName").Value<string>(),
                 ModelName = jObject.SelectToken("modelName").Value<string>(),
                 Year = jObject.SelectToken("autoData.year").Value<int>(),
-                PhotoLink = jObject.SelectToken("photoData.seoLinkSX").Value<string>(),       
-                PriceUSD = jObject.SelectToken("USD").Value<int>(),                                                                                                                
-                PriceUAH = jObject.SelectToken("UAH").Value<int>(),                                                                                                                
-                PriceEUR = jObject.SelectToken("EUR").Value<int>(),       
-                Race = jObject.SelectToken("autoData.race").Value<string>(),                                                                                                                                                                                                                                         
-                RaceInt = jObject.SelectToken("autoData.raceInt").Value<int>(),                                                                                                                                                                                                                                         
-                City = jObject.SelectToken("stateData.name").Value<string>()                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+                PhotoLink = jObject.SelectToken("photoData.seoLinkSX").Value<string>(),
+                PriceUSD = jObject.SelectToken("USD").Value<int>(),
+                PriceUAH = jObject.SelectToken("UAH").Value<int>(),
+                PriceEUR = jObject.SelectToken("EUR").Value<int>(),
+                Race = jObject.SelectToken("autoData.race").Value<string>(),
+                RaceInt = jObject.SelectToken("autoData.raceInt").Value<int>(),
+                City = jObject.SelectToken("stateData.name").Value<string>(),
+                FuelName = jObject.SelectToken("autoData.fuelName").Value<string>(),
+                GearBoxName = jObject.SelectToken("autoData.gearboxName").Value<string>()
             };
         }
 
@@ -40,9 +42,9 @@ namespace CarService.Api.Services
                 Race = jObject.SelectToken("autoData.race").Value<string>(),
                 RaceInt = jObject.SelectToken("autoData.raceInt").Value<int>(),
                 City = jObject.SelectToken("stateData.name").Value<string>(),
-                Description = jObject.SelectToken("autoData.description").Value<string>(),
                 FuelName = jObject.SelectToken("autoData.fuelName").Value<string>(),
-                GearBoxName = jObject.SelectToken("autoData.gearboxName").Value<string>()
+                GearBoxName = jObject.SelectToken("autoData.gearboxName").Value<string>(),
+                Description = jObject.SelectToken("autoData.description").Value<string>()
             };
         }
     }

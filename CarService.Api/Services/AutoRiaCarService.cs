@@ -22,7 +22,7 @@ namespace CarService.Api.Services
             _httpClient = new HttpClient();
         }
 
-        public async Task<IEnumerable<int>> GetListOfCarIds(IDictionary<string, string> carParameters)
+        public async Task<IEnumerable<int>> GetListOfCarsIds(IDictionary<string, string> carParameters)
         {
             carParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
             string url = _carUrlBuilder.Build(_configuration["AutoRiaApi:AutoSearchUrl"], carParameters);
@@ -32,11 +32,11 @@ namespace CarService.Api.Services
             var jObject = JObject.Parse(await response.Content.ReadAsStringAsync());
             return jObject.SelectToken("result.search_result.ids").Values<int>();
         }
-        public async Task<IEnumerable<int>> GetListOfRandomCarIds()
+        public async Task<IEnumerable<int>> GetListOfRandomCarsIds()
         {
             var carParameters = new Dictionary<string, string>();
             carParameters.Add("сategory_id", "1");
-            return await GetListOfCarIds(carParameters);
+            return await GetListOfCarsIds(carParameters);
         }
         public async Task<IEnumerable<BaseCarInfo>> GetBaseInfoAboutCars(IEnumerable<int> autoIds)
         {
@@ -53,7 +53,7 @@ namespace CarService.Api.Services
             var detailedInfo = await GetAllCarInfo(autoId);
             return _carMapper.MapToDetailedCarInfoObject(detailedInfo);
         }
-        public async Task<string> GetCarsPhotos(int autoId)
+        public async Task<IEnumerable<string>> GetCarsPhotos(int autoId)
         {
             var carParameters = new Dictionary<string, string>();
             carParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
@@ -61,7 +61,12 @@ namespace CarService.Api.Services
 
             var response = await _httpClient.GetAsync(url);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            var jObject = JObject.Parse(await response.Content.ReadAsStringAsync());
+            var jsonPhotos = jObject.SelectToken($"data.{autoId}").Children();
+            var res = new List<string>();
+            foreach (var jsonPhoto in jsonPhotos)
+                res.Add(jsonPhoto.First.SelectToken("formats").First.Value<string>());
+            return res;
         }
 
         private async Task<string> GetAllCarInfo(int autoId)
