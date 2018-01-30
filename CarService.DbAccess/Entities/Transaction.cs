@@ -6,13 +6,13 @@ namespace CarService.DbAccess.Entities
     {
         public int Id { get; set; }
         public TransactionStatus Status { get; set; }
-
-        //TODO:Check Sender:User_Id, Reciever:User_Id
-        public int Sender { get; set; }
-        public int Reciever { get; set; }
-
         public decimal Amount { get; set; }
-
         public DateTime Date { get; set; }
+
+        public int? SenderId { get; set; }
+        public User Sender { get; set; }
+        
+        public int? ReceiverId { get; set; }
+        public User Receiver { get; set; }
     }
 }

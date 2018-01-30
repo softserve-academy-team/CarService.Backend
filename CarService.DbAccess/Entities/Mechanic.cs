@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CarService.DbAccess.Entities
 {
@@ -6,14 +7,19 @@ namespace CarService.DbAccess.Entities
     {
         public int MechanicRate { get; set; }
 
-        public virtual ICollection<ReviewProposition> ReviewPropositions { get; set; }
+        public ICollection<ReviewProposition> ReviewPropositions { get; set; }
+        public ICollection<Order> OrdersTaken { get; set; }
+        public ICollection<Review> MadeReviews { get; set; }
+        public ICollection<Invitation> Invitations { get; set; }
+        public new ICollection<Dialog> Dialogs { get; set; }
 
-        public virtual ICollection<Order> OrdersTaken { get; set; }
-
-        public virtual ICollection<Review> MadeReviews { get; set; }
-
-        public new ICollection<Dialog> Dialogs{ get; set; }
-
-        public virtual ICollection<Invitation> Invitations { get; set; }
+        public Mechanic()
+        {
+            ReviewPropositions = new Collection<ReviewProposition>();
+            OrdersTaken = new Collection<Order>();
+            MadeReviews = new Collection<Review>();
+            Invitations = new Collection<Invitation>();
+            Dialogs = new Collection<Dialog>();
+        }
     }
 }
