@@ -1,15 +1,21 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace CarService.DbAccess.Entities
 {
     public class Auto : IEntity
     {
         public int Id { get; set; }
-        public string AutoRiaId { get; set; }
+        public int AutoRiaId { get; set; }
         public string Info { get; set; }
 
         public ICollection<Order> Orders { get; set; }
+        public ICollection<CustomerAuto> CustomerAutoes { get; set; }
 
-        public virtual ICollection<CustomerAuto> CustomerAutoes { get; set; }
+        public Auto()
+        {
+            Orders = new Collection<Order>();
+            CustomerAutoes = new Collection<CustomerAuto>();
+        }
     }
 }

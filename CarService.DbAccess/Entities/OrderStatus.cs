@@ -2,9 +2,9 @@
 {
     public enum OrderStatus
     {
-        active,
-        pending,
-        done,
-        canceled
+        Active,
+        Pending,
+        Done,
+        Canceled
     }
 }

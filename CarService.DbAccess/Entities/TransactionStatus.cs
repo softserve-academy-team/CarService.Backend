@@ -2,8 +2,8 @@
 {
     public enum TransactionStatus
     {
-        pending,
-        successful,
-        insuccessful
+        Pending,
+        Successful,
+        Insuccessful
     }
 }
