@@ -6,9 +6,9 @@ namespace CarService.Tests.Extensions
     {
         public static bool IsValid(this BaseCarInfo baseCarInfo)
         {
-            return baseCarInfo.AutoId > 0 
+            return baseCarInfo.AutoId > 0
                 && !string.IsNullOrWhiteSpace(baseCarInfo.MarkName)
-                && !string.IsNullOrWhiteSpace(baseCarInfo.ModelName) 
+                && !string.IsNullOrWhiteSpace(baseCarInfo.ModelName)
                 && baseCarInfo.Year > 0
                 && !string.IsNullOrWhiteSpace(baseCarInfo.PhotoLink)
                 && baseCarInfo.PriceUSD >= 0

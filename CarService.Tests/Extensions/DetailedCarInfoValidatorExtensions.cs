@@ -7,7 +7,7 @@ namespace CarService.Tests.Extensions
         public static bool IsValid(this DetailedCarInfo detailedCarInfo)
         {
             return (detailedCarInfo as BaseCarInfo).IsValid()
-                && !string.IsNullOrWhiteSpace(detailedCarInfo.Description);                
+                && !string.IsNullOrWhiteSpace(detailedCarInfo.Description);
         }
     }
 }

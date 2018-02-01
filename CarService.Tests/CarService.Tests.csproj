@@ -17,5 +17,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="appsettings.json" CopyToOutputDirectory="PreserveNewest" />
+
+    <None Update="TestFiles\AutoRiaCarMapperTestFiles\autoSearchTestFile.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Update="TestFiles\AutoRiaCarMapperTestFiles\allCarInfoTestFile.json" CopyToOutputDirectory="PreserveNewest" />        
+    <None Update="TestFiles\AutoRiaCarMapperTestFiles\carPhotoUrisTestFile.json" CopyToOutputDirectory="PreserveNewest" /> 
+
+    <None Update="TestFiles\AutoRiaCarServiceTestFiles\carsParametersTestFile.json" CopyToOutputDirectory="PreserveNewest" />  
+    <None Update="TestFiles\AutoRiaCarServiceTestFiles\carsIdsTestFile.json" CopyToOutputDirectory="PreserveNewest" />                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
   </ItemGroup>
 </Project>

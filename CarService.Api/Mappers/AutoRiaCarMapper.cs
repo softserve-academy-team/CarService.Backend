@@ -1,14 +1,23 @@
+using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using CarService.Api.Models;
 
-namespace CarService.Api.Services
+namespace CarService.Api.Mappers
 {
     public class AutoRiaCarMapper : ICarMapper
     {
+        public IEnumerable<int> MapToCollectionOfCarsIds(string jsonString)
+        {
+            JObject jObject = JObject.Parse(jsonString);
+            JToken idsJToken = jObject.SelectToken("result.search_result.ids");
+            IEnumerable<int> carsIds = idsJToken.Values<int>();
+            return carsIds;
+        }
         public BaseCarInfo MapToBaseCarInfoObject(string jsonString)
         {
-            var jObject = JObject.Parse(jsonString);
-            return new BaseCarInfo
+            JObject jObject = JObject.Parse(jsonString);
+            var baseCarInfo = new BaseCarInfo
             {
                 AutoId = jObject.SelectToken("autoData.autoId").Value<int>(),
                 MarkName = jObject.SelectToken("markName").Value<string>(),
@@ -24,12 +33,12 @@ namespace CarService.Api.Services
                 FuelName = jObject.SelectToken("autoData.fuelName").Value<string>(),
                 GearBoxName = jObject.SelectToken("autoData.gearboxName").Value<string>()
             };
+            return baseCarInfo;
         }
-
         public DetailedCarInfo MapToDetailedCarInfoObject(string jsonString)
         {
-            var jObject = JObject.Parse(jsonString);
-            return new DetailedCarInfo
+            JObject jObject = JObject.Parse(jsonString);
+            var detailedCarInfo = new DetailedCarInfo
             {
                 AutoId = jObject.SelectToken("autoData.autoId").Value<int>(),
                 MarkName = jObject.SelectToken("markName").Value<string>(),
@@ -46,6 +55,14 @@ namespace CarService.Api.Services
                 GearBoxName = jObject.SelectToken("autoData.gearboxName").Value<string>(),
                 Description = jObject.SelectToken("autoData.description").Value<string>()
             };
+            return detailedCarInfo;
+        }
+        public IEnumerable<string> MapToCollectionOfCarPhotoUris(string jsonString)
+        {
+            JObject jObject = JObject.Parse(jsonString);
+            JEnumerable<JToken> photoJTokens = jObject.SelectToken("data").First.First.Children();
+            IEnumerable<string> carPhotoUris = photoJTokens.Select(p => p.First.SelectToken("formats").First.Value<string>());
+            return carPhotoUris;
         }
     }
 }

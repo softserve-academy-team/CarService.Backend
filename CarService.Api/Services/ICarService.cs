@@ -6,10 +6,10 @@ namespace CarService.Api.Services
 {
     public interface ICarService
     {
-        Task<IEnumerable<int>> GetListOfCarsIds(IDictionary<string, string> carParameters);
-        Task<IEnumerable<int>> GetListOfRandomCarsIds();
+        Task<IEnumerable<int>> GetCarsIds(IDictionary<string, string> carsParameters);
+        Task<IEnumerable<int>> GetRandomCarsIds();
         Task<IEnumerable<BaseCarInfo>> GetBaseInfoAboutCars(IEnumerable<int> autoIds);
         Task<DetailedCarInfo> GetDetailedCarInfo(int autoId);
-        Task<IEnumerable<string>> GetCarsPhotos(int autoId);
+        Task<IEnumerable<string>> GetCarPhotos(int autoId);
     }
 }

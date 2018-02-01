@@ -1,84 +1,101 @@
+using System;
+using System.Text;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 using CarService.Api.Models;
+using CarService.Api.Mappers;
 
 namespace CarService.Api.Services
 {
     public class AutoRiaCarService : ICarService
     {
         private readonly IConfiguration _configuration;
-        private readonly ICarUrlBuilder _carUrlBuilder;
         private readonly ICarMapper _carMapper;
         private readonly HttpClient _httpClient;
 
-        public AutoRiaCarService(IConfiguration configuration, ICarUrlBuilder carUrlBuilder, ICarMapper carMapper)
+        public AutoRiaCarService(IConfiguration configuration, ICarMapper carMapper)
         {
             _configuration = configuration;
-            _carUrlBuilder = carUrlBuilder;
             _carMapper = carMapper;
             _httpClient = new HttpClient();
         }
 
-        public async Task<IEnumerable<int>> GetListOfCarsIds(IDictionary<string, string> carParameters)
+        public async Task<IEnumerable<int>> GetCarsIds(IDictionary<string, string> carsParameters)
         {
-            carParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
-            string url = _carUrlBuilder.Build(_configuration["AutoRiaApi:AutoSearchUrl"], carParameters);
+            carsParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
 
-            var response = await _httpClient.GetAsync(url);
+            var uriBuilder = new UriBuilder(_configuration["AutoRiaApi:Scheme"], _configuration["AutoRiaApi:Host"]);
+            uriBuilder.Path = _configuration["AutoRiaApi:AutoSearchPath"];
+            var stringBuilder = new StringBuilder();
+            uriBuilder.Query = stringBuilder.AppendJoin("&", carsParameters.Select(p => $"{p.Key}={p.Value}")).ToString();
+
+            HttpResponseMessage response = await _httpClient.GetAsync(uriBuilder.Uri);
             response.EnsureSuccessStatusCode();
-            var jObject = JObject.Parse(await response.Content.ReadAsStringAsync());
-            return jObject.SelectToken("result.search_result.ids").Values<int>();
+            string stringResponse = await response.Content.ReadAsStringAsync();
+
+            IEnumerable<int> carsIds = _carMapper.MapToCollectionOfCarsIds(stringResponse);
+            return carsIds;
         }
-        public async Task<IEnumerable<int>> GetListOfRandomCarsIds()
+        public async Task<IEnumerable<int>> GetRandomCarsIds()
         {
-            var carParameters = new Dictionary<string, string>();
-            carParameters.Add("сategory_id", "1");
-            return await GetListOfCarsIds(carParameters);
+            var carsParameters = new Dictionary<string, string>();
+            carsParameters.Add("сategory_id", "1");
+            IEnumerable<int> carsIds = await GetCarsIds(carsParameters);
+            return carsIds;
         }
         public async Task<IEnumerable<BaseCarInfo>> GetBaseInfoAboutCars(IEnumerable<int> autoIds)
         {
-            var res = new List<BaseCarInfo>();
-            foreach (var id in autoIds)
+            var cars = new List<BaseCarInfo>();
+            foreach (var autoId in autoIds)
             {
-                var allInfo = await GetAllCarInfo(id);
-                res.Add(_carMapper.MapToBaseCarInfoObject(allInfo));
+                string allCarInfo = await GetAllCarInfo(autoId);
+                cars.Add(_carMapper.MapToBaseCarInfoObject(allCarInfo));
             }
-            return res;
+            return cars;
         }
         public async Task<DetailedCarInfo> GetDetailedCarInfo(int autoId)
         {
-            var detailedInfo = await GetAllCarInfo(autoId);
-            return _carMapper.MapToDetailedCarInfoObject(detailedInfo);
+            string allCarInfo = await GetAllCarInfo(autoId);
+            DetailedCarInfo detailedCarInfo = _carMapper.MapToDetailedCarInfoObject(allCarInfo);
+            return detailedCarInfo;
         }
-        public async Task<IEnumerable<string>> GetCarsPhotos(int autoId)
+        public async Task<IEnumerable<string>> GetCarPhotos(int autoId)
         {
-            var carParameters = new Dictionary<string, string>();
-            carParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
-            string url = _carUrlBuilder.Build($"{_configuration["AutoRiaApi:AutoPhotosUrl"]}/{autoId}", carParameters);
+            var carsParameters = new Dictionary<string, string>();
+            carsParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
 
-            var response = await _httpClient.GetAsync(url);
+            var uriBuilder = new UriBuilder(_configuration["AutoRiaApi:Scheme"], _configuration["AutoRiaApi:Host"]);
+            uriBuilder.Path = $"{_configuration["AutoRiaApi:AutoPhotosPath"]}/{autoId}";
+            var stringBuilder = new StringBuilder();
+            uriBuilder.Query = stringBuilder.AppendJoin("&", carsParameters.Select(p => $"{p.Key}={p.Value}")).ToString();
+
+            HttpResponseMessage response = await _httpClient.GetAsync(uriBuilder.Uri);
             response.EnsureSuccessStatusCode();
-            var jObject = JObject.Parse(await response.Content.ReadAsStringAsync());
-            var jsonPhotos = jObject.SelectToken($"data.{autoId}").Children();
-            var res = new List<string>();
-            foreach (var jsonPhoto in jsonPhotos)
-                res.Add(jsonPhoto.First.SelectToken("formats").First.Value<string>());
-            return res;
+            string stringResponse = await response.Content.ReadAsStringAsync();
+
+            IEnumerable<string> carPhotos = _carMapper.MapToCollectionOfCarPhotoUris(stringResponse);
+            return carPhotos;
         }
 
         private async Task<string> GetAllCarInfo(int autoId)
         {
-            var carParameters = new Dictionary<string, string>();
-            carParameters.Add("auto_id", autoId.ToString());
-            carParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
-            string url = _carUrlBuilder.Build(_configuration["AutoRiaApi:AutoInfoUrl"], carParameters);
+            var carsParameters = new Dictionary<string, string>();
+            carsParameters.Add("auto_id", autoId.ToString());
+            carsParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
 
-            var response = await _httpClient.GetAsync(url);
+            var uriBuilder = new UriBuilder(_configuration["AutoRiaApi:Scheme"], _configuration["AutoRiaApi:Host"]);
+            uriBuilder.Path = _configuration["AutoRiaApi:AutoInfoPath"];
+            var stringBuilder = new StringBuilder();
+            uriBuilder.Query = stringBuilder.AppendJoin("&", carsParameters.Select(p => $"{p.Key}={p.Value}")).ToString();
+
+            HttpResponseMessage response = await _httpClient.GetAsync(uriBuilder.Uri);
             response.EnsureSuccessStatusCode();
-            return await response.Content.ReadAsStringAsync();
+            string allCarInfo = await response.Content.ReadAsStringAsync();
+            return allCarInfo;
         }
     }
 }
