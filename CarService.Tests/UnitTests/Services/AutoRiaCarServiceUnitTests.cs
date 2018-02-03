@@ -28,7 +28,7 @@ namespace CarService.Tests.UnitTests.Services
             _configuration = configurationBuilder.Build();
             _carMapper = new AutoRiaCarMapper();
             _carService = new AutoRiaCarService(_configuration, _carMapper);
-            _testFilesFolderPath = $@"{Directory.GetCurrentDirectory()}\TestFiles\AutoRiaCarServiceTestFiles";
+            _testFilesFolderPath = string.Format("{0}{1}TestFiles{1}AutoRiaCarServiceTestFiles{1}", Directory.GetCurrentDirectory(), Path.DirectorySeparatorChar);
         }
 
         #region GetCarsIdsTests
@@ -36,7 +36,7 @@ namespace CarService.Tests.UnitTests.Services
         public async Task GetCarsIds_CorrectCarsParameters_ReturnsNotEmptyCollectionOfIds()
         {
             // Arrange
-            using (var streamReader = new StreamReader($@"{_testFilesFolderPath}\carsParametersTestFile.json"))
+            using (var streamReader = new StreamReader($"{_testFilesFolderPath}carsParametersTestFile.json"))
             {
                 string carsParametersJsonString = await streamReader.ReadToEndAsync();
                 IDictionary<string, string> carsParameters = JsonConvert.DeserializeObject<IDictionary<string, string>>(carsParametersJsonString);
@@ -53,7 +53,7 @@ namespace CarService.Tests.UnitTests.Services
         public async Task GetCarsIds_CorrectCarsParameters_ReturnsCollectionOfCorrectIds()
         {
             // Arrange
-            using (var streamReader = new StreamReader($@"{_testFilesFolderPath}\carsParametersTestFile.json"))
+            using (var streamReader = new StreamReader($"{_testFilesFolderPath}carsParametersTestFile.json"))
             {
                 string carsParametersJsonString = await streamReader.ReadToEndAsync();
                 IDictionary<string, string> carsParameters = JsonConvert.DeserializeObject<IDictionary<string, string>>(carsParametersJsonString);
@@ -126,7 +126,7 @@ namespace CarService.Tests.UnitTests.Services
         public async Task GetBaseInfoAboutCars_CorrectCarsIds_ReturnsNotEmptyCollectionOfObjects()
         {
             // Arrange
-            using (var streamReader = new StreamReader($@"{_testFilesFolderPath}\carsIdsTestFile.json"))
+            using (var streamReader = new StreamReader($"{_testFilesFolderPath}carsIdsTestFile.json"))
             {
                 string carsIdsJsonString = await streamReader.ReadToEndAsync();
                 JObject jObject = JObject.Parse(carsIdsJsonString);
@@ -144,7 +144,7 @@ namespace CarService.Tests.UnitTests.Services
         public async Task GetBaseInfoAboutCars_CorrectCarsIds_ReturnsCollectionOfCorrectBaseCarInfoObjects()
         {
             // Arrange
-            using (var streamReader = new StreamReader($@"{_testFilesFolderPath}\carsIdsTestFile.json"))
+            using (var streamReader = new StreamReader($"{_testFilesFolderPath}carsIdsTestFile.json"))
             {
                 string carsIdsJsonString = await streamReader.ReadToEndAsync();
                 JObject jObject = JObject.Parse(carsIdsJsonString);

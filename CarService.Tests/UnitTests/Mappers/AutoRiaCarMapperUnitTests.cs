@@ -16,7 +16,7 @@ namespace CarService.Tests.UnitTests.Mappers
         public AutoRiaCarMapperUnitTests()
         {
             _carMapper = new AutoRiaCarMapper();
-            _testFilesFolderPath = $@"{Directory.GetCurrentDirectory()}\TestFiles\AutoRiaCarMapperTestFiles";
+            _testFilesFolderPath = string.Format("{0}{1}TestFiles{1}AutoRiaCarMapperTestFiles{1}", Directory.GetCurrentDirectory(), Path.DirectorySeparatorChar);
         }
 
         #region MapToCollectionOfCarsIdsTests
@@ -24,7 +24,7 @@ namespace CarService.Tests.UnitTests.Mappers
         public async Task MapToCollectionOfCarsIds_CorrectJsonStringObject_ReturnsNotEmptyCollectionOfObjects()
         {
             // Arrange
-            using (var streamReader = new StreamReader($@"{_testFilesFolderPath}\autoSearchTestFile.json"))
+            using (var streamReader = new StreamReader($"{_testFilesFolderPath}autoSearchTestFile.json"))
             {
                 string jsonString = await streamReader.ReadToEndAsync();
 
@@ -40,7 +40,7 @@ namespace CarService.Tests.UnitTests.Mappers
         public async Task MapToCollectionOfCarsIds_CorrectJsonStringObject_ReturnsCollectionOfCorrectAutoIds()
         {
             // Arrange
-            using (var streamReader = new StreamReader($@"{_testFilesFolderPath}\autoSearchTestFile.json"))
+            using (var streamReader = new StreamReader($"{_testFilesFolderPath}autoSearchTestFile.json"))
             {
                 string jsonString = await streamReader.ReadToEndAsync();
 
@@ -61,7 +61,7 @@ namespace CarService.Tests.UnitTests.Mappers
         public async Task MapToBaseCarInfoObject_CorrectJsonStringObject_ReturnsCorrectBaseCarInfoObject()
         {
             // Arrange
-            using (var streamReader = new StreamReader($@"{_testFilesFolderPath}\allCarInfoTestFile.json"))
+            using (var streamReader = new StreamReader($"{_testFilesFolderPath}allCarInfoTestFile.json"))
             {
                 string jsonString = await streamReader.ReadToEndAsync();
 
@@ -80,7 +80,7 @@ namespace CarService.Tests.UnitTests.Mappers
         public async Task MapToDetailedCarInfoObject_CorrectJsonStringObject_ReturnsCorrectDetailedCarInfoObject()
         {
             // Arrange
-            using (var streamReader = new StreamReader($@"{_testFilesFolderPath}\allCarInfoTestFile.json"))
+            using (var streamReader = new StreamReader($"{_testFilesFolderPath}allCarInfoTestFile.json"))
             {
                 string jsonString = await streamReader.ReadToEndAsync();
 
@@ -99,7 +99,7 @@ namespace CarService.Tests.UnitTests.Mappers
         public async Task MapToCollectionOfCarPhotoUris_CorrectJsonStringObject_ReturnsNotEmptyCollectionOfObjects()
         {
             // Arrange
-            using (var streamReader = new StreamReader($@"{_testFilesFolderPath}\carPhotoUrisTestFile.json"))
+            using (var streamReader = new StreamReader($"{_testFilesFolderPath}carPhotoUrisTestFile.json"))
             {
                 string jsonString = await streamReader.ReadToEndAsync();
 
@@ -115,7 +115,7 @@ namespace CarService.Tests.UnitTests.Mappers
         public async Task MapToCollectionOfCarPhotoUris_CorrectJsonStringObject_ReturnsCollectionOfCorrectCarPhotoUris()
         {
             // Arrange
-            using (var streamReader = new StreamReader($@"{_testFilesFolderPath}\carPhotoUrisTestFile.json"))
+            using (var streamReader = new StreamReader($"{_testFilesFolderPath}carPhotoUrisTestFile.json"))
             {
                 string jsonString = await streamReader.ReadToEndAsync();
 
