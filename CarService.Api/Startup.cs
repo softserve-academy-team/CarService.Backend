@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.Extensions.DependencyInjection;
+using CarService.Api.Mappers;
 using CarService.Api.Services;
 
 namespace CarService.Api
@@ -13,15 +14,16 @@ namespace CarService.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddCors(options => {
+            services.AddCors(options =>
+            {
                 options.AddPolicy("AllowAllOrigin", builder => builder.AllowAnyOrigin());
             });
-            services.Configure<MvcOptions>(options => {
+            services.Configure<MvcOptions>(options =>
+            {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
             });
 
-            services.AddSingleton<ICarUrlBuilder, AutoRiaCarUrlBuilder>();
-            services.AddSingleton<ICarMapper, AutoRiaCarMapper>();            
+            services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
             services.AddSingleton<ICarService, AutoRiaCarService>();
         }
 

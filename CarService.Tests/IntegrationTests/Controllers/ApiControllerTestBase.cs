@@ -23,7 +23,7 @@ namespace CarService.Tests.IntegrationTests.Controllers
                 .UseStartup<Startup>()
                 .UseEnvironment("Testing");
             var server = new TestServer(builder);
-            var client = server.CreateClient();
+            HttpClient client = server.CreateClient();
 
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));

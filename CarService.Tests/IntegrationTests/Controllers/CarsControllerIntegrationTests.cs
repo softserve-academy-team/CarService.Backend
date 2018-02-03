@@ -18,98 +18,224 @@ namespace CarService.Tests.IntegrationTests.Controllers
             _httpClient = base.GetClient();
         }
 
+        #region GetRandomCarsTests
         [Fact]
-        public async Task GetListOfRandomCars_When_request_Then_list_of_correct_objects()
+        public async Task GetRandomCars_SendsHttpRequest_ReturnsResponseWithSuccessStatusCode()
         {
             // Arrange
-            var url = "/api/cars/base-info/random";
+            string uri = "/api/cars/base-info/random";
 
             // Act
-            var response = await _httpClient.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<IEnumerable<BaseCarInfo>>(stringResponse);
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.NotEmpty(result);
-            Assert.All<BaseCarInfo>(result, obj => {
-                Assert.IsType<BaseCarInfo>(obj);
-                Assert.True(obj.IsValid());
+            Assert.True(response.IsSuccessStatusCode);
+        }
+
+        [Fact]
+        public async Task GetRandomCars_SendsHttpRequest_ReturnsResponseWithNotEmptyStringContent()
+        {
+            // Arrange
+            string uri = "/api/cars/base-info/random";
+
+            // Act
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            string stringResponse = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.False(string.IsNullOrEmpty(stringResponse));
+        }
+
+        [Fact]
+        public async Task GetRandomCars_SendsHttpRequest_ReturnsResponseWithNotEmptyCollectionOfObjects()
+        {
+            // Arrange
+            string uri = "/api/cars/base-info/random";
+
+            // Act
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            string stringResponse = await response.Content.ReadAsStringAsync();
+            IEnumerable<BaseCarInfo> randomCars = JsonConvert.DeserializeObject<IEnumerable<BaseCarInfo>>(stringResponse);
+
+            // Assert
+            Assert.NotNull(randomCars);
+            Assert.NotEmpty(randomCars);
+        }
+
+        [Fact]
+        public async Task GetRandomCars_SendsHttpRequest_ReturnsResponseWithCollectionOfCorrectBaseCarInfoObjects()
+        {
+            // Arrange
+            string uri = "/api/cars/base-info/random";
+
+            // Act
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            string stringResponse = await response.Content.ReadAsStringAsync();
+            IEnumerable<BaseCarInfo> randomCars = JsonConvert.DeserializeObject<IEnumerable<BaseCarInfo>>(stringResponse);
+
+            // Assert
+            Assert.All<BaseCarInfo>(randomCars, car =>
+            {
+                Assert.IsType<BaseCarInfo>(car);
+                Assert.True(car.IsValid());
             });
+        }
+        #endregion
+
+        #region GetDetailedCarInfoTests
+        [Theory]
+        [InlineData(19050985)]
+        public async Task GetDetailedCarInfo_SendsHttpRequestWithCorrectAutoId_ReturnsResponseWithSuccessStatusCode(int autoId)
+        {
+            // Arrange
+            string uri = $"/api/cars/detailed-info/{autoId}";
+
+            // Act 
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
+
+            // Assert
+            Assert.True(response.IsSuccessStatusCode);
         }
 
         [Theory]
         [InlineData(19050985)]
-        public async Task GetDetailedCarInfo_When_request_with_correct_auto_id_Then_correct_object(int autoId)
+        public async Task GetDetailedCarInfo_SendsHttpRequestWithCorrectAutoId_ReturnsResponseWithNotEmptyStringContent(int autoId)
         {
             // Arrange
-            var url = $"/api/cars/detailed-info/{autoId}";
+            string uri = $"/api/cars/detailed-info/{autoId}";
 
             // Act 
-            var response = await _httpClient.GetAsync(url);
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
             response.EnsureSuccessStatusCode();
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<DetailedCarInfo>(stringResponse);
+            string stringResponse = await response.Content.ReadAsStringAsync();
 
             // Assert
-            Assert.NotNull(result);
-            Assert.IsType<DetailedCarInfo>(result);
-            Assert.True(result.IsValid());
+            Assert.False(string.IsNullOrEmpty(stringResponse));
+        }
+
+        [Theory]
+        [InlineData(19050985)]
+        public async Task GetDetailedCarInfo_SendsHttpRequestWithCorrectAutoId_ReturnsResponseWithCorrectDetailedCarInfoObject(int autoId)
+        {
+            // Arrange
+            string uri = $"/api/cars/detailed-info/{autoId}";
+
+            // Act 
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            string stringResponse = await response.Content.ReadAsStringAsync();
+            DetailedCarInfo detailedCarInfo = JsonConvert.DeserializeObject<DetailedCarInfo>(stringResponse);
+
+            // Assert
+            Assert.NotNull(detailedCarInfo);
+            Assert.IsType<DetailedCarInfo>(detailedCarInfo);
+            Assert.True(detailedCarInfo.IsValid());
         }
 
         [Theory]
         [InlineData(1905098554)]
         [InlineData(111)]
-        [InlineData(-7)]        
-        public async Task GetDetailedCarInfo_When_request_with_incorrect_auto_id_Then_bad_request_status_code(int autoId)
+        [InlineData(-7)]
+        public async Task GetDetailedCarInfo_SendsHttpRequestWithIncorrectAutoId_ReturnsResponseWithNotFoundStatusCode(int autoId)
         {
             // Arrange
-            var url = $"/api/cars/detailed-info/{autoId}";
+            string uri = $"/api/cars/detailed-info/{autoId}";
 
             // Act 
-            var response = await _httpClient.GetAsync(url);
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
 
             // Assert
-            Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+        #endregion
+
+        #region GetCarsPhotosTests
+        [Theory]
+        [InlineData(19050985)]
+        public async Task GetCarsPhotos_SendsHttpRequestWithCorrectAutoId_ReturnsResponseWithSuccessStatusCode(int autoId)
+        {
+            // Arrange
+            string uri = $"/api/cars/detailed-info/{autoId}/photos";
+
+            // Act 
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
+
+            // Assert
+            Assert.True(response.IsSuccessStatusCode);
         }
 
         [Theory]
         [InlineData(19050985)]
-        public async Task GetCarsPhotos_When_request_with_correct_auto_id_Then_correct_list_of_urls(int autoId)
+        public async Task GetCarsPhotos_SendsHttpRequestWithCorrectAutoId_ReturnsResponseWithNotEmptyStringContent(int autoId)
         {
             // Arrange
-            var url = $"/api/cars/detailed-info/{autoId}/photos";
+            string uri = $"/api/cars/detailed-info/{autoId}/photos";
 
             // Act 
-            var response = await _httpClient.GetAsync(url);
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
             response.EnsureSuccessStatusCode();
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<IEnumerable<string>>(stringResponse);
+            string stringResponse = await response.Content.ReadAsStringAsync();
 
             // Assert
-            Assert.NotNull(result);
-            Assert.All<string>(result, obj => {
-                Assert.False(string.IsNullOrWhiteSpace(obj));
+            Assert.False(string.IsNullOrEmpty(stringResponse));
+        }
+
+        [Theory]
+        [InlineData(19050985)]
+        public async Task GetCarsPhotos_SendsHttpRequestWithCorrectAutoId_ReturnsResponseWithNotEmptyCollectionOfObjects(int autoId)
+        {
+            // Arrange
+            string uri = $"/api/cars/detailed-info/{autoId}/photos";
+
+            // Act 
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            string stringResponse = await response.Content.ReadAsStringAsync();
+            IEnumerable<string> carsPhotos = JsonConvert.DeserializeObject<IEnumerable<string>>(stringResponse);
+
+            // Assert
+            Assert.NotNull(carsPhotos);
+            Assert.NotEmpty(carsPhotos);
+        }
+
+        [Theory]
+        [InlineData(19050985)]
+        public async Task GetCarsPhotos_SendsHttpRequestWithCorrectAutoId_ReturnsResponseWithCollectionOfCorrectPhotoUris(int autoId)
+        {
+            // Arrange
+            string uri = $"/api/cars/detailed-info/{autoId}/photos";
+
+            // Act 
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
+            response.EnsureSuccessStatusCode();
+            string stringResponse = await response.Content.ReadAsStringAsync();
+            IEnumerable<string> carsPhotos = JsonConvert.DeserializeObject<IEnumerable<string>>(stringResponse);
+
+            // Assert
+            Assert.All<string>(carsPhotos, photoUri =>
+            {
+                Assert.False(string.IsNullOrWhiteSpace(photoUri));
             });
         }
 
         [Theory]
         [InlineData(1905098554)]
-        [InlineData(111)]        
-        [InlineData(-7)]        
-        public async Task GetCarsPhotos_When_request_with_incorrect_auto_id_Then_bad_request_status_code(int autoId)
+        [InlineData(111)]
+        [InlineData(-7)]
+        public async Task GetCarsPhotos_SendsHttpRequestWithIncorrectAutoId_ReturnsResponseWithNotFoundStatusCode(int autoId)
         {
             // Arrange
-            var url = $"/api/cars/detailed-info/{autoId}/photos";
+            string uri = $"/api/cars/detailed-info/{autoId}/photos";
 
             // Act 
-            var response = await _httpClient.GetAsync(url);
+            HttpResponseMessage response = await _httpClient.GetAsync(uri);
 
             // Assert
-            Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
+        #endregion
     }
 }

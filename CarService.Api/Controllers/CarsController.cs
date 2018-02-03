@@ -1,5 +1,7 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using CarService.Api.Models;
 using CarService.Api.Services;
 
 namespace CarService.Api.Controllers
@@ -17,13 +19,13 @@ namespace CarService.Api.Controllers
         // GET api/cars/base-info/random
         [HttpGet]
         [Route("base-info/random")]
-        public async Task<IActionResult> GetListOfRandomCars()
+        public async Task<IActionResult> GetRandomCars()
         {
             try
             {
-                var randomCarsIds = await _carService.GetListOfRandomCarsIds();
-                var res = await _carService.GetBaseInfoAboutCars(randomCarsIds);
-                return Ok(res);
+                IEnumerable<int> randomCarsIds = await _carService.GetRandomCarsIds();
+                IEnumerable<BaseCarInfo> randomCars = await _carService.GetBaseInfoAboutCars(randomCarsIds);
+                return Ok(randomCars);
             }
             catch
             {
@@ -37,8 +39,8 @@ namespace CarService.Api.Controllers
         {
             try
             {
-                var res = await _carService.GetDetailedCarInfo(autoId);
-                return Ok(res);
+                DetailedCarInfo detailedCarInfo = await _carService.GetDetailedCarInfo(autoId);
+                return Ok(detailedCarInfo);
             }
             catch
             {
@@ -48,12 +50,12 @@ namespace CarService.Api.Controllers
 
         // GET api/cars/detailed-info/{autoId}/photos
         [HttpGet("detailed-info/{autoId}/photos")]
-        public async Task<IActionResult> GetCarsPhotos(int autoId)
+        public async Task<IActionResult> GetCarPhotos(int autoId)
         {
             try
             {
-                var res = await _carService.GetCarsPhotos(autoId);
-                return Ok(res);
+                IEnumerable<string> carPhotos = await _carService.GetCarPhotos(autoId);
+                return Ok(carPhotos);
             }
             catch
             {
