@@ -121,12 +121,6 @@ namespace CarService.Api.Controllers
                     {"model_id", modelId}
                 };
 
-                // "Key: {0}, Value: {1}", item.Key, item.Value
-                foreach (var item in carParameters)
-                {
-                System.Console.WriteLine("{0} {1}", item.Key, item.Value);
-                }
-                
                 var carIds = await _carService.GetCarsIds(carParameters);
                 var res = await _carService.GetBaseInfoAboutCars(carIds);
                 return Ok(res);
