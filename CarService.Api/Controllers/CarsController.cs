@@ -62,5 +62,80 @@ namespace CarService.Api.Controllers
                 return NotFound();
             }
         }
+
+        // GET api/cars/dropdown/types  
+        [HttpGet("dropdown/types")]
+        public async Task<IActionResult> GetCarTypes()
+        {
+            try
+            {
+                var res = await _carService.GetInitialTypesDropdownInfo();
+                return Ok(res);
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
+        // GET api/cars/dropdown/makes/{categoryId} 
+        [HttpGet("dropdown/makes/{categoryId}")]
+        public async Task<IActionResult> GetMakes([FromRoute]int categoryId)
+        {
+            try
+            {
+                var res = await _carService.GetMakesDropdownInfo(categoryId);
+                return Ok(res);
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
+       
+        // GET api/cars/dropdown/models/{categoryId}/{makeId} 
+        [HttpGet("dropdown/models/{categoryId}/{makeId}")]
+        public async Task<IActionResult> GetModels([FromRoute]int categoryId, int makeId)
+        {
+            try
+            {
+                var res = await _carService.GetModelsDropdownInfo(categoryId, makeId);
+                return Ok(res);
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
+
+ // GET api/cars/search
+        [HttpGet]
+        [Route("search")]
+        public async Task<IActionResult> GetListOfCars([FromQuery] string categoryId, string makeId, string modelId)
+        {
+          
+            try
+            {
+                var carParameters = new Dictionary<string, string>(){
+                    {"category_id", categoryId},
+                    {"marka_id", makeId},
+                    {"model_id", modelId}
+                };
+
+                // "Key: {0}, Value: {1}", item.Key, item.Value
+                foreach (var item in carParameters)
+                {
+                System.Console.WriteLine("{0} {1}", item.Key, item.Value);
+                }
+                
+                var carIds = await _carService.GetCarsIds(carParameters);
+                var res = await _carService.GetBaseInfoAboutCars(carIds);
+                return Ok(res);
+            }
+            catch
+            {
+                return NotFound();
+            }
+        }
+
     }
 }
