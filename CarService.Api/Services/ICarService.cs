@@ -11,5 +11,9 @@ namespace CarService.Api.Services
         Task<IEnumerable<BaseCarInfo>> GetBaseInfoAboutCars(IEnumerable<int> autoIds);
         Task<DetailedCarInfo> GetDetailedCarInfo(int autoId);
         Task<IEnumerable<string>> GetCarPhotos(int autoId);
+        Task<string> GetInitialTypesDropdownInfo();
+        Task<string> GetMakesDropdownInfo(int categoryId);
+        Task<string> GetModelsDropdownInfo(int categoryId, int makeId);
+        
     }
 }

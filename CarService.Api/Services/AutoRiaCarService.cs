@@ -27,7 +27,6 @@ namespace CarService.Api.Services
         public async Task<IEnumerable<int>> GetCarsIds(IDictionary<string, string> carsParameters)
         {
             carsParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
-
             var uriBuilder = new UriBuilder(_configuration["AutoRiaApi:Scheme"], _configuration["AutoRiaApi:Host"]);
             uriBuilder.Path = _configuration["AutoRiaApi:AutoSearchPath"];
             var stringBuilder = new StringBuilder();
@@ -97,5 +96,55 @@ namespace CarService.Api.Services
             string allCarInfo = await response.Content.ReadAsStringAsync();
             return allCarInfo;
         }
+
+ public async Task<string> GetInitialTypesDropdownInfo()
+        {
+            var carsParameters = new Dictionary<string, string>();
+            carsParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
+
+            var uriBuilder = new UriBuilder(_configuration["AutoRiaApi:Scheme"], _configuration["AutoRiaApi:Host"]);
+            uriBuilder.Path = $"{_configuration["AutoRiaApi:AutoTypesPath"]}";
+            var stringBuilder = new StringBuilder();
+            uriBuilder.Query = stringBuilder.AppendJoin("&", carsParameters.Select(p => $"{p.Key}={p.Value}")).ToString();
+
+            var response = await _httpClient.GetAsync(uriBuilder.Uri);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+        }
+        public async Task<string> GetMakesDropdownInfo(int categoryId)
+        {
+            var carsParameters = new Dictionary<string, string>();
+            carsParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
+
+            var uriBuilder = new UriBuilder(_configuration["AutoRiaApi:Scheme"], _configuration["AutoRiaApi:Host"]);
+            uriBuilder.Path = $"{_configuration["AutoRiaApi:AutoTypesPath"]}/{categoryId}/marks";
+            
+            var stringBuilder = new StringBuilder();
+            uriBuilder.Query = stringBuilder.AppendJoin("&", carsParameters.Select(p => $"{p.Key}={p.Value}")).ToString();
+
+            var response = await _httpClient.GetAsync(uriBuilder.Uri);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+            
+        }
+        public async Task<string> GetModelsDropdownInfo(int categoryId, int makeId)
+        {
+            var carsParameters = new Dictionary<string, string>();
+            carsParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
+
+            var uriBuilder = new UriBuilder(_configuration["AutoRiaApi:Scheme"], _configuration["AutoRiaApi:Host"]);
+            uriBuilder.Path = $"{_configuration["AutoRiaApi:AutoTypesPath"]}/{categoryId}/marks/{makeId}/models";
+            
+            var stringBuilder = new StringBuilder();
+            uriBuilder.Query = stringBuilder.AppendJoin("&", carsParameters.Select(p => $"{p.Key}={p.Value}")).ToString();
+
+            var response = await _httpClient.GetAsync(uriBuilder.Uri);
+            response.EnsureSuccessStatusCode();
+            return await response.Content.ReadAsStringAsync();
+          
+        }
+
+        
+
     }
 }
