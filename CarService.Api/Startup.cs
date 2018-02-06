@@ -40,7 +40,7 @@ namespace CarService.Api
             services.AddDbContext<UserDbContext>(options =>
                 options.UseSqlServer(_configuration["Data:Identity:ConnectionString"]));
  
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<CustomerIdentityModel, IdentityRole>()
                 .AddEntityFrameworkStores<UserDbContext>();
         }
 
