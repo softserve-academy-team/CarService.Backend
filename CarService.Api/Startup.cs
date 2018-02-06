@@ -6,22 +6,44 @@ using Microsoft.Extensions.DependencyInjection;
 using CarService.Api.Mappers;
 using CarService.Api.Services;
 
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
+using CarService.DbAccess.EF;
+
 namespace CarService.Api
 {
+
+    public class UserDbContext : IdentityDbContext<IdentityUser>
+    {
+        public UserDbContext(DbContextOptions<UserDbContext> options): base(options)
+        {
+            
+        }
+    }
+
+
     public class Startup
     {
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowAllOrigin", builder => builder.AllowAnyOrigin());
+                options.AddPolicy("AllowAllOrigin", builder => {
+                    builder
+                    .AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+                    
+                    });
             });
-            services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
-            });
+          
+            services.AddDbContext<CarServiceDbContext>(opt => opt.UseInMemoryDatabase("user"));
+            services.AddIdentity<IdentityUser, IdentityRole>().AddEntityFrameworkStores<UserDbContext>();
+            services.AddMvc();
 
             services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
             services.AddSingleton<ICarService, AutoRiaCarService>();
@@ -34,7 +56,7 @@ namespace CarService.Api
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCors("AllowAllOrigin");
             app.UseMvc();
         }
     }
