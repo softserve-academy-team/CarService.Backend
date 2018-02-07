@@ -11,10 +11,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
+using CarService.Api.Models;
+using CarService.Api.Services;
+
 
 
 namespace CarService.Api.Controllers
 {
+    public class UserDTO
+    {
+        public string username { get; set; }
+        public string password { get; set; }
+    }
+    
+    
     [Route("api/[controller]")]
     public class AccountController : Controller
     {
@@ -33,15 +43,13 @@ namespace CarService.Api.Controllers
         };
  
         [HttpPost("token")]
-        public IActionResult Token()
+        public IActionResult Token([FromBody] UserDTO info)
         {
-            var username = Request.Form["username"];
-            var password = Request.Form["password"];
- 
-            var identity = GetIdentity(username, password);
+
+            var identity = GetIdentity(info.username, info.password);
             if (identity == null)
             {
-                return BadRequest("Invalid username or password.");
+                return BadRequest($"Invalid username or password.!!!! {info.username} {info.password}");
             }
  
             var now = DateTime.UtcNow;
