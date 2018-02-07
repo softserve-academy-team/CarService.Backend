@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CarService.Api.Models
 {
-    public class UserDbContext : IdentityDbContext<User>
+    public class UserDbContext: DbContext
     {
         public UserDbContext(DbContextOptions<UserDbContext> options) : base(options)
         {
