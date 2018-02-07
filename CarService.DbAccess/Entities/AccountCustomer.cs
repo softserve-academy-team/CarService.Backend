@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace CarService.Api.Models
+namespace CarService.DbAccess.Entities
 {
-    public class CustomerIdentityModel : IdentityUser
+    public class AccountCustomer : IdentityUser
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Identity;
 using CarService.Api.Mappers;
 using CarService.Api.Services;
 using CarService.Api.Models;
+using CarService.DbAccess.EF;
+using CarService.DbAccess.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 
@@ -37,11 +39,11 @@ namespace CarService.Api
             services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
             services.AddSingleton<ICarService, AutoRiaCarService>();
 
-            services.AddDbContext<UserDbContext>(options =>
+            services.AddDbContext<AccountDbContext>(options =>
                 options.UseSqlServer(_configuration["Data:Identity:ConnectionString"]));
  
-            services.AddIdentity<CustomerIdentityModel, IdentityRole>()
-                .AddEntityFrameworkStores<UserDbContext>();
+            services.AddIdentity<AccountCustomer, IdentityRole>()
+                .AddEntityFrameworkStores<AccountDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

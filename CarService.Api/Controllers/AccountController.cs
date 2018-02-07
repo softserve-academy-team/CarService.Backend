@@ -5,14 +5,15 @@ using System.Threading.Tasks;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Identity;
+using CarService.DbAccess.Entities;
 
 namespace CarService.Api.Controllers
 {
     [Route("api/[controller]")]
     public class AccountController : Controller
     {
-        readonly UserManager<CustomerIdentityModel> _userManager;
-        public AccountController(UserManager<CustomerIdentityModel> userManager)
+        readonly UserManager<AccountCustomer> _userManager;
+        public AccountController(UserManager<AccountCustomer> userManager)
         {
             this._userManager = userManager;
         }
@@ -20,7 +21,7 @@ namespace CarService.Api.Controllers
         [HttpPost("registration")]
         public async Task<IActionResult> Register([FromBody] RegisterCustomerCredentials registerCustomerCredentials)
         {
-            CustomerIdentityModel customerIdentityModel = new CustomerIdentityModel {
+            AccountCustomer accountCustomer = new AccountCustomer {
                 Email = registerCustomerCredentials.Email,
                 UserName = registerCustomerCredentials.Email,
                 FirstName = registerCustomerCredentials.FirstName,
@@ -28,7 +29,7 @@ namespace CarService.Api.Controllers
                 PhoneNumber = registerCustomerCredentials.PhoneNumber,
                 City = registerCustomerCredentials.City  
             };
-            var result = await _userManager.CreateAsync(customerIdentityModel, registerCustomerCredentials.Password);
+            var result = await _userManager.CreateAsync(accountCustomer, registerCustomerCredentials.Password);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
             return Ok();
