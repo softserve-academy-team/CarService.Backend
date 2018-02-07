@@ -68,22 +68,19 @@ namespace CarService.Api
             services.AddDbContext<UserDbContext>(options =>
                 options.UseSqlServer(_configuration["Data:Identity:ConnectionString"]));
  
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<UserDbContext>();
-
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ICarService carService)
         {
+            app.UseAuthentication();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
 
             app.UseMvc();
-            app.UseAuthentication();
         }
     }
 }

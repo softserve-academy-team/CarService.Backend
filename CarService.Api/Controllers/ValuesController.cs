@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CarService.Api.Controllers
 {
@@ -7,6 +8,7 @@ namespace CarService.Api.Controllers
     public class ValuesController : Controller
     {
         // GET api/values
+        [Authorize]
         [HttpGet]
         public IEnumerable<string> Get()
         {
@@ -14,6 +16,7 @@ namespace CarService.Api.Controllers
         }
 
         // GET api/values/5
+        [Authorize]
         [HttpGet("{id}")]
         public string Get(int id)
         {

@@ -33,7 +33,7 @@ namespace CarService.Api.Controllers
         };
  
         [HttpPost("token")]
-        public async Task<IActionResult> Token()
+        public IActionResult Token()
         {
             var username = Request.Form["username"];
             var password = Request.Form["password"];
