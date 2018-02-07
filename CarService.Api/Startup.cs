@@ -38,16 +38,17 @@ namespace CarService.Api
 
             services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
             services.AddSingleton<ICarService, AutoRiaCarService>();
-
+            services.AddSingleton<IAccountService, AccountService>();
+    
             services.AddDbContext<AccountDbContext>(options =>
-                options.UseSqlServer(_configuration["Data:Identity:ConnectionString"]));
+                options.UseSqlServer(_configuration["Data:Identity:ConnectionString"], b => b.MigrationsAssembly("CarService.Api")));
  
-            services.AddIdentity<AccountCustomer, IdentityRole>()
+            services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<AccountDbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ICarService carService)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ICarService carService, IAccountService accountService)
         {
             if (env.IsDevelopment())
             {

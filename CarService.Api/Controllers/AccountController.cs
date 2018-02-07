@@ -12,26 +12,29 @@ namespace CarService.Api.Controllers
     [Route("api/[controller]")]
     public class AccountController : Controller
     {
-        readonly UserManager<AccountCustomer> _userManager;
-        public AccountController(UserManager<AccountCustomer> userManager)
+        private readonly IAccountService _accountService;
+        public AccountController(IAccountService accountService)
         {
-            this._userManager = userManager;
+            this._accountService = accountService;
         }
 
         [HttpPost("registration")]
-        public async Task<IActionResult> Register([FromBody] RegisterCustomerCredentials registerCustomerCredentials)
+        public async Task<IActionResult> RegisterCustomer([FromBody] RegisterCustomerCredentials registerCustomerCredentials)
         {
-            AccountCustomer accountCustomer = new AccountCustomer {
-                Email = registerCustomerCredentials.Email,
-                UserName = registerCustomerCredentials.Email,
-                FirstName = registerCustomerCredentials.FirstName,
-                LastName = registerCustomerCredentials.LastName,
-                PhoneNumber = registerCustomerCredentials.PhoneNumber,
-                City = registerCustomerCredentials.City  
-            };
-            var result = await _userManager.CreateAsync(accountCustomer, registerCustomerCredentials.Password);
+            var result = await _accountService.AddUser(registerCustomerCredentials);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
+
+            return Ok();
+        }
+
+        [HttpPost("registration/mechanic")]
+        public async Task<IActionResult> RegisterMechanic([FromBody] RegisterMechanicCredentials registerMechanicCredentials)
+        {
+            var result = await _accountService.AddUser(registerMechanicCredentials);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
             return Ok();
         }
     }
