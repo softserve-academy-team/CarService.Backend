@@ -24,7 +24,7 @@ namespace CarService.Api.Controllers
             var result = await _accountService.AddUser(registerCustomerCredentials);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
-
+            _accountService.RegisterCustomer(registerCustomerCredentials);
             return Ok();
         }
 

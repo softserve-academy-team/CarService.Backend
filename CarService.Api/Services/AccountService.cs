@@ -3,21 +3,26 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using CarService.DbAccess.Entities;
 using CarService.Api.Models;
+using CarService.DbAccess.DAL;
 
 namespace CarService.Api.Services
 {
     public class AccountService : IAccountService
     {
         private readonly UserManager<IdentityUser> _userManager;
-
-        public AccountService(UserManager<IdentityUser> userManager)
+        private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+        public AccountService(UserManager<IdentityUser> userManager, IUnitOfWorkFactory unitOfWorkFactory)
         {
             this._userManager = userManager;
+            this._unitOfWorkFactory = unitOfWorkFactory;
         }
 
         public void RegisterCustomer(RegisterCustomerCredentials registerCustomerCredentials)
         {
-
+            IUnitOfWork unitOfWork = _unitOfWorkFactory.Create();
+            IRepository<User> users = unitOfWork.Repository<User>();
+            System.Console.WriteLine("ADasdasda");
+            users.Add(new User());
         }
 
         public void RegisterMechanic(RegisterCustomerCredentials registerMechanicCredentials)
