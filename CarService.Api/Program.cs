@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore;
+﻿using System;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using CarService.Api.Security;
 
 namespace CarService.Api
 {
@@ -10,9 +12,18 @@ namespace CarService.Api
             BuildWebHost(args).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .Build();
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            IWebHostBuilder webHostBuilder = WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>();
+
+            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            if (environment == EnvironmentName.Development)
+            {
+                webHostBuilder.UseKestrel(options => options.ConfigureEndpoints());
+            }
+
+            return webHostBuilder.Build();
+        }
     }
 }
