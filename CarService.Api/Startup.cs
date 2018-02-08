@@ -64,6 +64,7 @@ namespace CarService.Api
 
             services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
             services.AddSingleton<ICarService, AutoRiaCarService>();
+            services.AddSingleton<IAccountService, AccountService>();
 
             services.AddDbContext<UserDbContext>(options =>
                 options.UseSqlServer(_configuration["Data:Identity:ConnectionString"]));

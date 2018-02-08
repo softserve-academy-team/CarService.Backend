@@ -16,11 +16,11 @@ namespace CarService.Api.Controllers
         }
 
         // GET api/values/5
-        [Authorize]
+        [Authorize(Roles = "mechanic")]
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            return Ok("You are mechanic!");
         }
 
         // POST api/values

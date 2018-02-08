@@ -18,50 +18,37 @@ using CarService.Api.Services;
 
 namespace CarService.Api.Controllers
 {
-    public class UserDTO
-    {
-        public string username { get; set; }
-        public string password { get; set; }
-    }
+    
     
     
     [Route("api/[controller]")]
     public class AccountController : Controller
     {
-        
+        readonly IAccountService _accountService;
+        public AccountController(IAccountService accountService)
+        {
+            _accountService = accountService;
+        }
+
         [HttpPost]
         public IActionResult Register()
         {
             return Json("Works!");
         }
-        
-        // JWT
-          private List<User> users = new List<User>
-        {
-            new User {Email="admin@gmail.com", Password="12345", Role = "admin" },
-            new User { Email="qwerty", Password="55555", Role = "user" }
-        };
+   
  
         [HttpPost("token")]
         public IActionResult Token([FromBody] UserDTO info)
         {
 
-            var identity = GetIdentity(info.username, info.password);
+            ClaimsIdentity identity = _accountService.GetIdentity(info.username, info.password);
             if (identity == null)
             {
                 return BadRequest($"Invalid username or password.!!!! {info.username} {info.password}");
             }
  
-            var now = DateTime.UtcNow;
             // создаем JWT-токен
-            var jwt = new JwtSecurityToken(
-                    issuer: AuthOptions.ISSUER,
-                    audience: AuthOptions.AUDIENCE,
-                    notBefore: now,
-                    claims: identity.Claims,
-                    expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
-                    signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+            var encodedJwt = _accountService.createJwtToken(identity);
              
             var response = new
             {
@@ -73,25 +60,6 @@ namespace CarService.Api.Controllers
             return Json(response);
         }
  
-        private ClaimsIdentity GetIdentity(string username, string password)
-        {
-            User user = users.FirstOrDefault(x => x.Email == username && x.Password == password);
-            if (user != null)
-            {
-                var claims = new List<Claim>
-                {
-                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
-                };
-                ClaimsIdentity claimsIdentity =
-                new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
-                    ClaimsIdentity.DefaultRoleClaimType);
-                return claimsIdentity;
-            }
- 
-            // если пользователя не найдено
-            return null;
-        }
         
         
         
