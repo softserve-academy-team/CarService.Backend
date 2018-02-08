@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using CarService.Api.Mappers;
@@ -10,18 +13,23 @@ using CarService.Api.Models;
 using CarService.DbAccess.EF;
 using CarService.DbAccess.Entities;
 using CarService.DbAccess.DAL;
-using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
+using CarService.Api.Security;
 
 namespace CarService.Api
 {
     public class Startup
     {
         private readonly IConfiguration _configuration;
-        
-        public Startup(IConfiguration configuration)
+
+        public Startup(IHostingEnvironment env)
         {
-            _configuration = configuration;
+            var configurationBuilder = new ConfigurationBuilder()
+                .SetBasePath(env.ContentRootPath)
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                .AddEnvironmentVariables();
+            _configuration = configurationBuilder.Build();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -37,6 +45,7 @@ namespace CarService.Api
                 options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
             });
 
+            services.AddSingleton<IConfiguration>(provider => _configuration);
             services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
             services.AddSingleton<ICarService, AutoRiaCarService>();
             services.AddSingleton<IAccountService, AccountService>();
@@ -55,15 +64,25 @@ namespace CarService.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ICarService carService)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment environment, ICarService carService)
         {
-            app.UseAuthentication();
-            if (env.IsDevelopment())
+            if (environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                int? httpsPort = null;
+                IConfigurationSection httpsSection = _configuration.GetSection("HttpServer:Endpoints:Https");
+                if (httpsSection.Exists())
+                {
+                    var httpsEndpoint = new EndpointConfiguration();
+                    httpsSection.Bind(httpsEndpoint);
+                    httpsPort = httpsEndpoint.Port;
+                }
+                app.UseRewriter(new RewriteOptions().AddRedirectToHttps(StatusCodes.Status302Found, httpsPort));
             }
 
             app.UseMvc();
+            app.UseAuthentication();
         }
     }
 }
