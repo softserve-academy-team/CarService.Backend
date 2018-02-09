@@ -21,20 +21,18 @@ namespace CarService.Api.Controllers
         [HttpPost("registration")]
         public async Task<IActionResult> RegisterCustomer([FromBody] RegisterCustomerCredentials registerCustomerCredentials)
         {
-            var result = await _accountService.AddUser(registerCustomerCredentials);
+            var result = await _accountService.RegisterCustomer(registerCustomerCredentials);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
-            _accountService.RegisterCustomer(registerCustomerCredentials);
             return Ok();
         }
 
         [HttpPost("registration/mechanic")]
         public async Task<IActionResult> RegisterMechanic([FromBody] RegisterMechanicCredentials registerMechanicCredentials)
         {
-            var result = await _accountService.AddUser(registerMechanicCredentials);
+            var result = await _accountService.RegisterMechanic(registerMechanicCredentials);
             if (!result.Succeeded)
-                return BadRequest(result.Errors);
-
+                return BadRequest();
             return Ok();
         }
     }

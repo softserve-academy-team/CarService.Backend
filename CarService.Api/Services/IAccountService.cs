@@ -6,8 +6,7 @@ namespace CarService.Api.Services
 {
     public interface IAccountService
     {
-        void RegisterCustomer(RegisterCustomerCredentials registerCustomerCredentials);
-        void RegisterMechanic(RegisterCustomerCredentials registerMechanicCredentials);
-        Task<IdentityResult> AddUser(RegisterCustomerCredentials registerCustomerCredentials);
+        Task<IdentityResult> RegisterCustomer(RegisterCustomerCredentials registerCustomerCredentials);
+        Task<IdentityResult> RegisterMechanic(RegisterMechanicCredentials registerMechanicCredentials);
     }
 }
