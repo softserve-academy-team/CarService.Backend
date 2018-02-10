@@ -80,9 +80,9 @@ namespace CarService.Api
                 }
                 app.UseRewriter(new RewriteOptions().AddRedirectToHttps(StatusCodes.Status302Found, httpsPort));
             }
-
-            app.UseMvc();
+            
             app.UseAuthentication();
+            app.UseMvc();
         }
     }
 }
