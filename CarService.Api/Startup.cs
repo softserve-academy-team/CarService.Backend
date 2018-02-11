@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using CarService.DbAccess.EF;
 
 namespace CarService.Api
 {
@@ -66,8 +67,13 @@ namespace CarService.Api
             services.AddSingleton<ICarService, AutoRiaCarService>();
             services.AddSingleton<IAccountService, AccountService>();
 
-            services.AddDbContext<UserDbContext>(options =>
-                options.UseSqlServer(_configuration["Data:Identity:ConnectionString"]));
+           /* services.AddDbContext<UserDbContext>(options =>
+                options.UseSqlServer(_configuration.GetConnectionString("IdentityConnection")));*/
+            services.AddDbContext<CarServiceDbContext>(options =>
+                options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
+            
+            // services.AddDbContext<AccountContext>(options =>
+            //     options.UseSqlServer(_configuration["Data:Identity:ConnectionString"]))
  
             services.AddMvc();
         }

@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
-using CarService.Api.Models;
+
 using CarService.Api.Services;
 
 
@@ -41,10 +41,10 @@ namespace CarService.Api.Controllers
         public IActionResult Token([FromBody] UserDTO info)
         {
 
-            ClaimsIdentity identity = _accountService.GetIdentity(info.username, info.password);
+            ClaimsIdentity identity = _accountService.GetIdentity(info.email, info.password);
             if (identity == null)
             {
-                return BadRequest($"Invalid username or password.!!!! {info.username} {info.password}");
+                return BadRequest($"Invalid username or password.!!!! {info.email} {info.password}");
             }
  
             // создаем JWT-токен
