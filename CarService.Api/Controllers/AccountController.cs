@@ -13,9 +13,14 @@ namespace CarService.Api.Controllers
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
-        public AccountController(IAccountService accountService)
+        private readonly IEmailService   _emailService;
+
+        public AccountController(
+            IAccountService accountService,
+            IEmailService emailService)
         {
             this._accountService = accountService;
+                 _emailService = emailService;
         }
 
         [HttpPost("registration")]
@@ -24,6 +29,8 @@ namespace CarService.Api.Controllers
             var result = await _accountService.RegisterCustomer(registerCustomerCredentials);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
+
+
             return Ok();
         }
 

@@ -61,6 +61,9 @@ namespace CarService.Api
 
             services.AddIdentity<IdentityUser, IdentityRole>()
                 .AddEntityFrameworkStores<AccountDbContext>();
+
+            services.Configure<EmailConfig>(_configuration.GetSection("Email"));
+            services.AddTransient<IEmailService, EmailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
