@@ -31,7 +31,7 @@ namespace CarService.Api.Services
             if (!result.Succeeded)
                 return result;
 
-            AddMechanic(registerMechanicCredentials, user);
+            //AddMechanic(registerMechanicCredentials, user);
             return result;
         }
 
@@ -48,56 +48,56 @@ namespace CarService.Api.Services
             if (!result.Succeeded)
                 return result;
 
-            AddCustomer(registerCustomerCredentials, user);
+            //AddCustomer(registerCustomerCredentials, user);
             return result;
         }
 
 
         private void AddCustomer(RegisterCustomerCredentials registerCustomerCredentials, IdentityUser user)
         {
-            var customer = new Customer
-            {
-                IdIdentity = user.Id,
-                Email = user.Email,
-                Password = user.PasswordHash,
-                Status = UserStatus.Inactive,
-                FirstName = registerCustomerCredentials.FirstName,
-                LastName = registerCustomerCredentials.LastName,
-                PhoneNumber = registerCustomerCredentials.PhoneNumber,
-                RegisterDate = DateTime.Now.ToUniversalTime(),
-                City = registerCustomerCredentials.City
-            };
+            // var customer = new Customer
+            // {
+            //     IdIdentity = user.Id,
+            //     Email = user.Email,
+            //     Password = user.PasswordHash,
+            //     Status = UserStatus.Inactive,
+            //     FirstName = registerCustomerCredentials.FirstName,
+            //     LastName = registerCustomerCredentials.LastName,
+            //     PhoneNumber = registerCustomerCredentials.PhoneNumber,
+            //     RegisterDate = DateTime.Now.ToUniversalTime(),
+            //     City = registerCustomerCredentials.City
+            // };
 
-            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
-            {
-                IRepository<Customer> users = unitOfWork.Repository<Customer>();
-                users.Add(customer);
-                unitOfWork.Save();
-            }
+            // using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            // {
+            //     IRepository<Customer> users = unitOfWork.Repository<Customer>();
+            //     users.Add(customer);
+            //     unitOfWork.Save();
+            // }
         }
 
         private void AddMechanic(RegisterMechanicCredentials registerMechanicCredentials, IdentityUser user)
         {
-            var mechanic = new Mechanic
-            {
-                IdIdentity = user.Id,
-                Email = user.Email,
-                Password = user.PasswordHash,
-                Status = UserStatus.Inactive,
-                FirstName = registerMechanicCredentials.FirstName,
-                LastName = registerMechanicCredentials.LastName,
-                PhoneNumber = registerMechanicCredentials.PhoneNumber,
-                RegisterDate = DateTime.Now.ToUniversalTime(),
-                City = registerMechanicCredentials.City,
-                WorkExperience = registerMechanicCredentials.WorkExperience
-            };
+            // var mechanic = new Mechanic
+            // {
+            //     IdIdentity = user.Id,
+            //     Email = user.Email,
+            //     Password = user.PasswordHash,
+            //     Status = UserStatus.Inactive,
+            //     FirstName = registerMechanicCredentials.FirstName,
+            //     LastName = registerMechanicCredentials.LastName,
+            //     PhoneNumber = registerMechanicCredentials.PhoneNumber,
+            //     RegisterDate = DateTime.Now.ToUniversalTime(),
+            //     City = registerMechanicCredentials.City,
+            //     WorkExperience = registerMechanicCredentials.WorkExperience
+            // };
 
-            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
-            {
-                IRepository<Mechanic> users = unitOfWork.Repository<Mechanic>();
-                users.Add(mechanic);
-                unitOfWork.Save();
-            }
+            // using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            // {
+            //     IRepository<Mechanic> users = unitOfWork.Repository<Mechanic>();
+            //     users.Add(mechanic);
+            //     unitOfWork.Save();
+            // }
         }
     }
 }

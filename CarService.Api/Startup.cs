@@ -59,7 +59,7 @@ namespace CarService.Api
             //services.AddDbContext<CarServiceDbContext>(options => 
                 //options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("CarService.Api")));
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<AccountDbContext>();
         }
 
