@@ -11,7 +11,7 @@ namespace CarService.DbAccess.Entities
         public string Videos { get; set; }
         public DateTime Date { get; set; }
 
-        public int? MechanicId { get; set; }
+        public string MechanicId { get; set; }
         public Mechanic Mechanic { get; set; }
 
         public int? OrderId { get; set; }

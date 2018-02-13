@@ -1,10 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using CarService.DbAccess.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace CarService.DbAccess.EF
 {
-    public class CarServiceDbContext : DbContext
+    public class CarServiceDbContext : IdentityDbContext<User>
     {
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Mechanic> Mechanics { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<ReviewProposition> ReviewPropositions { get; set; }
@@ -12,7 +15,7 @@ namespace CarService.DbAccess.EF
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Message> Messages { get; set; }
         public DbSet<Dialog> Dialogs { get; set; }
-        //public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Invitation> Invitations { get; set; }
 
         public CarServiceDbContext()
@@ -39,17 +42,17 @@ namespace CarService.DbAccess.EF
             modelBuilder.Entity<CustomerAuto>()
                 .HasKey(ca => new { ca.CustomerId, ca.AutoId });
 
-            // // OneToMany(User(Sender), Transaction)
-            // modelBuilder.Entity<Transaction>()
-            //    .HasOne(x => x.Sender)
-            //    .WithMany(x => x.SendersTransactions)
-            //    .HasForeignKey(x => x.SenderId);
+            // OneToMany(User(Sender), Transaction)
+            modelBuilder.Entity<Transaction>()
+               .HasOne(x => x.Sender)
+               .WithMany(x => x.SendersTransactions)
+               .HasForeignKey(x => x.SenderId);
 
-            // // OneToMany(User(Receiver), Transaction)
-            // modelBuilder.Entity<Transaction>()
-            //    .HasOne(x => x.Receiver)
-            //    .WithMany(x => x.ReceiversTransactions)
-            //    .HasForeignKey(x => x.ReceiverId);
+            // OneToMany(User(Receiver), Transaction)
+            modelBuilder.Entity<Transaction>()
+               .HasOne(x => x.Receiver)
+               .WithMany(x => x.ReceiversTransactions)
+               .HasForeignKey(x => x.ReceiverId);
         }
     }
 }

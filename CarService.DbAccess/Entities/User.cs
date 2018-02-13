@@ -19,13 +19,13 @@ namespace CarService.DbAccess.Entities
         public DateTime RegisterDate { get; set; }
         public DateTime LastLoginDate { get; set; }
 
-        //public ICollection<Transaction> SendersTransactions { get; set; }
-        //public ICollection<Transaction> ReceiversTransactions { get; set; }
+        public ICollection<Transaction> SendersTransactions { get; set; }
+        public ICollection<Transaction> ReceiversTransactions { get; set; }
 
         public User()
         {
-            //SendersTransactions = new Collection<Transaction>();
-            //ReceiversTransactions = new Collection<Transaction>();
+            SendersTransactions = new Collection<Transaction>();
+            ReceiversTransactions = new Collection<Transaction>();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace CarService.DbAccess.Entities
         public int? OrderId { get; set; }
         public Order Order { get; set; }
 
-        public int? MechanicId { get; set; }
+        public string MechanicId { get; set; }
         public Mechanic Mechanic { get; set; }
     }
 }
