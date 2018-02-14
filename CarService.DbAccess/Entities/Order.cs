@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace CarService.DbAccess.Entities
 {
     public class Order : IEntity
     {
-        public int Id { get; set; }
+        [Key]
+        public int EntityId { get; set; }
         public DateTime Date { get; set; }
         public OrderStatus Status { get; set; }
 

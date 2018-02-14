@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using CarService.DbAccess.DAL;
+using CarService.DbAccess.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarService.Api.Controllers
@@ -6,11 +9,40 @@ namespace CarService.Api.Controllers
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
+        private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+
+        public ValuesController(IUnitOfWorkFactory unitOfWorkFactory)
+        {
+            _unitOfWorkFactory = unitOfWorkFactory;
+        }
+
         // GET api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            {
+                var autos = new List<Auto>();
+                var tasks = new List<Task>();                
+                for (int i = 0; i < 10; ++i)
+                {
+                    autos.Add(new Auto
+                    {
+                        Info = $"Best car in the world {i}"
+                    });
+                }
+                
+                foreach (var auto in autos)
+                {
+                  var autoRepository = unitOfWork.Repository<Auto>();
+                  autoRepository.Add(auto);
+                  tasks.Add(unitOfWork.SaveAsync());
+                }
+
+                await Task.WhenAll(tasks);
+
+                return Ok(autos[9]);
+            }
         }
 
         // GET api/values/5

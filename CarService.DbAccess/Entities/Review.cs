@@ -1,10 +1,12 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace CarService.DbAccess.Entities
 {
     public class Review : IEntity
     {
-        public int Id { get; set; }
+        [Key]
+        public int EntityId { get; set; }
         public int AutoRate { get; set; }
         public string Description { get; set; }
         public string Photos { get; set; }

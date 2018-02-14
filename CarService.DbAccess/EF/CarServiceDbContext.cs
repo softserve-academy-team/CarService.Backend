@@ -18,12 +18,7 @@ namespace CarService.DbAccess.EF
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Invitation> Invitations { get; set; }
 
-        public CarServiceDbContext()
-        {
-            Database.EnsureCreated();
-        }
-
-        public CarServiceDbContext(DbContextOptions<CarServiceDbContext> options) : base(options)
+        public CarServiceDbContext(DbContextOptions options) : base(options)
         {
             Database.EnsureCreated();
         }

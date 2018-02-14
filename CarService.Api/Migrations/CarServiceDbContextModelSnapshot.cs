@@ -12,11 +12,10 @@ using System;
 
 namespace CarService.Api.Migrations
 {
-    [DbContext(typeof(AccountDbContext))]
-    [Migration("20180212171711_Initial333")]
-    partial class Initial333
+    [DbContext(typeof(CarServiceDbContext))]
+    partial class CarServiceDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,21 +24,21 @@ namespace CarService.Api.Migrations
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Auto", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("AutoRiaId");
 
                     b.Property<string>("Info");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
-                    b.ToTable("Auto");
+                    b.ToTable("Autos");
                 });
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Comment", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Date");
@@ -50,83 +49,75 @@ namespace CarService.Api.Migrations
 
                     b.Property<string>("Text");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("Comment");
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("CarService.DbAccess.Entities.CustomerAuto", b =>
                 {
-                    b.Property<int?>("CustomerId");
+                    b.Property<string>("CustomerId");
 
                     b.Property<int?>("AutoId");
-
-                    b.Property<string>("CustomerId1");
 
                     b.HasKey("CustomerId", "AutoId");
 
                     b.HasIndex("AutoId");
-
-                    b.HasIndex("CustomerId1");
 
                     b.ToTable("CustomerAuto");
                 });
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Dialog", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("CustomerId");
+                    b.Property<string>("CustomerId");
 
-                    b.Property<string>("CustomerId1");
-
-                    b.Property<int?>("MechanicId");
+                    b.Property<string>("MechanicId");
 
                     b.Property<string>("MechanicId1");
 
                     b.Property<int?>("OrderId");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
-                    b.HasIndex("CustomerId1");
+                    b.HasIndex("CustomerId");
 
                     b.HasIndex("MechanicId1");
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("Dialog");
+                    b.ToTable("Dialogs");
                 });
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Invitation", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<int?>("MechanicId");
-
-                    b.Property<string>("MechanicId1");
+                    b.Property<string>("MechanicId");
 
                     b.Property<int?>("OrderId");
 
                     b.Property<string>("Text");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
-                    b.HasIndex("MechanicId1");
+                    b.HasIndex("MechanicId");
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("Invitation");
+                    b.ToTable("Invitations");
                 });
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Message", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Date");
@@ -135,18 +126,18 @@ namespace CarService.Api.Migrations
 
                     b.Property<string>("Text");
 
-                    b.Property<int>("UserId");
+                    b.Property<string>("UserId");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
                     b.HasIndex("DialogId");
 
-                    b.ToTable("Message");
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Order", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int?>("AutoId");
@@ -155,28 +146,26 @@ namespace CarService.Api.Migrations
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<int?>("MechanicId");
-
-                    b.Property<string>("MechanicId1");
+                    b.Property<string>("MechanicId");
 
                     b.Property<int?>("ReviewId");
 
                     b.Property<int>("Status");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
                     b.HasIndex("AutoId");
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("MechanicId1");
+                    b.HasIndex("MechanicId");
 
-                    b.ToTable("Order");
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Review", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("AutoRate");
@@ -187,9 +176,7 @@ namespace CarService.Api.Migrations
 
                     b.Property<string>("Description");
 
-                    b.Property<int?>("MechanicId");
-
-                    b.Property<string>("MechanicId1");
+                    b.Property<string>("MechanicId");
 
                     b.Property<int?>("OrderId");
 
@@ -197,43 +184,65 @@ namespace CarService.Api.Migrations
 
                     b.Property<string>("Videos");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("MechanicId1");
+                    b.HasIndex("MechanicId");
 
                     b.HasIndex("OrderId")
                         .IsUnique()
                         .HasFilter("[OrderId] IS NOT NULL");
 
-                    b.ToTable("Review");
+                    b.ToTable("Reviews");
                 });
 
             modelBuilder.Entity("CarService.DbAccess.Entities.ReviewProposition", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Comment");
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<int?>("MechanicId");
-
-                    b.Property<string>("MechanicId1");
+                    b.Property<string>("MechanicId");
 
                     b.Property<int?>("OrderId");
 
                     b.Property<int>("Price");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
-                    b.HasIndex("MechanicId1");
+                    b.HasIndex("MechanicId");
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("ReviewProposition");
+                    b.ToTable("ReviewPropositions");
+                });
+
+            modelBuilder.Entity("CarService.DbAccess.Entities.Transaction", b =>
+                {
+                    b.Property<int>("EntityId")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<decimal>("Amount");
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<string>("ReceiverId");
+
+                    b.Property<string>("SenderId");
+
+                    b.Property<int>("Status");
+
+                    b.HasKey("EntityId");
+
+                    b.HasIndex("ReceiverId");
+
+                    b.HasIndex("SenderId");
+
+                    b.ToTable("Transactions");
                 });
 
             modelBuilder.Entity("CarService.DbAccess.Entities.User", b =>
@@ -253,6 +262,8 @@ namespace CarService.Api.Migrations
                         .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed");
+
+                    b.Property<int>("EntityId");
 
                     b.Property<string>("FirstName");
 
@@ -452,14 +463,15 @@ namespace CarService.Api.Migrations
 
                     b.HasOne("CarService.DbAccess.Entities.Customer", "Customer")
                         .WithMany("CustomerAutoes")
-                        .HasForeignKey("CustomerId1");
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Dialog", b =>
                 {
                     b.HasOne("CarService.DbAccess.Entities.Customer", "Customer")
                         .WithMany("Dialogs")
-                        .HasForeignKey("CustomerId1");
+                        .HasForeignKey("CustomerId");
 
                     b.HasOne("CarService.DbAccess.Entities.Mechanic", "Mechanic")
                         .WithMany()
@@ -474,7 +486,7 @@ namespace CarService.Api.Migrations
                 {
                     b.HasOne("CarService.DbAccess.Entities.Mechanic", "Mechanic")
                         .WithMany("Invitations")
-                        .HasForeignKey("MechanicId1");
+                        .HasForeignKey("MechanicId");
 
                     b.HasOne("CarService.DbAccess.Entities.Order", "Order")
                         .WithMany("Invitations")
@@ -500,7 +512,7 @@ namespace CarService.Api.Migrations
 
                     b.HasOne("CarService.DbAccess.Entities.Mechanic", "Mechanic")
                         .WithMany("OrdersTaken")
-                        .HasForeignKey("MechanicId1");
+                        .HasForeignKey("MechanicId");
                 });
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Review", b =>
@@ -511,7 +523,7 @@ namespace CarService.Api.Migrations
 
                     b.HasOne("CarService.DbAccess.Entities.Mechanic", "Mechanic")
                         .WithMany("MadeReviews")
-                        .HasForeignKey("MechanicId1");
+                        .HasForeignKey("MechanicId");
 
                     b.HasOne("CarService.DbAccess.Entities.Order", "Order")
                         .WithOne("Review")
@@ -522,11 +534,22 @@ namespace CarService.Api.Migrations
                 {
                     b.HasOne("CarService.DbAccess.Entities.Mechanic", "Mechanic")
                         .WithMany("ReviewPropositions")
-                        .HasForeignKey("MechanicId1");
+                        .HasForeignKey("MechanicId");
 
                     b.HasOne("CarService.DbAccess.Entities.Order", "Order")
                         .WithMany("ReviewPropositions")
                         .HasForeignKey("OrderId");
+                });
+
+            modelBuilder.Entity("CarService.DbAccess.Entities.Transaction", b =>
+                {
+                    b.HasOne("CarService.DbAccess.Entities.User", "Receiver")
+                        .WithMany("ReceiversTransactions")
+                        .HasForeignKey("ReceiverId");
+
+                    b.HasOne("CarService.DbAccess.Entities.User", "Sender")
+                        .WithMany("SendersTransactions")
+                        .HasForeignKey("SenderId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

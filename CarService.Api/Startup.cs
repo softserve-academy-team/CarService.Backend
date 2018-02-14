@@ -15,6 +15,7 @@ using CarService.DbAccess.Entities;
 using CarService.DbAccess.DAL;
 using Microsoft.EntityFrameworkCore;
 using CarService.Api.Security;
+using System;
 
 namespace CarService.Api
 {
@@ -49,15 +50,13 @@ namespace CarService.Api
             services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
             services.AddSingleton<ICarService, AutoRiaCarService>();
             services.AddScoped<IAccountService, AccountService>();
-            
-            var builderA = new DbContextOptionsBuilder<CarServiceDbContext>();
-            builderA.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
-            services.AddScoped<IUnitOfWorkFactory>(provider => new SqlUnitOfWorkFactory(builderA));
-            
-            //services.AddDbContext<AccountDbContext>(options =>
-                //options.UseSqlServer(_configuration.GetConnectionString("IdentityConnection"), b => b.MigrationsAssembly("CarService.Api")));
 
-            services.AddDbContext<CarServiceDbContext>(options => 
+            services.AddScoped<IUnitOfWorkFactory>(provider => new SqlUnitOfWorkFactory(options =>
+            {
+                options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
+            }));
+
+            services.AddDbContext<CarServiceDbContext>(options =>
                 options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("CarService.Api")));
 
             services.AddIdentity<User, IdentityRole>()
@@ -65,7 +64,7 @@ namespace CarService.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment environment, ICarService carService)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment environment)
         {
             if (environment.IsDevelopment())
             {
@@ -81,7 +80,7 @@ namespace CarService.Api
                 }
                 app.UseRewriter(new RewriteOptions().AddRedirectToHttps(StatusCodes.Status302Found, httpsPort));
             }
-            
+
             app.UseAuthentication();
             app.UseMvc();
         }

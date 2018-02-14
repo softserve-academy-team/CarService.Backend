@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace CarService.DbAccess.Entities
 {
     public class Dialog : IEntity
     {
-        public int Id { get; set; }
+        [Key]
+        public int EntityId { get; set; }
 
         public string CustomerId { get; set; }
         public Customer Customer { get; set; }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace CarService.Api.Migrations
 {
-    public partial class Initial : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -37,6 +37,7 @@ namespace CarService.Api.Migrations
                     Discriminator = table.Column<string>(nullable: false),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(nullable: false),
+                    EntityId = table.Column<int>(nullable: false),
                     FirstName = table.Column<string>(nullable: true),
                     LastLoginDate = table.Column<DateTime>(nullable: false),
                     LastName = table.Column<string>(nullable: true),
@@ -59,17 +60,17 @@ namespace CarService.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Auto",
+                name: "Autos",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    EntityId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     AutoRiaId = table.Column<int>(nullable: false),
                     Info = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Auto", x => x.Id);
+                    table.PrimaryKey("PK_Autos", x => x.EntityId);
                 });
 
             migrationBuilder.CreateTable(
@@ -179,73 +180,99 @@ namespace CarService.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Transactions",
+                columns: table => new
+                {
+                    EntityId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Amount = table.Column<decimal>(nullable: false),
+                    Date = table.Column<DateTime>(nullable: false),
+                    ReceiverId = table.Column<string>(nullable: true),
+                    SenderId = table.Column<string>(nullable: true),
+                    Status = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transactions", x => x.EntityId);
+                    table.ForeignKey(
+                        name: "FK_Transactions_AspNetUsers_ReceiverId",
+                        column: x => x.ReceiverId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Transactions_AspNetUsers_SenderId",
+                        column: x => x.SenderId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CustomerAuto",
                 columns: table => new
                 {
-                    CustomerId = table.Column<int>(nullable: false),
-                    AutoId = table.Column<int>(nullable: false),
-                    CustomerId1 = table.Column<string>(nullable: true)
+                    CustomerId = table.Column<string>(nullable: false),
+                    AutoId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_CustomerAuto", x => new { x.CustomerId, x.AutoId });
                     table.ForeignKey(
-                        name: "FK_CustomerAuto_Auto_AutoId",
+                        name: "FK_CustomerAuto_Autos_AutoId",
                         column: x => x.AutoId,
-                        principalTable: "Auto",
-                        principalColumn: "Id",
+                        principalTable: "Autos",
+                        principalColumn: "EntityId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CustomerAuto_AspNetUsers_CustomerId1",
-                        column: x => x.CustomerId1,
+                        name: "FK_CustomerAuto_AspNetUsers_CustomerId",
+                        column: x => x.CustomerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Order",
+                name: "Orders",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    EntityId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     AutoId = table.Column<int>(nullable: true),
-                    CustomerId = table.Column<int>(nullable: true),
-                    CustomerId1 = table.Column<string>(nullable: true),
+                    CustomerId = table.Column<string>(nullable: true),
                     Date = table.Column<DateTime>(nullable: false),
-                    MechanicId = table.Column<int>(nullable: true),
-                    MechanicId1 = table.Column<string>(nullable: true),
+                    MechanicId = table.Column<string>(nullable: true),
                     ReviewId = table.Column<int>(nullable: true),
                     Status = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Order", x => x.Id);
+                    table.PrimaryKey("PK_Orders", x => x.EntityId);
                     table.ForeignKey(
-                        name: "FK_Order_Auto_AutoId",
+                        name: "FK_Orders_Autos_AutoId",
                         column: x => x.AutoId,
-                        principalTable: "Auto",
-                        principalColumn: "Id",
+                        principalTable: "Autos",
+                        principalColumn: "EntityId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Order_AspNetUsers_CustomerId1",
-                        column: x => x.CustomerId1,
+                        name: "FK_Orders_AspNetUsers_CustomerId",
+                        column: x => x.CustomerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Order_AspNetUsers_MechanicId1",
-                        column: x => x.MechanicId1,
+                        name: "FK_Orders_AspNetUsers_MechanicId",
+                        column: x => x.MechanicId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Comment",
+                name: "Comments",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    EntityId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Date = table.Column<DateTime>(nullable: false),
                     OrderId = table.Column<int>(nullable: true),
@@ -254,167 +281,163 @@ namespace CarService.Api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Comment", x => x.Id);
+                    table.PrimaryKey("PK_Comments", x => x.EntityId);
                     table.ForeignKey(
-                        name: "FK_Comment_Order_OrderId",
+                        name: "FK_Comments_Orders_OrderId",
                         column: x => x.OrderId,
-                        principalTable: "Order",
-                        principalColumn: "Id",
+                        principalTable: "Orders",
+                        principalColumn: "EntityId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Dialog",
+                name: "Dialogs",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    EntityId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    CustomerId = table.Column<int>(nullable: true),
-                    CustomerId1 = table.Column<string>(nullable: true),
-                    MechanicId = table.Column<int>(nullable: true),
+                    CustomerId = table.Column<string>(nullable: true),
+                    MechanicId = table.Column<string>(nullable: true),
                     MechanicId1 = table.Column<string>(nullable: true),
                     OrderId = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Dialog", x => x.Id);
+                    table.PrimaryKey("PK_Dialogs", x => x.EntityId);
                     table.ForeignKey(
-                        name: "FK_Dialog_AspNetUsers_CustomerId1",
-                        column: x => x.CustomerId1,
+                        name: "FK_Dialogs_AspNetUsers_CustomerId",
+                        column: x => x.CustomerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Dialog_AspNetUsers_MechanicId1",
+                        name: "FK_Dialogs_AspNetUsers_MechanicId1",
                         column: x => x.MechanicId1,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Dialog_Order_OrderId",
+                        name: "FK_Dialogs_Orders_OrderId",
                         column: x => x.OrderId,
-                        principalTable: "Order",
-                        principalColumn: "Id",
+                        principalTable: "Orders",
+                        principalColumn: "EntityId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Invitation",
+                name: "Invitations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    EntityId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Date = table.Column<DateTime>(nullable: false),
-                    MechanicId = table.Column<int>(nullable: true),
-                    MechanicId1 = table.Column<string>(nullable: true),
+                    MechanicId = table.Column<string>(nullable: true),
                     OrderId = table.Column<int>(nullable: true),
                     Text = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Invitation", x => x.Id);
+                    table.PrimaryKey("PK_Invitations", x => x.EntityId);
                     table.ForeignKey(
-                        name: "FK_Invitation_AspNetUsers_MechanicId1",
-                        column: x => x.MechanicId1,
+                        name: "FK_Invitations_AspNetUsers_MechanicId",
+                        column: x => x.MechanicId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Invitation_Order_OrderId",
+                        name: "FK_Invitations_Orders_OrderId",
                         column: x => x.OrderId,
-                        principalTable: "Order",
-                        principalColumn: "Id",
+                        principalTable: "Orders",
+                        principalColumn: "EntityId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Review",
+                name: "ReviewPropositions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
+                    EntityId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Comment = table.Column<string>(nullable: true),
+                    Date = table.Column<DateTime>(nullable: false),
+                    MechanicId = table.Column<string>(nullable: true),
+                    OrderId = table.Column<int>(nullable: true),
+                    Price = table.Column<int>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReviewPropositions", x => x.EntityId);
+                    table.ForeignKey(
+                        name: "FK_ReviewPropositions_AspNetUsers_MechanicId",
+                        column: x => x.MechanicId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ReviewPropositions_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "EntityId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Reviews",
+                columns: table => new
+                {
+                    EntityId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     AutoRate = table.Column<int>(nullable: false),
                     CustomerId = table.Column<string>(nullable: true),
                     Date = table.Column<DateTime>(nullable: false),
                     Description = table.Column<string>(nullable: true),
-                    MechanicId = table.Column<int>(nullable: true),
-                    MechanicId1 = table.Column<string>(nullable: true),
+                    MechanicId = table.Column<string>(nullable: true),
                     OrderId = table.Column<int>(nullable: true),
                     Photos = table.Column<string>(nullable: true),
                     Videos = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Review", x => x.Id);
+                    table.PrimaryKey("PK_Reviews", x => x.EntityId);
                     table.ForeignKey(
-                        name: "FK_Review_AspNetUsers_CustomerId",
+                        name: "FK_Reviews_AspNetUsers_CustomerId",
                         column: x => x.CustomerId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Review_AspNetUsers_MechanicId1",
-                        column: x => x.MechanicId1,
+                        name: "FK_Reviews_AspNetUsers_MechanicId",
+                        column: x => x.MechanicId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Review_Order_OrderId",
+                        name: "FK_Reviews_Orders_OrderId",
                         column: x => x.OrderId,
-                        principalTable: "Order",
-                        principalColumn: "Id",
+                        principalTable: "Orders",
+                        principalColumn: "EntityId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ReviewProposition",
+                name: "Messages",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    Comment = table.Column<string>(nullable: true),
-                    Date = table.Column<DateTime>(nullable: false),
-                    MechanicId = table.Column<int>(nullable: true),
-                    MechanicId1 = table.Column<string>(nullable: true),
-                    OrderId = table.Column<int>(nullable: true),
-                    Price = table.Column<int>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ReviewProposition", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ReviewProposition_AspNetUsers_MechanicId1",
-                        column: x => x.MechanicId1,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_ReviewProposition_Order_OrderId",
-                        column: x => x.OrderId,
-                        principalTable: "Order",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Message",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
+                    EntityId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Date = table.Column<DateTime>(nullable: false),
                     DialogId = table.Column<int>(nullable: true),
                     Text = table.Column<string>(nullable: true),
-                    UserId = table.Column<int>(nullable: false)
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Message", x => x.Id);
+                    table.PrimaryKey("PK_Messages", x => x.EntityId);
                     table.ForeignKey(
-                        name: "FK_Message_Dialog_DialogId",
+                        name: "FK_Messages_Dialogs_DialogId",
                         column: x => x.DialogId,
-                        principalTable: "Dialog",
-                        principalColumn: "Id",
+                        principalTable: "Dialogs",
+                        principalColumn: "EntityId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -458,8 +481,8 @@ namespace CarService.Api.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comment_OrderId",
-                table: "Comment",
+                name: "IX_Comments_OrderId",
+                table: "Comments",
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
@@ -468,81 +491,86 @@ namespace CarService.Api.Migrations
                 column: "AutoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CustomerAuto_CustomerId1",
-                table: "CustomerAuto",
-                column: "CustomerId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Dialog_CustomerId1",
-                table: "Dialog",
-                column: "CustomerId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Dialog_MechanicId1",
-                table: "Dialog",
-                column: "MechanicId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Dialog_OrderId",
-                table: "Dialog",
-                column: "OrderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Invitation_MechanicId1",
-                table: "Invitation",
-                column: "MechanicId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Invitation_OrderId",
-                table: "Invitation",
-                column: "OrderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Message_DialogId",
-                table: "Message",
-                column: "DialogId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Order_AutoId",
-                table: "Order",
-                column: "AutoId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Order_CustomerId1",
-                table: "Order",
-                column: "CustomerId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Order_MechanicId1",
-                table: "Order",
-                column: "MechanicId1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Review_CustomerId",
-                table: "Review",
+                name: "IX_Dialogs_CustomerId",
+                table: "Dialogs",
                 column: "CustomerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Review_MechanicId1",
-                table: "Review",
+                name: "IX_Dialogs_MechanicId1",
+                table: "Dialogs",
                 column: "MechanicId1");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Review_OrderId",
-                table: "Review",
+                name: "IX_Dialogs_OrderId",
+                table: "Dialogs",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invitations_MechanicId",
+                table: "Invitations",
+                column: "MechanicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Invitations_OrderId",
+                table: "Invitations",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Messages_DialogId",
+                table: "Messages",
+                column: "DialogId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_AutoId",
+                table: "Orders",
+                column: "AutoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_CustomerId",
+                table: "Orders",
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_MechanicId",
+                table: "Orders",
+                column: "MechanicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReviewPropositions_MechanicId",
+                table: "ReviewPropositions",
+                column: "MechanicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReviewPropositions_OrderId",
+                table: "ReviewPropositions",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_CustomerId",
+                table: "Reviews",
+                column: "CustomerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_MechanicId",
+                table: "Reviews",
+                column: "MechanicId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_OrderId",
+                table: "Reviews",
                 column: "OrderId",
                 unique: true,
                 filter: "[OrderId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReviewProposition_MechanicId1",
-                table: "ReviewProposition",
-                column: "MechanicId1");
+                name: "IX_Transactions_ReceiverId",
+                table: "Transactions",
+                column: "ReceiverId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ReviewProposition_OrderId",
-                table: "ReviewProposition",
-                column: "OrderId");
+                name: "IX_Transactions_SenderId",
+                table: "Transactions",
+                column: "SenderId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -563,34 +591,37 @@ namespace CarService.Api.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Comment");
+                name: "Comments");
 
             migrationBuilder.DropTable(
                 name: "CustomerAuto");
 
             migrationBuilder.DropTable(
-                name: "Invitation");
+                name: "Invitations");
 
             migrationBuilder.DropTable(
-                name: "Message");
+                name: "Messages");
 
             migrationBuilder.DropTable(
-                name: "Review");
+                name: "ReviewPropositions");
 
             migrationBuilder.DropTable(
-                name: "ReviewProposition");
+                name: "Reviews");
+
+            migrationBuilder.DropTable(
+                name: "Transactions");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Dialog");
+                name: "Dialogs");
 
             migrationBuilder.DropTable(
-                name: "Order");
+                name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "Auto");
+                name: "Autos");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

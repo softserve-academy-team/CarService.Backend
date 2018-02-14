@@ -10,12 +10,13 @@ using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System;
 
-namespace CarService.Api.Migrations.CarServiceDb
+namespace CarService.Api.Migrations
 {
     [DbContext(typeof(CarServiceDbContext))]
-    partial class CarServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180214184403_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,21 +25,21 @@ namespace CarService.Api.Migrations.CarServiceDb
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Auto", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("AutoRiaId");
 
                     b.Property<string>("Info");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
                     b.ToTable("Autos");
                 });
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Comment", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Date");
@@ -49,7 +50,7 @@ namespace CarService.Api.Migrations.CarServiceDb
 
                     b.Property<string>("Text");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
                     b.HasIndex("OrderId");
 
@@ -71,20 +72,22 @@ namespace CarService.Api.Migrations.CarServiceDb
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Dialog", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("CustomerId");
 
                     b.Property<string>("MechanicId");
 
+                    b.Property<string>("MechanicId1");
+
                     b.Property<int?>("OrderId");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("MechanicId");
+                    b.HasIndex("MechanicId1");
 
                     b.HasIndex("OrderId");
 
@@ -93,7 +96,7 @@ namespace CarService.Api.Migrations.CarServiceDb
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Invitation", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Date");
@@ -104,7 +107,7 @@ namespace CarService.Api.Migrations.CarServiceDb
 
                     b.Property<string>("Text");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
                     b.HasIndex("MechanicId");
 
@@ -115,7 +118,7 @@ namespace CarService.Api.Migrations.CarServiceDb
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Message", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("Date");
@@ -126,7 +129,7 @@ namespace CarService.Api.Migrations.CarServiceDb
 
                     b.Property<string>("UserId");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
                     b.HasIndex("DialogId");
 
@@ -135,7 +138,7 @@ namespace CarService.Api.Migrations.CarServiceDb
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Order", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int?>("AutoId");
@@ -150,7 +153,7 @@ namespace CarService.Api.Migrations.CarServiceDb
 
                     b.Property<int>("Status");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
                     b.HasIndex("AutoId");
 
@@ -163,7 +166,7 @@ namespace CarService.Api.Migrations.CarServiceDb
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Review", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("AutoRate");
@@ -182,7 +185,7 @@ namespace CarService.Api.Migrations.CarServiceDb
 
                     b.Property<string>("Videos");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
                     b.HasIndex("CustomerId");
 
@@ -197,7 +200,7 @@ namespace CarService.Api.Migrations.CarServiceDb
 
             modelBuilder.Entity("CarService.DbAccess.Entities.ReviewProposition", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Comment");
@@ -210,7 +213,7 @@ namespace CarService.Api.Migrations.CarServiceDb
 
                     b.Property<int>("Price");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
                     b.HasIndex("MechanicId");
 
@@ -221,7 +224,7 @@ namespace CarService.Api.Migrations.CarServiceDb
 
             modelBuilder.Entity("CarService.DbAccess.Entities.Transaction", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("EntityId")
                         .ValueGeneratedOnAdd();
 
                     b.Property<decimal>("Amount");
@@ -234,7 +237,7 @@ namespace CarService.Api.Migrations.CarServiceDb
 
                     b.Property<int>("Status");
 
-                    b.HasKey("Id");
+                    b.HasKey("EntityId");
 
                     b.HasIndex("ReceiverId");
 
@@ -260,6 +263,8 @@ namespace CarService.Api.Migrations.CarServiceDb
                         .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed");
+
+                    b.Property<int>("EntityId");
 
                     b.Property<string>("FirstName");
 
@@ -471,7 +476,7 @@ namespace CarService.Api.Migrations.CarServiceDb
 
                     b.HasOne("CarService.DbAccess.Entities.Mechanic", "Mechanic")
                         .WithMany()
-                        .HasForeignKey("MechanicId");
+                        .HasForeignKey("MechanicId1");
 
                     b.HasOne("CarService.DbAccess.Entities.Order", "Order")
                         .WithMany("Dialogs")
