@@ -12,14 +12,10 @@ using System.Linq;
 using System.Security.Claims;
 
 
-using CarService.Api.Services;
-
 
 
 namespace CarService.Api.Controllers
-{
-    
-    
+{ 
     
     [Route("api/[controller]")]
     public class AccountController : Controller
@@ -33,7 +29,7 @@ namespace CarService.Api.Controllers
         [HttpPost]
         public IActionResult Register()
         {
-            return Json("Works!");
+            return Ok("Works!");
         }
    
  
@@ -47,7 +43,7 @@ namespace CarService.Api.Controllers
                 return BadRequest($"Invalid username or password.!!!! {info.email} {info.password}");
             }
  
-            // создаем JWT-токен
+           
             var encodedJwt = _accountService.createJwtToken(identity);
              
             var response = new
@@ -57,7 +53,7 @@ namespace CarService.Api.Controllers
             };
  
            
-            return Json(response);
+            return Ok(response);
         }
  
         
