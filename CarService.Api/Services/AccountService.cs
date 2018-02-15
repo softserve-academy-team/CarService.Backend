@@ -5,6 +5,7 @@ using CarService.DbAccess.Entities;
 using CarService.Api.Models;
 using CarService.DbAccess.DAL;
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace CarService.Api.Services
 {
@@ -12,10 +13,13 @@ namespace CarService.Api.Services
     {
         private readonly UserManager<User> _userManager;
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
-        public AccountService(UserManager<User> userManager, IUnitOfWorkFactory unitOfWorkFactory)
+        private readonly IEmailService _emailService;
+
+        public AccountService(UserManager<User> userManager, IUnitOfWorkFactory unitOfWorkFactory, IEmailService emailService)
         {
             this._userManager = userManager;
             this._unitOfWorkFactory = unitOfWorkFactory;
+            this._emailService = emailService;
         }
 
         public async Task<IdentityResult> RegisterCustomer(RegisterCustomerCredentials registerCustomerCredentials)
@@ -36,6 +40,13 @@ namespace CarService.Api.Services
             var result = await _userManager.CreateAsync(user, registerCustomerCredentials.Password);
             if (!result.Succeeded)
                 return result;
+
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var callbackUrl = new UriBuilder("http://localhost:5000/api/account/confirmEmail");
+            callbackUrl.Path = $"?userId={user.Id}&code={code}";
+
+            await _emailService.SendEmailAsync(user.Email, "Confirm your account",
+                           $"ѕодтвердите регистрацию, перейд€ по ссылке: <a href='{callbackUrl.Uri}'>link</a>");
 
             return result;
         }

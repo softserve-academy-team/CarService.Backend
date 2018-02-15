@@ -42,5 +42,26 @@ namespace CarService.Api.Controllers
                 return BadRequest(result.Errors);
             return Ok();
         }
+
+        [HttpGet("confirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            //if (userId == null || code == null)
+            //{
+            //    return RedirectToAction(nameof(HomeController.Index), "Home");
+            //}
+            //var user = await _userManager.FindByIdAsync(userId);
+            //if (user == null)
+            //{
+            //    throw new ApplicationException($"Unable to load user with ID '{userId}'.");
+            //}
+            //var result = await _userManager.ConfirmEmailAsync(user, code);
+
+
+            //await this._hubContext.Clients.All.InvokeAsync("ConfirmEmail", "Message from web api", "Email confirmed");
+
+            //return View(result.Succeeded ? "ConfirmEmail" : "Error");
+            return Ok();
+        }
     }
 }
