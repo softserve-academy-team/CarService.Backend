@@ -23,7 +23,7 @@ namespace CarService.Api.Controllers
                  _emailService = emailService;
         }
 
-        [HttpPost("registration")]
+        [HttpPost("registration/customer")]
         public async Task<IActionResult> RegisterCustomer([FromBody] RegisterCustomerCredentials registerCustomerCredentials)
         {
             var result = await _accountService.RegisterCustomer(registerCustomerCredentials);
@@ -39,7 +39,7 @@ namespace CarService.Api.Controllers
         {
             var result = await _accountService.RegisterMechanic(registerMechanicCredentials);
             if (!result.Succeeded)
-                return BadRequest();
+                return BadRequest(result.Errors);
             return Ok();
         }
     }

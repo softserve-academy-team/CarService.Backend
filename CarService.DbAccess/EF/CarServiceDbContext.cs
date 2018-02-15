@@ -1,11 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using CarService.DbAccess.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace CarService.DbAccess.EF
 {
-    public class CarServiceDbContext : DbContext
+    public class CarServiceDbContext : IdentityDbContext<User>
     {
-        public DbSet<User> Users { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Mechanic> Mechanics { get; set; }
         public DbSet<Comment> Comments { get; set; }
@@ -18,12 +18,7 @@ namespace CarService.DbAccess.EF
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Invitation> Invitations { get; set; }
 
-        public CarServiceDbContext()
-        {
-            Database.EnsureCreated();
-        }
-
-        public CarServiceDbContext(DbContextOptions<CarServiceDbContext> options) : base(options)
+        public CarServiceDbContext(DbContextOptions options) : base(options)
         {
             Database.EnsureCreated();
         }
@@ -44,15 +39,25 @@ namespace CarService.DbAccess.EF
 
             // OneToMany(User(Sender), Transaction)
             modelBuilder.Entity<Transaction>()
-               .HasOne(x => x.Sender)
-               .WithMany(x => x.SendersTransactions)
-               .HasForeignKey(x => x.SenderId);
+               .HasOne(t => t.Sender)
+               .WithMany(t => t.SendersTransactions)
+               .HasForeignKey(t => t.SenderId);
 
             // OneToMany(User(Receiver), Transaction)
             modelBuilder.Entity<Transaction>()
-               .HasOne(x => x.Receiver)
-               .WithMany(x => x.ReceiversTransactions)
-               .HasForeignKey(x => x.ReceiverId);
+               .HasOne(t => t.Receiver)
+               .WithMany(t => t.ReceiversTransactions)
+               .HasForeignKey(t => t.ReceiverId);
+
+            // Unique constraint for User.EntityId
+            modelBuilder.Entity<User>()
+               .HasAlternateKey(u => u.EntityId)
+               .HasName("AlternateKey_Entityid");    
+
+            // AutoIncrement for User.EntityId
+            modelBuilder.Entity<User>()
+                .Property(u => u.EntityId)
+                .ValueGeneratedOnAdd();             
         }
     }
 }
