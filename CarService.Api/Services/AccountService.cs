@@ -18,6 +18,28 @@ namespace CarService.Api.Services
             this._unitOfWorkFactory = unitOfWorkFactory;
         }
 
+        public async Task<IdentityResult> RegisterCustomer(RegisterCustomerCredentials registerCustomerCredentials)
+        {
+            var user = new Customer
+            {
+                Email = registerCustomerCredentials.Email,
+                UserName = registerCustomerCredentials.Email,
+                PhoneNumber = registerCustomerCredentials.PhoneNumber,
+                Status = UserStatus.Inactive,
+                FirstName = registerCustomerCredentials.FirstName,
+                LastName = registerCustomerCredentials.LastName,
+                RegisterDate = DateTime.Now.ToUniversalTime(),
+                City = registerCustomerCredentials.City,
+                CardNumber = registerCustomerCredentials.CardNumber
+            };
+
+            var result = await _userManager.CreateAsync(user, registerCustomerCredentials.Password);
+            if (!result.Succeeded)
+                return result;
+
+            return result;
+        }
+
         public async Task<IdentityResult> RegisterMechanic(RegisterMechanicCredentials registerMechanicCredentials)
         {
             var user = new Mechanic
@@ -30,31 +52,11 @@ namespace CarService.Api.Services
                 LastName = registerMechanicCredentials.LastName,
                 RegisterDate = DateTime.Now.ToUniversalTime(),
                 City = registerMechanicCredentials.City,
-                WorkExperience = registerMechanicCredentials.WorkExperience
+                WorkExperience = registerMechanicCredentials.WorkExperience,
+                CardNumber = registerMechanicCredentials.CardNumber
             };
 
             var result = await _userManager.CreateAsync(user, registerMechanicCredentials.Password);
-            if (!result.Succeeded)
-                return result;
-                
-            return result;
-        }
-
-        public async Task<IdentityResult> RegisterCustomer(RegisterCustomerCredentials registerCustomerCredentials)
-        {
-            var user = new Customer
-            {
-                Email = registerCustomerCredentials.Email,
-                UserName = registerCustomerCredentials.Email,
-                PhoneNumber = registerCustomerCredentials.PhoneNumber,
-                Status = UserStatus.Inactive,
-                FirstName = registerCustomerCredentials.FirstName,
-                LastName = registerCustomerCredentials.LastName,
-                RegisterDate = DateTime.Now.ToUniversalTime(),
-                City = registerCustomerCredentials.City
-            };
-
-            var result = await _userManager.CreateAsync(user, registerCustomerCredentials.Password);
             if (!result.Succeeded)
                 return result;
 

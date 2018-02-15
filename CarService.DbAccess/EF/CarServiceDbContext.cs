@@ -39,15 +39,25 @@ namespace CarService.DbAccess.EF
 
             // OneToMany(User(Sender), Transaction)
             modelBuilder.Entity<Transaction>()
-               .HasOne(x => x.Sender)
-               .WithMany(x => x.SendersTransactions)
-               .HasForeignKey(x => x.SenderId);
+               .HasOne(t => t.Sender)
+               .WithMany(t => t.SendersTransactions)
+               .HasForeignKey(t => t.SenderId);
 
             // OneToMany(User(Receiver), Transaction)
             modelBuilder.Entity<Transaction>()
-               .HasOne(x => x.Receiver)
-               .WithMany(x => x.ReceiversTransactions)
-               .HasForeignKey(x => x.ReceiverId);
+               .HasOne(t => t.Receiver)
+               .WithMany(t => t.ReceiversTransactions)
+               .HasForeignKey(t => t.ReceiverId);
+
+            // Unique constraint for User.EntityId
+            modelBuilder.Entity<User>()
+               .HasAlternateKey(u => u.EntityId)
+               .HasName("AlternateKey_Entityid");    
+
+            // AutoIncrement for User.EntityId
+            modelBuilder.Entity<User>()
+                .Property(u => u.EntityId)
+                .ValueGeneratedOnAdd();             
         }
     }
 }

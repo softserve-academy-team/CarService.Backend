@@ -9,40 +9,11 @@ namespace CarService.Api.Controllers
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
-        private readonly IUnitOfWorkFactory _unitOfWorkFactory;
-
-        public ValuesController(IUnitOfWorkFactory unitOfWorkFactory)
-        {
-            _unitOfWorkFactory = unitOfWorkFactory;
-        }
-
         // GET api/values
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public IActionResult Get()
         {
-            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
-            {
-                var autos = new List<Auto>();
-                var tasks = new List<Task>();                
-                for (int i = 0; i < 10; ++i)
-                {
-                    autos.Add(new Auto
-                    {
-                        Info = $"Best car in the world {i}"
-                    });
-                }
-                
-                foreach (var auto in autos)
-                {
-                  var autoRepository = unitOfWork.Repository<Auto>();
-                  autoRepository.Add(auto);
-                  tasks.Add(unitOfWork.SaveAsync());
-                }
-
-                await Task.WhenAll(tasks);
-
-                return Ok(autos[9]);
-            }
+            return Ok();
         }
 
         // GET api/values/5
