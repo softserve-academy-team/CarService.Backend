@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using CarService.DbAccess.EF;
 using Microsoft.Extensions.Options;
+using System.Text;
 
 namespace CarService.Api
 {
@@ -31,7 +32,7 @@ namespace CarService.Api
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.Configure<AuthOptions>(_configuration);
+            services.Configure<AuthOptions>(_configuration.GetSection("AuthOptions"));
 
             services.AddCors(options =>
             {
@@ -62,7 +63,7 @@ namespace CarService.Api
                             ValidateLifetime = true,
  
                             // установка ключа безопасности
-                            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.Key)),
                             // валидация ключа безопасности
                             ValidateIssuerSigningKey = true,
                         };
