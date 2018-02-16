@@ -13,6 +13,7 @@ using System.Security.Claims;
 
 
 
+using CarService.DbAccess.Entities;
 
 namespace CarService.Api.Controllers
 { 
@@ -20,19 +21,13 @@ namespace CarService.Api.Controllers
     [Route("api/[controller]")]
     public class AccountController : Controller
     {
-        readonly IAccountService _accountService;
+        private readonly IAccountService _accountService;
         public AccountController(IAccountService accountService)
         {
             _accountService = accountService;
         }
 
-        [HttpPost]
-        public IActionResult Register()
-        {
-            return Ok("Works!");
-        }
-   
- 
+  
         [HttpPost("token")]
         public IActionResult Token([FromBody] UserDTO info)
         {
@@ -55,9 +50,25 @@ namespace CarService.Api.Controllers
            
             return Ok(response);
         }
+      
+        [HttpPost("registration/customer")]
+        public async Task<IActionResult> RegisterCustomer([FromBody] RegisterCustomerCredentials registerCustomerCredentials)
+        {
+            var result = await _accountService.RegisterCustomer(registerCustomerCredentials);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+            return Ok();
+        }
+
+        [HttpPost("registration/mechanic")]
+        public async Task<IActionResult> RegisterMechanic([FromBody] RegisterMechanicCredentials registerMechanicCredentials)
+        {
+            var result = await _accountService.RegisterMechanic(registerMechanicCredentials);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+            return Ok();
+        }
  
-        
-        
         
     }
 }

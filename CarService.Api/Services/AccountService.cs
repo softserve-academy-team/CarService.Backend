@@ -7,7 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Options;
 using System.Text;
-
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
+using CarService.DbAccess.Entities;
+using CarService.DbAccess.DAL;
 
 
 namespace CarService.Api.Services
@@ -15,18 +19,21 @@ namespace CarService.Api.Services
 
     public class AccountService : IAccountService
     {
-        // later to get rid of
-          private List<User> users = new List<User>
+          private List<Models.User> users = new List<Models.User>
         {
-            new User {Email="mechanicn@gmail.com", Password="12345", Role = "mechanic" },
-            new User { Email="qwerty", Password="55555", Role = "user" }
+            new Models.User {Email="mechanicn@gmail.com", Password="12345", Role = "mechanic" },
+            new Models.User { Email="qwerty", Password="55555", Role = "user" }
         };
 
-       private readonly AuthOptions _options;
+        private readonly AuthOptions _options;
+        private readonly UserManager<Models.User> _userManager;
+        private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 
-        public AccountService(IOptions<AuthOptions> optionsAccessor)
+        public AccountService(IOptions<AuthOptions> optionsAccessor, UserManager<Models.User> userManager, IUnitOfWorkFactory unitOfWorkFactory)
         {
             _options = optionsAccessor.Value;
+            this._userManager = userManager;
+            this._unitOfWorkFactory = unitOfWorkFactory;
         }
 
         public string createJwtToken(ClaimsIdentity identity)
@@ -46,7 +53,7 @@ namespace CarService.Api.Services
 
         public ClaimsIdentity GetIdentity(string username, string password)
         {
-             User user = users.FirstOrDefault(x => x.Email == username && x.Password == password);
+            Models.User user = users.FirstOrDefault(x => x.Email == username && x.Password == password);
             if (user != null)
             {
                 var claims = new List<Claim>
@@ -62,6 +69,51 @@ namespace CarService.Api.Services
  
             // если пользователя не найдено
             return null;
+        }
+
+        public async Task<IdentityResult> RegisterCustomer(RegisterCustomerCredentials registerCustomerCredentials)
+        {
+            var user = new Customer
+            {
+                Email = registerCustomerCredentials.Email,
+                UserName = registerCustomerCredentials.Email,
+                PhoneNumber = registerCustomerCredentials.PhoneNumber,
+                Status = UserStatus.Inactive,
+                FirstName = registerCustomerCredentials.FirstName,
+                LastName = registerCustomerCredentials.LastName,
+                RegisterDate = DateTime.Now.ToUniversalTime(),
+                City = registerCustomerCredentials.City,
+                CardNumber = registerCustomerCredentials.CardNumber
+            };
+
+            var result = await _userManager.CreateAsync(user, registerCustomerCredentials.Password);
+            if (!result.Succeeded)
+                return result;
+
+            return result;
+        }
+
+        public async Task<IdentityResult> RegisterMechanic(RegisterMechanicCredentials registerMechanicCredentials)
+        {
+            var user = new Mechanic
+            {
+                Email = registerMechanicCredentials.Email,
+                UserName = registerMechanicCredentials.Email,
+                PhoneNumber = registerMechanicCredentials.PhoneNumber,
+                Status = UserStatus.Inactive,
+                FirstName = registerMechanicCredentials.FirstName,
+                LastName = registerMechanicCredentials.LastName,
+                RegisterDate = DateTime.Now.ToUniversalTime(),
+                City = registerMechanicCredentials.City,
+                WorkExperience = registerMechanicCredentials.WorkExperience,
+                CardNumber = registerMechanicCredentials.CardNumber
+            };
+
+            var result = await _userManager.CreateAsync(user, registerMechanicCredentials.Password);
+            if (!result.Succeeded)
+                return result;
+
+            return result;
         }
 
     }
