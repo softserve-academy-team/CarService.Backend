@@ -12,21 +12,27 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using CarService.DbAccess.EF;
+using Microsoft.Extensions.Options;
 
 namespace CarService.Api
 {
     public class Startup
     {
         private readonly IConfiguration _configuration;
+        private readonly AuthOptions _options;
         
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IOptions<AuthOptions> optionsAccessor)
         {
             _configuration = configuration;
+            _options = optionsAccessor.Value;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.Configure<AuthOptions>(_configuration);
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllOrigin", builder => builder.AllowAnyOrigin());
@@ -46,12 +52,12 @@ namespace CarService.Api
                             // укзывает, будет ли валидироваться издатель при валидации токена
                             ValidateIssuer = true,
                             // строка, представляющая издателя
-                            ValidIssuer = AuthOptions.ISSUER,
+                            ValidIssuer = _options.Issuer,
  
                             // будет ли валидироваться потребитель токена
                             ValidateAudience = true,
                             // установка потребителя токена
-                            ValidAudience = AuthOptions.AUDIENCE,
+                            ValidAudience = _options.Audience,
                             // будет ли валидироваться время существования
                             ValidateLifetime = true,
  

@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using CarService.Api.Models;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Options;
 
 
 namespace CarService.Api.Services
@@ -19,16 +20,23 @@ namespace CarService.Api.Services
             new User { Email="qwerty", Password="55555", Role = "user" }
         };
 
+       private readonly AuthOptions _options;
+
+        public AccountService(IOptions<AuthOptions> optionsAccessor)
+        {
+            _options = optionsAccessor.Value;
+        }
+
         public string createJwtToken(ClaimsIdentity identity)
         {
             var now = DateTime.UtcNow;
            
             var jwt = new JwtSecurityToken(
-                issuer: AuthOptions.ISSUER,
-                audience: AuthOptions.AUDIENCE,
+                issuer: _options.Issuer,
+                audience: _options.Audience,
                 notBefore: now,
                 claims: identity.Claims,
-                expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
+                expires: now.Add(TimeSpan.FromMinutes(_options.Lifetime)),
                 signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
             string encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
             return encodedJwt;
