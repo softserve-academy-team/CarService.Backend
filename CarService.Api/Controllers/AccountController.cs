@@ -1,60 +1,39 @@
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+using CarService.Api.Models;
+using CarService.Api.Services;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-
+using CarService.DbAccess.Entities;
 
 namespace CarService.Api.Controllers
 {
-    public class Credentials
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
-
-
     [Route("api/[controller]")]
     public class AccountController : Controller
     {
-        private readonly UserManager<IdentityUser> userManager;
-        private readonly SignInManager<IdentityUser> signInManager;
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        private readonly IAccountService _accountService;
+        public AccountController(IAccountService accountService)
         {
-            this.userManager = userManager;
-            this.signInManager = signInManager;
-        }
-        // POST api/account
-        [HttpPost]
-        public IActionResult Register()
-        {
-            // var user = new IdentityUser {UserName = credentials.Email, Email = credentials.Email };          
-                
-            
-            // var result = await userManager.CreateAsync(user, credentials.Password);
-            // if(!result.Succeeded)
-            //     return BadRequest(result.Errors);
-            // await signInManager.SignInAsync(user, isPersistent: false);
-            var jwt = new JwtSecurityToken();
-            var tokenHandler = new JwtSecurityTokenHandler();
-            return Ok(tokenHandler.WriteToken(jwt));
-        }
-        [HttpGet]
-        public IActionResult Ropister()
-        {
-            // var user = new IdentityUser {UserName = credentials.Email, Email = credentials.Email };          
-                
-            
-            // var result = await userManager.CreateAsync(user, credentials.Password);
-            // if(!result.Succeeded)
-            //     return BadRequest(result.Errors);
-            // await signInManager.SignInAsync(user, isPersistent: false);
-            var jwt = new JwtSecurityToken();
-            var tokenHandler = new JwtSecurityTokenHandler();
-            return Ok(tokenHandler.WriteToken(jwt));
+            this._accountService = accountService;
         }
 
-       
+        [HttpPost("registration/customer")]
+        public async Task<IActionResult> RegisterCustomer([FromBody] RegisterCustomerCredentials registerCustomerCredentials)
+        {
+            var result = await _accountService.RegisterCustomer(registerCustomerCredentials);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+            return Ok();
+        }
+
+        [HttpPost("registration/mechanic")]
+        public async Task<IActionResult> RegisterMechanic([FromBody] RegisterMechanicCredentials registerMechanicCredentials)
+        {
+            var result = await _accountService.RegisterMechanic(registerMechanicCredentials);
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+            return Ok();
+        }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class CustomerAuto
     {
-        public int? CustomerId { get; set; }
+        public string CustomerId { get; set; }
         public Customer Customer { get; set; }
 
         public int? AutoId { get; set; }

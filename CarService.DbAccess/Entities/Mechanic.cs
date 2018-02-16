@@ -3,8 +3,9 @@ using System.Collections.ObjectModel;
 
 namespace CarService.DbAccess.Entities
 {
-    public class Mechanic : Customer
+    public class Mechanic : Customer, IEntity
     {
+        public string WorkExperience { get; set; }
         public int MechanicRate { get; set; }
 
         public ICollection<ReviewProposition> ReviewPropositions { get; set; }

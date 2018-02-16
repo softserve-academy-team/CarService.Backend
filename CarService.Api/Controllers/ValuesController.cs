@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using CarService.DbAccess.DAL;
+using CarService.DbAccess.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarService.Api.Controllers
@@ -8,9 +11,9 @@ namespace CarService.Api.Controllers
     {
         // GET api/values
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult Get()
         {
-            return new string[] { "value1", "value2" };
+            return Ok();
         }
 
         // GET api/values/5
