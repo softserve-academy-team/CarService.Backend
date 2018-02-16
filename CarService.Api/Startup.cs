@@ -74,13 +74,8 @@ namespace CarService.Api
             services.AddSingleton<ICarService, AutoRiaCarService>();
             services.AddSingleton<IAccountService, AccountService>();
 
-           /* services.AddDbContext<UserDbContext>(options =>
-                options.UseSqlServer(_configuration.GetConnectionString("IdentityConnection")));*/
             services.AddDbContext<CarServiceDbContext>(options =>
                 options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
-            
-            // services.AddDbContext<AccountContext>(options =>
-            //     options.UseSqlServer(_configuration["Data:Identity:ConnectionString"]))
  
             services.AddMvc();
         }

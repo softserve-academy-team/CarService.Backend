@@ -33,10 +33,7 @@ namespace CarService.Api.Services
         public string createJwtToken(ClaimsIdentity identity)
         {
             var now = DateTime.UtcNow;
-            System.Console.WriteLine("_options.Issuer {0}", _options.Issuer);
-            System.Console.WriteLine("_options.Lifetime {0}", _options.Lifetime);
-            System.Console.WriteLine("_options.Audience {0}", _options.Audience);
-           
+          
             var jwt = new JwtSecurityToken(
                 issuer: _options.Issuer,
                 audience: _options.Audience,
