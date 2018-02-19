@@ -16,6 +16,7 @@ using CarService.DbAccess.DAL;
 using Microsoft.EntityFrameworkCore;
 using CarService.Api.Security;
 using System;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace CarService.Api
 {
@@ -37,10 +38,18 @@ namespace CarService.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            services.AddCors(options =>
+            //services.AddCors(options =>
+            //{
+            //    options.AddPolicy("AllowAllOrigin", builder => builder.AllowAnyOrigin());
+            //});
+            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
             {
-                options.AddPolicy("AllowAllOrigin", builder => builder.AllowAnyOrigin());
-            });
+                builder
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+            }));
+
             services.Configure<MvcOptions>(options =>
             {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
@@ -50,6 +59,7 @@ namespace CarService.Api
             services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
             services.AddSingleton<ICarService, AutoRiaCarService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddTransient<IEmailService, EmailService>();
 
             services.AddScoped<IUnitOfWorkFactory>(provider => new SqlUnitOfWorkFactory(options =>
             {
@@ -58,9 +68,15 @@ namespace CarService.Api
 
             services.AddDbContext<CarServiceDbContext>(options =>
                 options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("CarService.Api")));
-
+          
+            
             services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<CarServiceDbContext>();
+                .AddEntityFrameworkStores<CarServiceDbContext>()
+                .AddDefaultTokenProviders();
+
+            services.Configure<EmailConfig>(_configuration.GetSection("Email"));
+
+            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -69,7 +85,6 @@ namespace CarService.Api
             if (environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-
                 int? httpsPort = null;
                 IConfigurationSection httpsSection = _configuration.GetSection("HttpServer:Endpoints:Https");
                 if (httpsSection.Exists())
@@ -80,8 +95,13 @@ namespace CarService.Api
                 }
                 app.UseRewriter(new RewriteOptions().AddRedirectToHttps(StatusCodes.Status302Found, httpsPort));
             }
-
+ 
             app.UseAuthentication();
+            app.UseCors("CorsPolicy");
+            app.UseSignalR(routes =>
+            {
+                routes.MapHub<SignalRHub>("sendMessage");
+            });
             app.UseMvc();
         }
     }
