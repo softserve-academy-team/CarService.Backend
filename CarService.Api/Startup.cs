@@ -38,17 +38,12 @@ namespace CarService.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            //services.AddCors(options =>
-            //{
-            //    options.AddPolicy("AllowAllOrigin", builder => builder.AllowAnyOrigin());
-            //});
-            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+            services.AddCors(options =>
             {
-                builder
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-            }));
+                options.AddPolicy("AllowAllOrigin", builder => builder.AllowAnyOrigin()
+                                                                    .AllowAnyHeader()
+                                                                    .AllowAnyMethod());
+            });
 
             services.Configure<MvcOptions>(options =>
             {
