@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CarService.DbAccess.DAL;
 using CarService.DbAccess.Entities;
-using CarService.DbAccess.EF;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CarService.Api.Controllers
 {
@@ -12,17 +11,19 @@ namespace CarService.Api.Controllers
     public class ValuesController : Controller
     {
         // GET api/values
+        [Authorize]
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IActionResult Get()
         {
-            return new string[] { "value1", "value2" };
+            return Ok("Values here!");
         }
 
         // GET api/values/5
+        [Authorize(Roles = "mechanic")]
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            return Ok("You are mechanic!");
         }
 
         // POST api/values
