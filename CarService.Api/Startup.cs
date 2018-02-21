@@ -40,16 +40,10 @@ namespace CarService.Api
             services.AddMvc();
             services.AddCors(options =>
             {
-<<<<<<< HEAD
-                options.AddPolicy("AllowAllOrigin", builder => builder.AllowAnyOrigin()
-                                                                    .AllowAnyHeader()
-                                                                    .AllowAnyMethod());
-=======
                options.AddPolicy("AllowAllOrigin", builder => builder
                .AllowAnyOrigin()
                .AllowAnyHeader()
                .AllowAnyMethod());
->>>>>>> develop
             });
 
             services.Configure<MvcOptions>(options =>
