@@ -25,8 +25,6 @@ using Microsoft.AspNetCore.Mvc.Cors.Internal;
 
 namespace CarService.Api
 {
-
-
     public class Startup
     {
         private readonly IConfiguration _configuration;
@@ -65,12 +63,6 @@ namespace CarService.Api
             {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
             });
-
-            services.AddSingleton<IConfiguration>(provider => _configuration);
-            services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
-            services.AddSingleton<ICarService, AutoRiaCarService>();
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddTransient<IEmailService, EmailService>();
 
             services.AddScoped<IUnitOfWorkFactory>(provider => new SqlUnitOfWorkFactory(options =>
             {
@@ -113,8 +105,8 @@ namespace CarService.Api
             services.AddSingleton<ICarService, AutoRiaCarService>();
             services.AddSingleton<IAccountService, AccountService>();
             services.AddSingleton<IConfiguration>(provider => _configuration);
+            services.AddTransient<IEmailService, EmailService>();
 
-            
  
             services.AddMvc();
 

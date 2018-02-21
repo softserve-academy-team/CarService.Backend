@@ -446,7 +446,9 @@ namespace CarService.Api.Migrations
 
                     b.Property<int>("MechanicRate");
 
-                    b.Property<string>("WorkExperience");
+                    b.Property<string>("Specialization");
+
+                    b.Property<int>("WorkExperience");
 
                     b.ToTable("Mechanic");
 

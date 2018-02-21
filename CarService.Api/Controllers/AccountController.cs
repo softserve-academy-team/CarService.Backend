@@ -1,24 +1,14 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 using CarService.Api.Models;
 using CarService.Api.Services;
 using System.Threading.Tasks;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Identity;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-
-
-
-using CarService.DbAccess.Entities;
 using Microsoft.Extensions.Configuration;
 
+
 namespace CarService.Api.Controllers
-{ 
-    
+{
+
     [Route("api/[controller]")]
     public class AccountController : Controller
     {
@@ -47,7 +37,6 @@ namespace CarService.Api.Controllers
                 return BadRequest($"Invalid username or password.!!!! {info.email} {info.password}");
             }
  
-           
             var encodedJwt = _accountService.createJwtToken(identity);
              
             var response = new
