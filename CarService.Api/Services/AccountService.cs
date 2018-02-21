@@ -9,7 +9,6 @@ using System.Text;
 using System.Web;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.SignalR;
 
 namespace CarService.Api.Services
 {
@@ -19,20 +18,17 @@ namespace CarService.Api.Services
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
-        private readonly IHubContext<SignalRHub> _signalRContext;
 
         public AccountService(
             UserManager<User> userManager, 
             IUnitOfWorkFactory unitOfWorkFactory, 
             IEmailService emailService, 
-            IConfiguration configuration,
-            IHubContext<SignalRHub> signalRContext)
+            IConfiguration configuration)
         {
             this._userManager = userManager;
             this._unitOfWorkFactory = unitOfWorkFactory;
             this._emailService = emailService;
             this._configuration = configuration;
-            this._signalRContext = signalRContext;
         }
 
         public async Task<IdentityResult> RegisterCustomer(RegisterCustomerCredentials registerCustomerCredentials)
@@ -87,8 +83,6 @@ namespace CarService.Api.Services
             }
             
             var result = await _userManager.ConfirmEmailAsync(user, code);
-
-            await this._signalRContext.Clients.All.InvokeAsync("ConfirmEmail", "Email confirmed");
 
             return result;
         }

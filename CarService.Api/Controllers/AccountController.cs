@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Identity;
 using CarService.DbAccess.Entities;
+using Microsoft.Extensions.Configuration;
 
 namespace CarService.Api.Controllers
 {
@@ -14,13 +15,16 @@ namespace CarService.Api.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly IEmailService   _emailService;
+        private readonly IConfiguration _configuration;
 
         public AccountController(
             IAccountService accountService,
-            IEmailService emailService)
+            IEmailService emailService,
+            IConfiguration configuration)
         {
             this._accountService = accountService;
-                 _emailService = emailService;
+            this._emailService = emailService;
+            this._configuration = configuration;
         }
 
         [HttpPost("registration/customer")]
@@ -29,8 +33,6 @@ namespace CarService.Api.Controllers
             var result = await _accountService.RegisterCustomer(registerCustomerCredentials);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
-
-
             return Ok();
         }
 
@@ -48,7 +50,7 @@ namespace CarService.Api.Controllers
         {
             var result = await _accountService.ConfirmEmail(userId, code);
             
-            return Ok();
+            return Redirect(_configuration["Email:Redirect"]);
         }
 
     }
