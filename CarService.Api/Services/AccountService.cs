@@ -9,7 +9,6 @@ using System.Text;
 using System.Web;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.SignalR;
 
 namespace CarService.Api.Services
 {
@@ -19,20 +18,17 @@ namespace CarService.Api.Services
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
-        private readonly IHubContext<SignalRHub> _signalRContext;
 
         public AccountService(
             UserManager<User> userManager, 
             IUnitOfWorkFactory unitOfWorkFactory, 
             IEmailService emailService, 
-            IConfiguration configuration,
-            IHubContext<SignalRHub> signalRContext)
+            IConfiguration configuration)
         {
             this._userManager = userManager;
             this._unitOfWorkFactory = unitOfWorkFactory;
             this._emailService = emailService;
             this._configuration = configuration;
-            this._signalRContext = signalRContext;
         }
 
         public async Task<IdentityResult> RegisterCustomer(RegisterCustomerCredentials registerCustomerCredentials)
@@ -41,13 +37,11 @@ namespace CarService.Api.Services
             {
                 Email = registerCustomerCredentials.Email,
                 UserName = registerCustomerCredentials.Email,
-                PhoneNumber = registerCustomerCredentials.PhoneNumber,
                 Status = UserStatus.Inactive,
                 FirstName = registerCustomerCredentials.FirstName,
                 LastName = registerCustomerCredentials.LastName,
                 RegisterDate = DateTime.Now.ToUniversalTime(),
-                City = registerCustomerCredentials.City,
-                CardNumber = registerCustomerCredentials.CardNumber
+                City = registerCustomerCredentials.Location
             };
 
             return await AddUser(user, registerCustomerCredentials.Password);
@@ -59,14 +53,13 @@ namespace CarService.Api.Services
             {
                 Email = registerMechanicCredentials.Email,
                 UserName = registerMechanicCredentials.Email,
-                PhoneNumber = registerMechanicCredentials.PhoneNumber,
                 Status = UserStatus.Inactive,
                 FirstName = registerMechanicCredentials.FirstName,
                 LastName = registerMechanicCredentials.LastName,
                 RegisterDate = DateTime.Now.ToUniversalTime(),
-                City = registerMechanicCredentials.City,
-                WorkExperience = registerMechanicCredentials.WorkExperience,
-                CardNumber = registerMechanicCredentials.CardNumber
+                City = registerMechanicCredentials.Location,
+                WorkExperience = registerMechanicCredentials.Experience,
+                Specialization = registerMechanicCredentials.Specialization
             };
 
             return await AddUser(user, registerMechanicCredentials.Password);
@@ -87,8 +80,6 @@ namespace CarService.Api.Services
             }
             
             var result = await _userManager.ConfirmEmailAsync(user, code);
-
-            await this._signalRContext.Clients.All.InvokeAsync("ConfirmEmail", "Email confirmed");
 
             return result;
         }
