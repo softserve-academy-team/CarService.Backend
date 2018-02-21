@@ -19,21 +19,21 @@ namespace CarService.Api.Services
 
     public class AccountService : IAccountService
     {
-          private List<Models.User> users = new List<Models.User>
-        {
-            new Models.User {Email="mechanicn@gmail.com", Password="12345", Role = "mechanic" },
-            new Models.User { Email="qwerty", Password="55555", Role = "user" }
-        };
-
         private readonly AuthOptions _options;
-        private readonly UserManager<Models.User> _userManager;
+        private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 
-        public AccountService(IOptions<AuthOptions> optionsAccessor, UserManager<Models.User> userManager, IUnitOfWorkFactory unitOfWorkFactory)
+        public AccountService(IOptions<AuthOptions> optionsAccessor,
+         UserManager<User> userManager, 
+         SignInManager<User> signInManager, 
+         IUnitOfWorkFactory unitOfWorkFactory)
         {
             _options = optionsAccessor.Value;
-            this._userManager = userManager;
-            this._unitOfWorkFactory = unitOfWorkFactory;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _userManager = userManager;
+            _unitOfWorkFactory = unitOfWorkFactory;
         }
 
         public string createJwtToken(ClaimsIdentity identity)
@@ -51,15 +51,16 @@ namespace CarService.Api.Services
             return encodedJwt;
         }
 
-        public ClaimsIdentity GetIdentity(string username, string password)
+        public async Task<ClaimsIdentity> GetIdentity(string email, string password)
         {
-            Models.User user = users.FirstOrDefault(x => x.Email == username && x.Password == password);
+            User user = await _userManager.FindByEmailAsync(email);
+            await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
             if (user != null)
             {
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
+                    // new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
                 };
                 ClaimsIdentity claimsIdentity =
                 new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
@@ -67,7 +68,6 @@ namespace CarService.Api.Services
                 return claimsIdentity;
             }
  
-            // если пользователя не найдено
             return null;
         }
 

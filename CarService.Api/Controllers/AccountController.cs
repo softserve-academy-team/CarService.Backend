@@ -29,10 +29,10 @@ namespace CarService.Api.Controllers
 
   
         [HttpPost("token")]
-        public IActionResult Token([FromBody] UserDTO info)
+        public async Task<IActionResult> Token([FromBody] UserDTO info)
         {
 
-            ClaimsIdentity identity = _accountService.GetIdentity(info.email, info.password);
+            ClaimsIdentity identity = await _accountService.GetIdentity(info.email, info.password);
             if (identity == null)
             {
                 return BadRequest($"Invalid username or password.!!!! {info.email} {info.password}");

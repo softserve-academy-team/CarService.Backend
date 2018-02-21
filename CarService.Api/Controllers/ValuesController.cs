@@ -15,7 +15,7 @@ namespace CarService.Api.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok();
+            return Ok("Values here!");
         }
 
         // GET api/values/5
