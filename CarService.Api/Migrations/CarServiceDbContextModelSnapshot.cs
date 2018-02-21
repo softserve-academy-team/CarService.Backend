@@ -290,6 +290,8 @@ namespace CarService.Api.Migrations
 
                     b.Property<DateTime>("RegisterDate");
 
+                    b.Property<string>("Role");
+
                     b.Property<string>("SecurityStamp");
 
                     b.Property<int>("Status");

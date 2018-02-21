@@ -14,6 +14,8 @@ namespace CarService.DbAccess.Entities
         public string LastName { get; set; }
         public DateTime RegisterDate { get; set; }
         public DateTime LastLoginDate { get; set; }
+        public string Role { get; set; }
+        
 
         public ICollection<Transaction> SendersTransactions { get; set; }
         public ICollection<Transaction> ReceiversTransactions { get; set; }

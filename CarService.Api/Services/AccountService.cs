@@ -26,7 +26,7 @@ namespace CarService.Api.Services
 
         public AccountService(IOptions<AuthOptions> optionsAccessor,
          UserManager<User> userManager, 
-         SignInManager<User> signInManager, 
+         SignInManager<User> signInManager,
          IUnitOfWorkFactory unitOfWorkFactory)
         {
             _options = optionsAccessor.Value;
@@ -55,12 +55,14 @@ namespace CarService.Api.Services
         {
             User user = await _userManager.FindByEmailAsync(email);
             await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
+           
             if (user != null)
             {
+                
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                    // new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
                 };
                 ClaimsIdentity claimsIdentity =
                 new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
@@ -83,7 +85,8 @@ namespace CarService.Api.Services
                 LastName = registerCustomerCredentials.LastName,
                 RegisterDate = DateTime.Now.ToUniversalTime(),
                 City = registerCustomerCredentials.City,
-                CardNumber = registerCustomerCredentials.CardNumber
+                CardNumber = registerCustomerCredentials.CardNumber,
+                Role = "user"
             };
 
             var result = await _userManager.CreateAsync(user, registerCustomerCredentials.Password);
@@ -106,7 +109,8 @@ namespace CarService.Api.Services
                 RegisterDate = DateTime.Now.ToUniversalTime(),
                 City = registerMechanicCredentials.City,
                 WorkExperience = registerMechanicCredentials.WorkExperience,
-                CardNumber = registerMechanicCredentials.CardNumber
+                CardNumber = registerMechanicCredentials.CardNumber,
+                Role = "mechanic"
             };
 
             var result = await _userManager.CreateAsync(user, registerMechanicCredentials.Password);
