@@ -37,13 +37,11 @@ namespace CarService.Api.Services
             {
                 Email = registerCustomerCredentials.Email,
                 UserName = registerCustomerCredentials.Email,
-                PhoneNumber = registerCustomerCredentials.PhoneNumber,
                 Status = UserStatus.Inactive,
                 FirstName = registerCustomerCredentials.FirstName,
                 LastName = registerCustomerCredentials.LastName,
                 RegisterDate = DateTime.Now.ToUniversalTime(),
-                City = registerCustomerCredentials.City,
-                CardNumber = registerCustomerCredentials.CardNumber
+                City = registerCustomerCredentials.Location
             };
 
             return await AddUser(user, registerCustomerCredentials.Password);
@@ -55,14 +53,13 @@ namespace CarService.Api.Services
             {
                 Email = registerMechanicCredentials.Email,
                 UserName = registerMechanicCredentials.Email,
-                PhoneNumber = registerMechanicCredentials.PhoneNumber,
                 Status = UserStatus.Inactive,
                 FirstName = registerMechanicCredentials.FirstName,
                 LastName = registerMechanicCredentials.LastName,
                 RegisterDate = DateTime.Now.ToUniversalTime(),
-                City = registerMechanicCredentials.City,
-                WorkExperience = registerMechanicCredentials.WorkExperience,
-                CardNumber = registerMechanicCredentials.CardNumber
+                City = registerMechanicCredentials.Location,
+                WorkExperience = registerMechanicCredentials.Experience,
+                Specialization = registerMechanicCredentials.Specialization
             };
 
             return await AddUser(user, registerMechanicCredentials.Password);
