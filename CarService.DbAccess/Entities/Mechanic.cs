@@ -5,7 +5,8 @@ namespace CarService.DbAccess.Entities
 {
     public class Mechanic : Customer, IEntity
     {
-        public string WorkExperience { get; set; }
+        public int WorkExperience { get; set; }
+        public string Specialization { get; set; }
         public int MechanicRate { get; set; }
 
         public ICollection<ReviewProposition> ReviewPropositions { get; set; }

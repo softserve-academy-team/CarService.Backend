@@ -2,6 +2,7 @@ namespace CarService.Api.Models
 {
     public class RegisterMechanicCredentials : RegisterCustomerCredentials
     {
-        public string WorkExperience { get; set; }
+        public int Experience { get; set; }
+        public string Specialization { get; set; }
     }
 }
