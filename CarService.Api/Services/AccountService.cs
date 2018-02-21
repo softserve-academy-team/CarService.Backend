@@ -19,6 +19,8 @@ namespace CarService.Api.Services
 
     public class AccountService : IAccountService
     {
+        private const string MECHANIC_ROLE = "mechanic";
+        private const string СUSTOMER_ROLE = "customer";
         private readonly AuthOptions _options;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
@@ -86,7 +88,7 @@ namespace CarService.Api.Services
                 RegisterDate = DateTime.Now.ToUniversalTime(),
                 City = registerCustomerCredentials.City,
                 CardNumber = registerCustomerCredentials.CardNumber,
-                Role = "user"
+                Role = СUSTOMER_ROLE
             };
 
             var result = await _userManager.CreateAsync(user, registerCustomerCredentials.Password);
@@ -110,7 +112,7 @@ namespace CarService.Api.Services
                 City = registerMechanicCredentials.City,
                 WorkExperience = registerMechanicCredentials.WorkExperience,
                 CardNumber = registerMechanicCredentials.CardNumber,
-                Role = "mechanic"
+                Role = MECHANIC_ROLE
             };
 
             var result = await _userManager.CreateAsync(user, registerMechanicCredentials.Password);

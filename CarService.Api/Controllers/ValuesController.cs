@@ -27,9 +27,11 @@ namespace CarService.Api.Controllers
         }
 
         // POST api/values
-        [HttpPost]
-        public void Post([FromBody]string value)
+        [Authorize(Roles = "customer")]
+        [HttpPost("customer")]
+        public IActionResult Post([FromBody]string value)
         {
+            return Ok("You are customer!");
         }
 
         // PUT api/values/5
