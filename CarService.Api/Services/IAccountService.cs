@@ -15,5 +15,6 @@ namespace CarService.Api.Services
         
         Task<IdentityResult> RegisterCustomer(RegisterCustomerCredentials registerCustomerCredentials);
         Task<IdentityResult> RegisterMechanic(RegisterMechanicCredentials registerMechanicCredentials);
+        Task<IdentityResult> ConfirmEmail(string userId, string code);
     }
 }

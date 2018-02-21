@@ -14,6 +14,7 @@ using System.Security.Claims;
 
 
 using CarService.DbAccess.Entities;
+using Microsoft.Extensions.Configuration;
 
 namespace CarService.Api.Controllers
 { 
@@ -22,9 +23,17 @@ namespace CarService.Api.Controllers
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
-        public AccountController(IAccountService accountService)
+        private readonly IEmailService   _emailService;
+        private readonly IConfiguration _configuration;
+
+        public AccountController(
+            IAccountService accountService,
+            IEmailService emailService,
+            IConfiguration configuration)
         {
             _accountService = accountService;
+            _emailService = emailService;
+            _configuration = configuration;
         }
 
   
@@ -68,7 +77,14 @@ namespace CarService.Api.Controllers
                 return BadRequest(result.Errors);
             return Ok();
         }
- 
-        
+
+        [HttpGet("confirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        {
+            var result = await _accountService.ConfirmEmail(userId, code);
+            
+            return Redirect(_configuration["Email:Redirect"]);
+        }
+
     }
 }

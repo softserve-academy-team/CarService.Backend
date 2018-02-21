@@ -19,6 +19,9 @@ using Microsoft.Extensions.Options;
 using System.Text;
 using System.Threading.Tasks;
 using System;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Cors.Internal;
 
 namespace CarService.Api
 {
@@ -47,19 +50,28 @@ namespace CarService.Api
 
             services.AddOptions();
             services.Configure<AuthOptions>(_configuration.GetSection("AuthOptions"));
+            services.Configure<EmailConfig>(_configuration.GetSection("Email"));
             
 
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowAllOrigin", builder => {
-                    builder
-                    .AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-                    
-                    });
+               options.AddPolicy("AllowAllOrigin", builder => builder
+               .AllowAnyOrigin()
+               .AllowAnyHeader()
+               .AllowAnyMethod());
             });
-          
+
+            services.Configure<MvcOptions>(options =>
+            {
+                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
+            });
+
+            services.AddSingleton<IConfiguration>(provider => _configuration);
+            services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
+            services.AddSingleton<ICarService, AutoRiaCarService>();
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddTransient<IEmailService, EmailService>();
+
             services.AddScoped<IUnitOfWorkFactory>(provider => new SqlUnitOfWorkFactory(options =>
             {
                 options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
@@ -70,8 +82,8 @@ namespace CarService.Api
 
 
             services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<CarServiceDbContext>();
-            
+                .AddEntityFrameworkStores<CarServiceDbContext>()
+                .AddDefaultTokenProviders();
 
 			// JWT
 			services.AddAuthentication(cfg => {
@@ -114,8 +126,7 @@ namespace CarService.Api
             app.UseAuthentication();
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
-
+                  app.UseDeveloperExceptionPage();
                 int? httpsPort = null;
                 IConfigurationSection httpsSection = _configuration.GetSection("HttpServer:Endpoints:Https");
                 if (httpsSection.Exists())

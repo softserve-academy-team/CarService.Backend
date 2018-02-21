@@ -8,12 +8,11 @@ using System.Linq;
 using Microsoft.Extensions.Options;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using CarService.DbAccess.Entities;
 using CarService.DbAccess.DAL;
-
-
+using Microsoft.Extensions.Configuration;
+using System.Web;
 namespace CarService.Api.Services
 {
 
@@ -26,16 +25,25 @@ namespace CarService.Api.Services
         private readonly SignInManager<User> _signInManager;
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
 
-        public AccountService(IOptions<AuthOptions> optionsAccessor,
-         UserManager<User> userManager, 
-         SignInManager<User> signInManager,
-         IUnitOfWorkFactory unitOfWorkFactory)
+        private readonly IEmailService _emailService;
+        private readonly IConfiguration _configuration;
+
+       
+        public AccountService(
+            IOptions<AuthOptions> optionsAccessor,
+            UserManager<User> userManager, 
+            SignInManager<User> signInManager,
+            IUnitOfWorkFactory unitOfWorkFactory,
+            IEmailService emailService, 
+            IConfiguration configuration)
         {
             _options = optionsAccessor.Value;
             _userManager = userManager;
             _signInManager = signInManager;
             _userManager = userManager;
             _unitOfWorkFactory = unitOfWorkFactory;
+            _emailService = emailService;
+            _configuration = configuration;
         }
 
         public string createJwtToken(ClaimsIdentity identity)
@@ -81,21 +89,15 @@ namespace CarService.Api.Services
             {
                 Email = registerCustomerCredentials.Email,
                 UserName = registerCustomerCredentials.Email,
-                PhoneNumber = registerCustomerCredentials.PhoneNumber,
                 Status = UserStatus.Inactive,
                 FirstName = registerCustomerCredentials.FirstName,
                 LastName = registerCustomerCredentials.LastName,
                 RegisterDate = DateTime.Now.ToUniversalTime(),
-                City = registerCustomerCredentials.City,
-                CardNumber = registerCustomerCredentials.CardNumber,
+                City = registerCustomerCredentials.Location,
                 Role = СUSTOMER_ROLE
             };
 
-            var result = await _userManager.CreateAsync(user, registerCustomerCredentials.Password);
-            if (!result.Succeeded)
-                return result;
-
-            return result;
+            return await AddUser(user, registerCustomerCredentials.Password);
         }
 
         public async Task<IdentityResult> RegisterMechanic(RegisterMechanicCredentials registerMechanicCredentials)
@@ -104,20 +106,61 @@ namespace CarService.Api.Services
             {
                 Email = registerMechanicCredentials.Email,
                 UserName = registerMechanicCredentials.Email,
-                PhoneNumber = registerMechanicCredentials.PhoneNumber,
                 Status = UserStatus.Inactive,
                 FirstName = registerMechanicCredentials.FirstName,
                 LastName = registerMechanicCredentials.LastName,
                 RegisterDate = DateTime.Now.ToUniversalTime(),
-                City = registerMechanicCredentials.City,
-                WorkExperience = registerMechanicCredentials.WorkExperience,
-                CardNumber = registerMechanicCredentials.CardNumber,
+                City = registerMechanicCredentials.Location,
+                WorkExperience = registerMechanicCredentials.Experience,
+                Specialization = registerMechanicCredentials.Specialization,
                 Role = MECHANIC_ROLE
             };
 
-            var result = await _userManager.CreateAsync(user, registerMechanicCredentials.Password);
+            return await AddUser(user, registerMechanicCredentials.Password);
+        }
+
+        public async Task<IdentityResult> ConfirmEmail(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                throw new ApplicationException($"Unable to load user with ID '{userId}'.");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                throw new ApplicationException($"Unable to load user with ID '{userId}'.");
+            }
+            
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+
+            return result;
+        }
+
+        private async Task<IdentityResult> AddUser(User user, string password)
+        {
+            var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
                 return result;
+
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = HttpUtility.UrlEncode(code);
+            
+            var callBackUrl = new UriBuilder();
+            callBackUrl.Scheme = _configuration["Email:Scheme"];
+            callBackUrl.Host =   _configuration["Email:Host"];
+            callBackUrl.Port =   Convert.ToInt32(_configuration["Email:Port"]); 
+            callBackUrl.Path =   _configuration["Email:EmailPath"];
+              
+            var userIdentityParams = new Dictionary<string, string>();
+            userIdentityParams.Add("userId", user.Id);
+            userIdentityParams.Add("code", code);
+            var stringBuilder = new StringBuilder();
+            callBackUrl.Query = stringBuilder.AppendJoin("&", userIdentityParams.Select(iup=>$"{iup.Key}={iup.Value}")).ToString();
+            
+            await _emailService.SendEmailAsync(user.Email, "Confirm your account",
+                           $"Please confirm your account by clicking : <a href='{callBackUrl.Uri}'>Confirm Car Service account</a>");
 
             return result;
         }
