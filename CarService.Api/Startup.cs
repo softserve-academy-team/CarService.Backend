@@ -38,17 +38,13 @@ namespace CarService.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-            //services.AddCors(options =>
-            //{
-            //    options.AddPolicy("AllowAllOrigin", builder => builder.AllowAnyOrigin());
-            //});
-            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+            services.AddCors(options =>
             {
-                builder
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-            }));
+               options.AddPolicy("AllowAllOrigin", builder => builder
+               .AllowAnyOrigin()
+               .AllowAnyHeader()
+               .AllowAnyMethod());
+            });
 
             services.Configure<MvcOptions>(options =>
             {
@@ -76,7 +72,6 @@ namespace CarService.Api
 
             services.Configure<EmailConfig>(_configuration.GetSection("Email"));
 
-            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -84,7 +79,7 @@ namespace CarService.Api
         {
             if (environment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                  app.UseDeveloperExceptionPage();
                 int? httpsPort = null;
                 IConfigurationSection httpsSection = _configuration.GetSection("HttpServer:Endpoints:Https");
                 if (httpsSection.Exists())
@@ -97,11 +92,6 @@ namespace CarService.Api
             }
  
             app.UseAuthentication();
-            app.UseCors("CorsPolicy");
-            app.UseSignalR(routes =>
-            {
-                routes.MapHub<SignalRHub>("sendMessage");
-            });
             app.UseMvc();
         }
     }
