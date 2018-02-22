@@ -29,8 +29,8 @@ namespace CarService.Api
     {
         private readonly IConfiguration _configuration;
         private readonly AuthOptions _options;
-        
-        public Startup(IConfiguration configuration,IHostingEnvironment env, IOptions<AuthOptions> optionsAccessor)
+
+        public Startup(IConfiguration configuration, IHostingEnvironment env, IOptions<AuthOptions> optionsAccessor)
         {
             var configurationBuilder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -49,14 +49,14 @@ namespace CarService.Api
             services.AddOptions();
             services.Configure<AuthOptions>(_configuration.GetSection("AuthOptions"));
             services.Configure<EmailConfig>(_configuration.GetSection("Email"));
-            
+
 
             services.AddCors(options =>
             {
-               options.AddPolicy("AllowAllOrigin", builder => builder
-               .AllowAnyOrigin()
-               .AllowAnyHeader()
-               .AllowAnyMethod());
+                options.AddPolicy("AllowAllOrigin", builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod());
             });
 
             services.Configure<MvcOptions>(options =>
@@ -73,17 +73,29 @@ namespace CarService.Api
                 options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("CarService.Api")));
 
 
-            services.AddIdentity<User, IdentityRole>()
+            services.AddIdentity<User, IdentityRole>(
+                options =>
+                {
+                    // Password settings
+                    options.Password.RequireDigit = false;
+                    options.Password.RequiredLength = 4;
+                    options.Password.RequiredUniqueChars = 0;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                }
+            )
                 .AddEntityFrameworkStores<CarServiceDbContext>()
                 .AddDefaultTokenProviders();
 
-			// JWT
-			services.AddAuthentication(cfg => {
-                    cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    
-                })
+            // JWT
+            services.AddAuthentication(cfg =>
+            {
+                cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            })
                     .AddJwtBearer(options =>
                     {
                         options.RequireHttpsMetadata = false;
@@ -99,15 +111,15 @@ namespace CarService.Api
                         };
                     });
 
-            
+
 
             services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
             services.AddSingleton<ICarService, AutoRiaCarService>();
-            services.AddSingleton<IAccountService, AccountService>();
+            services.AddScoped<IAccountService, AccountService>();
             services.AddSingleton<IConfiguration>(provider => _configuration);
             services.AddTransient<IEmailService, EmailService>();
 
- 
+
             services.AddMvc();
 
         }
@@ -118,7 +130,7 @@ namespace CarService.Api
             app.UseAuthentication();
             if (env.IsDevelopment())
             {
-                  app.UseDeveloperExceptionPage();
+                app.UseDeveloperExceptionPage();
                 int? httpsPort = null;
                 IConfigurationSection httpsSection = _configuration.GetSection("HttpServer:Endpoints:Https");
                 if (httpsSection.Exists())

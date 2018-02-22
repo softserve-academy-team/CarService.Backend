@@ -41,8 +41,7 @@ namespace CarService.Api.Controllers
              
             var response = new
             {
-                access_token = encodedJwt,
-                username = identity.Name
+                access_token = encodedJwt
             };
  
            
