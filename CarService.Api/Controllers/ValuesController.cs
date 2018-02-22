@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CarService.DbAccess.DAL;
 using CarService.DbAccess.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CarService.Api.Controllers
 {
@@ -10,23 +11,27 @@ namespace CarService.Api.Controllers
     public class ValuesController : Controller
     {
         // GET api/values
+        [Authorize]
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok();
+            return Ok("Values here!");
         }
 
         // GET api/values/5
+        [Authorize(Roles = "mechanic")]
         [HttpGet("{id}")]
-        public string Get(int id)
+        public IActionResult Get(int id)
         {
-            return "value";
+            return Ok("You are mechanic!");
         }
 
         // POST api/values
-        [HttpPost]
-        public void Post([FromBody]string value)
+        [Authorize(Roles = "customer")]
+        [HttpPost("customer")]
+        public IActionResult Post([FromBody]string value)
         {
+            return Ok("You are customer!");
         }
 
         // PUT api/values/5

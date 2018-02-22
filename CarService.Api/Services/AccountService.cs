@@ -1,34 +1,89 @@
+using System;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using CarService.Api.Models;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Options;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using CarService.DbAccess.Entities;
-using CarService.Api.Models;
 using CarService.DbAccess.DAL;
-using System;
 using Microsoft.Extensions.Configuration;
-using System.Text;
 using System.Web;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace CarService.Api.Services
 {
+
     public class AccountService : IAccountService
     {
+        private const string MECHANIC_ROLE = "mechanic";
+        private const string СUSTOMER_ROLE = "customer";
+        private readonly AuthOptions _options;
         private readonly UserManager<User> _userManager;
+        private readonly SignInManager<User> _signInManager;
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
 
+       
         public AccountService(
+            IOptions<AuthOptions> optionsAccessor,
             UserManager<User> userManager, 
-            IUnitOfWorkFactory unitOfWorkFactory, 
+            SignInManager<User> signInManager,
+            IUnitOfWorkFactory unitOfWorkFactory,
             IEmailService emailService, 
             IConfiguration configuration)
         {
-            this._userManager = userManager;
-            this._unitOfWorkFactory = unitOfWorkFactory;
-            this._emailService = emailService;
-            this._configuration = configuration;
+            _options = optionsAccessor.Value;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _userManager = userManager;
+            _unitOfWorkFactory = unitOfWorkFactory;
+            _emailService = emailService;
+            _configuration = configuration;
+        }
+
+        public string createJwtToken(ClaimsIdentity identity)
+        {
+            var now = DateTime.UtcNow;
+          
+            var jwt = new JwtSecurityToken(
+                issuer: _options.Issuer,
+                audience: _options.Audience,
+                notBefore: now,
+                claims: identity.Claims,
+                expires: now.Add(TimeSpan.FromMinutes(_options.Lifetime)),
+                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.Key)), SecurityAlgorithms.HmacSha256));
+            string encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+            return encodedJwt;
+        }
+
+        public async Task<ClaimsIdentity> GetIdentity(string email, string password)
+        {
+            User user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                var signInResult = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
+                    if(!signInResult.Succeeded)
+                    return null;
+                string role = user is Mechanic ? MECHANIC_ROLE : СUSTOMER_ROLE;
+
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, role)
+                };
+                ClaimsIdentity claimsIdentity =
+                new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
+                    ClaimsIdentity.DefaultRoleClaimType);
+                return claimsIdentity;
+            }
+ 
+            return null;
         }
 
         public async Task<IdentityResult> RegisterCustomer(RegisterCustomerCredentials registerCustomerCredentials)
@@ -110,5 +165,6 @@ namespace CarService.Api.Services
 
             return result;
         }
+
     }
 }

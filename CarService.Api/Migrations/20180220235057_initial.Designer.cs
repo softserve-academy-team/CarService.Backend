@@ -13,9 +13,10 @@ using System;
 namespace CarService.Api.Migrations
 {
     [DbContext(typeof(CarServiceDbContext))]
-    partial class CarServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180220235057_initial")]
+    partial class initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -290,8 +291,6 @@ namespace CarService.Api.Migrations
 
                     b.Property<DateTime>("RegisterDate");
 
-                    b.Property<string>("Role");
-
                     b.Property<string>("SecurityStamp");
 
                     b.Property<int>("Status");
@@ -446,9 +445,7 @@ namespace CarService.Api.Migrations
 
                     b.Property<int>("MechanicRate");
 
-                    b.Property<string>("Specialization");
-
-                    b.Property<int>("WorkExperience");
+                    b.Property<string>("WorkExperience");
 
                     b.ToTable("Mechanic");
 
