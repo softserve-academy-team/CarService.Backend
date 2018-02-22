@@ -70,11 +70,12 @@ namespace CarService.Api.Services
                 var signInResult = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
                     if(!signInResult.Succeeded)
                     return null;
+                string role = user is Mechanic ? MECHANIC_ROLE : СUSTOMER_ROLE;
 
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                    new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role)
+                    new Claim(ClaimsIdentity.DefaultRoleClaimType, role)
                 };
                 ClaimsIdentity claimsIdentity =
                 new ClaimsIdentity(claims, "Token", ClaimsIdentity.DefaultNameClaimType,
@@ -95,8 +96,7 @@ namespace CarService.Api.Services
                 FirstName = registerCustomerCredentials.FirstName,
                 LastName = registerCustomerCredentials.LastName,
                 RegisterDate = DateTime.Now.ToUniversalTime(),
-                City = registerCustomerCredentials.Location,
-                Role = СUSTOMER_ROLE
+                City = registerCustomerCredentials.Location
             };
 
             return await AddUser(user, registerCustomerCredentials.Password);
@@ -114,8 +114,7 @@ namespace CarService.Api.Services
                 RegisterDate = DateTime.Now.ToUniversalTime(),
                 City = registerMechanicCredentials.Location,
                 WorkExperience = registerMechanicCredentials.Experience,
-                Specialization = registerMechanicCredentials.Specialization,
-                Role = MECHANIC_ROLE
+                Specialization = registerMechanicCredentials.Specialization
             };
 
             return await AddUser(user, registerMechanicCredentials.Password);
