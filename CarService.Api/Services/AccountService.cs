@@ -64,11 +64,13 @@ namespace CarService.Api.Services
         public async Task<ClaimsIdentity> GetIdentity(string email, string password)
         {
             User user = await _userManager.FindByEmailAsync(email);
-            await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
-           
+
             if (user != null)
             {
-                
+                var signInResult = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: false);
+                    if(!signInResult.Succeeded)
+                    return null;
+
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
