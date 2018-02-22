@@ -2,14 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using CarService.Api.Models;
 using CarService.Api.Services;
 using System.Threading.Tasks;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Identity;
-using CarService.DbAccess.Entities;
+using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
+
 
 namespace CarService.Api.Controllers
 {
+
     [Route("api/[controller]")]
     public class AccountController : Controller
     {
@@ -22,11 +21,33 @@ namespace CarService.Api.Controllers
             IEmailService emailService,
             IConfiguration configuration)
         {
-            this._accountService = accountService;
-            this._emailService = emailService;
-            this._configuration = configuration;
+            _accountService = accountService;
+            _emailService = emailService;
+            _configuration = configuration;
         }
 
+  
+        [HttpPost("token")]
+        public async Task<IActionResult> Token([FromBody] UserDTO info)
+        {
+
+            ClaimsIdentity identity = await _accountService.GetIdentity(info.email, info.password);
+            if (identity == null)
+            {
+                return BadRequest($"Invalid username or password.!!!! {info.email} {info.password}");
+            }
+ 
+            var encodedJwt = _accountService.createJwtToken(identity);
+             
+            var response = new
+            {
+                access_token = encodedJwt
+            };
+ 
+           
+            return Ok(response);
+        }
+      
         [HttpPost("registration/customer")]
         public async Task<IActionResult> RegisterCustomer([FromBody] RegisterCustomerCredentials registerCustomerCredentials)
         {
