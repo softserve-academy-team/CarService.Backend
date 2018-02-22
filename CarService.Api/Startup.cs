@@ -64,6 +64,13 @@ namespace CarService.Api
                 options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
             });
 
+            services.AddSingleton<IConfiguration>(provider => _configuration);
+            services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
+            services.AddSingleton<ICarService, AutoRiaCarService>();
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddTransient<IEmailService, EmailService>();
+            services.AddScoped<IProfileService, ProfileService>();
+
             services.AddScoped<IUnitOfWorkFactory>(provider => new SqlUnitOfWorkFactory(options =>
             {
                 options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));

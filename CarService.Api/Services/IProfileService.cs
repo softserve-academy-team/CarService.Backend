@@ -7,5 +7,6 @@ namespace CarService.Api.Services
     {
         Task EditCustomerProfile(CustomerDTO custpmerDTO);
         Task EditMechanicProfile(MechanicDTO mechanicDTO);
+        Task<UserDTO> GetUserDTO(string email);
     }
 }

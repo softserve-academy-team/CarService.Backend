@@ -54,11 +54,62 @@ namespace CarService.Api.Services
                     mechanic.PhoneNumber = mechanicDTO.PhoneNumber;
                     mechanic.City = mechanicDTO.City;
                     mechanic.CardNumber = mechanicDTO.CardNumber;
+                    mechanic.WorkExperience = mechanicDTO.WorkExperience;
+                    mechanic.Specialization = mechanicDTO.Specialization;
 
                     repository.Attach(mechanic);
                     unitOfWork.Save();
                 }
             }
+        }
+
+        public async Task<UserDTO> GetUserDTO(string email)
+        {
+            User user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                if (user is Mechanic)
+                {
+                    MechanicDTO mechanicDTO;
+                    using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+                    {
+                        IRepository<Mechanic> repository = unitOfWork.Repository<Mechanic>();
+                        var mechanic = repository.Get(user.EntityId);
+                        mechanicDTO = new MechanicDTO
+                        {
+                            Email = mechanic.Email,
+                            FirstName = mechanic.FirstName,
+                            LastName = mechanic.LastName,
+                            PhoneNumber = mechanic.PhoneNumber,
+                            City = mechanic.City,
+                            CardNumber = mechanic.CardNumber,
+                            Specialization = mechanic.Specialization,
+                            WorkExperience = mechanic.WorkExperience,
+                            MechanicRate = mechanic.MechanicRate
+                        };
+                    }
+                    return mechanicDTO;
+                }
+                CustomerDTO customerDTO;
+                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+                {
+                    IRepository<Customer> repository = unitOfWork.Repository<Customer>();
+                    var mechanic = repository.Get(user.EntityId);
+                    customerDTO = new CustomerDTO
+                    {
+                        Email = mechanic.Email,
+                        FirstName = mechanic.FirstName,
+                        LastName = mechanic.LastName,
+                        PhoneNumber = mechanic.PhoneNumber,
+                        City = mechanic.City,
+                        CardNumber = mechanic.CardNumber
+                    };
+                }
+                return customerDTO;
+            }
+
+            return null;
         }
     }
 }

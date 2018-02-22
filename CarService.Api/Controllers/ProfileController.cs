@@ -2,6 +2,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using CarService.Api.Models.DTO;
 using CarService.Api.Services;
+using System.IO;
+using System.Text;
 
 namespace CarService.Api.Controllers
 {
@@ -14,18 +16,23 @@ namespace CarService.Api.Controllers
             _profileService = profileService;
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("user-info")]
         public async Task<IActionResult> GetUserInfo()
         {
-            var user = new CustomerDTO {
-                Email = "vasia@gmail.com",
-                FirstName = "Vasia",
-                LastName = "Pupkin",
-                PhoneNumber = "+380551243219",
-                City = "Kyiv",
-                CardNumber = "**** 9012"
-            };
+            string email;
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                email = await reader.ReadToEndAsync();
+            }
+
+            if (email == null)
+                return BadRequest();
+
+            var user = await _profileService.GetUserDTO(email);
+            
+            if (user == null)
+                return BadRequest();
 
             return Ok(user);
         }
