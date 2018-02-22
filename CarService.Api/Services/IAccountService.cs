@@ -2,7 +2,6 @@ using System.Security.Claims;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CarService.Api.Models;
-using System.Security.Claims;
 
 using Microsoft.AspNetCore.Identity;
 
