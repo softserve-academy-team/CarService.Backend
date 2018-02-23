@@ -8,12 +8,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace CarService.Api.Controllers
 {
-
     [Route("api/[controller]")]
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
-        private readonly IEmailService   _emailService;
+        private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
 
         public AccountController(
@@ -26,28 +25,27 @@ namespace CarService.Api.Controllers
             _configuration = configuration;
         }
 
-  
         [HttpPost("token")]
         public async Task<IActionResult> Token([FromBody] UserDTO info)
         {
-
             ClaimsIdentity identity = await _accountService.GetIdentity(info.email, info.password);
+
             if (identity == null)
-            {
-                return BadRequest($"Invalid username or password.!!!! {info.email} {info.password}");
-            }
- 
+                return BadRequest($"Invalid username or password.!!!! {info.email}");
+
+            if (!await _accountService.IsEmailConfirmed(info.email))
+                return BadRequest("Please confirm your email.");
+
             var encodedJwt = _accountService.createJwtToken(identity);
-             
+
             var response = new
             {
                 access_token = encodedJwt
             };
- 
-           
+
             return Ok(response);
         }
-      
+
         [HttpPost("registration/customer")]
         public async Task<IActionResult> RegisterCustomer([FromBody] RegisterCustomerCredentials registerCustomerCredentials)
         {
@@ -70,9 +68,8 @@ namespace CarService.Api.Controllers
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
             var result = await _accountService.ConfirmEmail(userId, code);
-            
+
             return Redirect(_configuration["Email:Redirect"]);
         }
-
     }
 }
