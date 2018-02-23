@@ -4,6 +4,7 @@ using CarService.Api.Models.DTO;
 using CarService.Api.Services;
 using System.IO;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CarService.Api.Controllers
 {
@@ -16,27 +17,24 @@ namespace CarService.Api.Controllers
             _profileService = profileService;
         }
 
+        [Authorize]
         [HttpPost]
         [Route("user-info")]
         public async Task<IActionResult> GetUserInfo()
         {
-            string email;
-            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
-            {
-                email = await reader.ReadToEndAsync();
-            }
-
+            string email = User.Identity.Name;
             if (email == null)
                 return BadRequest();
 
             var user = await _profileService.GetUserDTO(email);
-            
+
             if (user == null)
                 return BadRequest();
 
             return Ok(user);
         }
 
+        [Authorize]
         [HttpPost]
         [Route("edit/customer")]
         public async Task<IActionResult> EditCustomerInfo([FromBody] CustomerDTO customerDTO)
@@ -45,6 +43,7 @@ namespace CarService.Api.Controllers
             return Ok();
         }
 
+        [Authorize]
         [HttpPost]
         [Route("edit/mechanic")]
         public async Task<IActionResult> EditMechanicInfo([FromBody] MechanicDTO mechanicDTO)
