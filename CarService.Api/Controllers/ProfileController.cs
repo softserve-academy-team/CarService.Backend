@@ -18,7 +18,7 @@ namespace CarService.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpGet]
         [Route("user-info")]
         public async Task<IActionResult> GetUserInfo()
         {
