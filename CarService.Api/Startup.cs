@@ -22,6 +22,7 @@ using System;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
+using AutoMapper;
 
 namespace CarService.Api
 {
@@ -119,7 +120,7 @@ namespace CarService.Api
                     });
 
             services.AddMvc();
-
+            services.AddAutoMapper(x=> x.AddProfile(new MappingProfile()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
