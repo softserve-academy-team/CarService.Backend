@@ -13,6 +13,8 @@ using CarService.DbAccess.Entities;
 using CarService.DbAccess.DAL;
 using Microsoft.Extensions.Configuration;
 using System.Web;
+using AutoMapper;
+
 namespace CarService.Api.Services
 {
 
@@ -27,7 +29,7 @@ namespace CarService.Api.Services
 
         private readonly IEmailService _emailService;
         private readonly IConfiguration _configuration;
-
+        private readonly IMapper _iMapper;
 
         public AccountService(
             IOptions<AuthOptions> optionsAccessor,
@@ -35,7 +37,8 @@ namespace CarService.Api.Services
             SignInManager<User> signInManager,
             IUnitOfWorkFactory unitOfWorkFactory,
             IEmailService emailService,
-            IConfiguration configuration)
+            IConfiguration configuration,
+            IMapper iMapper)
         {
             _options = optionsAccessor.Value;
             _userManager = userManager;
@@ -44,6 +47,7 @@ namespace CarService.Api.Services
             _unitOfWorkFactory = unitOfWorkFactory;
             _emailService = emailService;
             _configuration = configuration;
+            _iMapper = iMapper;
         }
 
         public string createJwtToken(ClaimsIdentity identity)
@@ -95,36 +99,14 @@ namespace CarService.Api.Services
 
         public async Task<IdentityResult> RegisterCustomer(RegisterCustomerCredentials registerCustomerCredentials)
         {
-            var user = new Customer
-            {
-                Email = registerCustomerCredentials.Email,
-                UserName = registerCustomerCredentials.Email,
-                Status = UserStatus.Inactive,
-                FirstName = registerCustomerCredentials.FirstName,
-                LastName = registerCustomerCredentials.LastName,
-                RegisterDate = DateTime.Now.ToUniversalTime(),
-                City = registerCustomerCredentials.Location
-            };
-
-            return await AddUser(user, registerCustomerCredentials.Password);
+            var customer = _iMapper.Map<RegisterCustomerCredentials, Customer>(registerCustomerCredentials);
+            return await AddUser(customer, registerCustomerCredentials.Password);
         }
 
         public async Task<IdentityResult> RegisterMechanic(RegisterMechanicCredentials registerMechanicCredentials)
         {
-            var user = new Mechanic
-            {
-                Email = registerMechanicCredentials.Email,
-                UserName = registerMechanicCredentials.Email,
-                Status = UserStatus.Inactive,
-                FirstName = registerMechanicCredentials.FirstName,
-                LastName = registerMechanicCredentials.LastName,
-                RegisterDate = DateTime.Now.ToUniversalTime(),
-                City = registerMechanicCredentials.Location,
-                WorkExperience = registerMechanicCredentials.Experience,
-                Specialization = registerMechanicCredentials.Specialization
-            };
-
-            return await AddUser(user, registerMechanicCredentials.Password);
+            var mechanic = _iMapper.Map<RegisterMechanicCredentials, Mechanic>(registerMechanicCredentials);
+            return await AddUser(mechanic, registerMechanicCredentials.Password);
         }
 
         public async Task<IdentityResult> ConfirmEmail(string userId, string code)
@@ -148,6 +130,9 @@ namespace CarService.Api.Services
 
         private async Task<IdentityResult> AddUser(User user, string password)
         {
+            user.Status = UserStatus.Inactive;
+            user.RegisterDate = DateTime.Now.ToUniversalTime();
+
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
                 return result;

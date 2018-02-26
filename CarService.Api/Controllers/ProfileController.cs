@@ -35,7 +35,7 @@ namespace CarService.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPut]
         [Route("edit/customer")]
         public async Task<IActionResult> EditCustomerInfo([FromBody] CustomerDTO customerDTO)
         {
@@ -44,7 +44,7 @@ namespace CarService.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPut]
         [Route("edit/mechanic")]
         public async Task<IActionResult> EditMechanicInfo([FromBody] MechanicDTO mechanicDTO)
         {

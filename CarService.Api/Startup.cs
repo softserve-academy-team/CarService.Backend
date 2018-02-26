@@ -120,7 +120,7 @@ namespace CarService.Api
                     });
 
             services.AddMvc();
-            services.AddAutoMapper(x=> x.AddProfile(new MappingProfile()));
+            services.AddAutoMapper(x => x.AddProfile(new MappingProfile()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
