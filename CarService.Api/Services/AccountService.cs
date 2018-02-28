@@ -162,7 +162,7 @@ namespace CarService.Api.Services
             callBackUrl.Path = _configuration["Email:EmailPath"];
 
             var userIdentityParams = new Dictionary<string, string>();
-            userIdentityParams.Add("userId", user.Id);
+            userIdentityParams.Add("userId", user.Id.ToString());
             userIdentityParams.Add("code", code);
             var stringBuilder = new StringBuilder();
             callBackUrl.Query = stringBuilder.AppendJoin("&", userIdentityParams.Select(iup => $"{iup.Key}={iup.Value}")).ToString();

@@ -26,7 +26,7 @@ namespace CarService.Api.Services
                 using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
                 {
                     IRepository<Customer> repository = unitOfWork.Repository<Customer>();
-                    var customer = repository.Get(user.EntityId);
+                    var customer = repository.Get(user.Id);
                     customer.FirstName = customerDTO.FirstName;
                     customer.LastName = customerDTO.LastName;
                     customer.PhoneNumber = customerDTO.PhoneNumber;
@@ -48,7 +48,7 @@ namespace CarService.Api.Services
                 using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
                 {
                     IRepository<Mechanic> repository = unitOfWork.Repository<Mechanic>();
-                    var mechanic = repository.Get(user.EntityId);
+                    var mechanic = repository.Get(user.Id);
                     mechanic.FirstName = mechanicDTO.FirstName;
                     mechanic.LastName = mechanicDTO.LastName;
                     mechanic.PhoneNumber = mechanicDTO.PhoneNumber;
@@ -75,7 +75,7 @@ namespace CarService.Api.Services
                     using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
                     {
                         IRepository<Mechanic> repository = unitOfWork.Repository<Mechanic>();
-                        var mechanic = repository.Get(user.EntityId);
+                        var mechanic = repository.Get(user.Id);
                         mechanicDTO = new MechanicDTO
                         {
                             Email = mechanic.Email,
@@ -95,7 +95,7 @@ namespace CarService.Api.Services
                 using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
                 {
                     IRepository<Customer> repository = unitOfWork.Repository<Customer>();
-                    var mechanic = repository.Get(user.EntityId);
+                    var mechanic = repository.Get(user.Id);
                     customerDTO = new CustomerDTO
                     {
                         Email = mechanic.Email,
@@ -110,6 +110,26 @@ namespace CarService.Api.Services
             }
 
             return null;
+        }
+
+        public async Task AddCarToFavorites(string email, FavoritesDto body)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+                {
+                    IRepository<Auto> autos = unitOfWork.Repository<Auto>();
+                    var auto = new Auto {AutoRiaId = body.autoRiaId, Info = body.info};
+                    autos.Add(auto);
+
+                    IRepository<CustomerAuto> customerAutos = unitOfWork.Repository<CustomerAuto>();  
+                    customerAutos.Add(new CustomerAuto {CustomerId = user.Id, AutoId = auto.Id });
+
+                    unitOfWork.Save();
+                }
+            }
         }
     }
 }

@@ -33,11 +33,11 @@ namespace CarService.DbAccess.DAL
         }
         public T Get(int id)
         {
-            return _dataSet.FirstOrDefault(x => x.EntityId == id);
+            return _dataSet.FirstOrDefault(x => x.Id == id);
         }
         public async Task<T> GetAsync(int id)
         {
-            return await _dataSet.FirstOrDefaultAsync(x => x.EntityId == id);
+            return await _dataSet.FirstOrDefaultAsync(x => x.Id == id);
         }
         public T Find(Func<T, bool> predicate)
         {

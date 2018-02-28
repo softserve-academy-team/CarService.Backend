@@ -6,8 +6,7 @@ namespace CarService.DbAccess.Entities
 {
     public class Auto : IEntity
     {
-        [Key]
-        public int EntityId { get; set; }
+        public int Id { get; set; }
         public int AutoRiaId { get; set; }
         public string Info { get; set; }
 

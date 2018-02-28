@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using CarService.DbAccess.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace CarService.DbAccess.EF
 {
-    public class CarServiceDbContext : IdentityDbContext<User>
+    public class CarServiceDbContext : IdentityDbContext<User, IdentityRole<int>, int>
     {
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Mechanic> Mechanics { get; set; }
@@ -37,6 +38,18 @@ namespace CarService.DbAccess.EF
             modelBuilder.Entity<CustomerAuto>()
                 .HasKey(ca => new { ca.CustomerId, ca.AutoId });
 
+            // // Configuring relationship PK(Customer.Id) - FK(CustomerAuto.CustomerId)
+            // modelBuilder.Entity<Customer>()
+            //     .HasMany(c => c.CustomerAutoes)
+            //     .WithOne(c => c.Customer)
+            //     .HasPrincipalKey(c => c.Id)
+            //     .HasForeignKey(c => c.CustomerId);
+            
+            // Unique constraint for Auto.AutoRiaId
+            modelBuilder.Entity<Auto>()
+                .HasAlternateKey(a => a.AutoRiaId)
+                .HasName("AlternateKey_AutoRiaId");
+
             // OneToMany(User(Sender), Transaction)
             modelBuilder.Entity<Transaction>()
                .HasOne(t => t.Sender)
@@ -49,15 +62,20 @@ namespace CarService.DbAccess.EF
                .WithMany(t => t.ReceiversTransactions)
                .HasForeignKey(t => t.ReceiverId);
 
-            // Unique constraint for User.EntityId
-            modelBuilder.Entity<User>()
-               .HasAlternateKey(u => u.EntityId)
-               .HasName("AlternateKey_Entityid");    
+            // // Unique constraint for User.Id
+            // modelBuilder.Entity<User>()
+            //    .HasAlternateKey(u => u.Id)
+            //    .HasName("AlternateKey_Id");
 
-            // AutoIncrement for User.EntityId
-            modelBuilder.Entity<User>()
-                .Property(u => u.EntityId)
-                .ValueGeneratedOnAdd();             
+            // // AutoIncrement for User.Id
+            // modelBuilder.Entity<User>()
+            //     .Property(u => u.Id)
+            //     .ValueGeneratedOnAdd();
+
+            // // AutoIncrement for CustomerAuto.Id
+            // modelBuilder.Entity<CustomerAuto>()
+            //     .Property(u => u.Id)
+            //     .ValueGeneratedOnAdd();
         }
     }
 }

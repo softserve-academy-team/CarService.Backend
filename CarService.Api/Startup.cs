@@ -80,7 +80,7 @@ namespace CarService.Api
                 options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("CarService.Api")));
 
 
-            services.AddIdentity<User, IdentityRole>(
+            services.AddIdentity<User, IdentityRole<int>>(
                 options =>
                 {
                     // Password settings

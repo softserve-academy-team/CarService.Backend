@@ -51,5 +51,18 @@ namespace CarService.Api.Controllers
             await _profileService.EditMechanicProfile(mechanicDTO);
             return Ok();
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("add")]
+        public async Task<IActionResult> AddCarToFavourites([FromBody] FavoritesDto body)
+        {
+            string email = User.Identity.Name;
+            if (email == null)
+                return BadRequest(); //TODO: authorization failed
+
+            await _profileService.AddCarToFavorites(email, body);
+            return Ok();
+        }
     }
 }
