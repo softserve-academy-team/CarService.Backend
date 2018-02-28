@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using CarService.Api.Models.DTO;
@@ -103,6 +105,38 @@ namespace CarService.Api.Services
                     unitOfWork.Save();
                 }
             }
+        }
+
+        public async Task<IEnumerable<ProfileOrderInfo>> GetUserCreatedOrders(string email)
+        {
+            return new List<ProfileOrderInfo>
+            {
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Canceled.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Active.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Pending.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2012", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2010", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"}
+            };
+        }
+
+        public async Task<IEnumerable<ProfileOrderInfo>> GetUserAppliedOrders(string email)
+        {
+            return new List<ProfileOrderInfo>
+            {
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Canceled.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Active.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Pending.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2012", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
+                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2010", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"}
+            };
         }
     }
 }

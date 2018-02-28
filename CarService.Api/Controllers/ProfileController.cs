@@ -5,6 +5,7 @@ using CarService.Api.Services;
 using System.IO;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
 
 namespace CarService.Api.Controllers
 {
@@ -64,5 +65,29 @@ namespace CarService.Api.Controllers
             await _profileService.AddCarToFavorites(email, body);
             return Ok();
         }
-    }
+
+        [Authorize]
+        [HttpGet]
+        [Route("created-orders")]
+        public async Task<IActionResult> GetUserCreatedOrders()
+        {
+            string email = User.Identity.Name;
+            if (email == null)
+                return BadRequest();
+            IEnumerable<ProfileOrderInfo> orderList = await _profileService.GetUserCreatedOrders(email);
+            return Ok(orderList);
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("applied-orders")]
+        public async Task<IActionResult> GetUserAppliedOrders()
+        {
+            string email = User.Identity.Name;
+            if (email == null)
+                return BadRequest();
+            IEnumerable<ProfileOrderInfo> orderList = await _profileService.GetUserAppliedOrders(email);
+            return Ok(orderList);
+        }
+    }   
 }
