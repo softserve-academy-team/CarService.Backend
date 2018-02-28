@@ -35,7 +35,7 @@ namespace CarService.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPut]
         [Route("edit/customer")]
         public async Task<IActionResult> EditCustomerInfo([FromBody] CustomerDTO customerDTO)
         {
@@ -44,11 +44,24 @@ namespace CarService.Api.Controllers
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpPut]
         [Route("edit/mechanic")]
         public async Task<IActionResult> EditMechanicInfo([FromBody] MechanicDTO mechanicDTO)
         {
             await _profileService.EditMechanicProfile(mechanicDTO);
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("add")]
+        public async Task<IActionResult> AddCarToFavourites([FromBody] FavoritesDto body)
+        {
+            string email = User.Identity.Name;
+            if (email == null)
+                return BadRequest(); //TODO: authorization failed
+
+            await _profileService.AddCarToFavorites(email, body);
             return Ok();
         }
     }

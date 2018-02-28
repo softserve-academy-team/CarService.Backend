@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using AutoMapper;
 using CarService.Api.Models.DTO;
 using CarService.DbAccess.DAL;
 using CarService.DbAccess.Entities;
@@ -10,11 +11,13 @@ namespace CarService.Api.Services
     {
         private readonly UserManager<User> _userManager;
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+        private readonly IMapper _iMapper;
 
-        public ProfileService(UserManager<User> userManager, IUnitOfWorkFactory unitOfWorkFactory)
+        public ProfileService(UserManager<User> userManager, IUnitOfWorkFactory unitOfWorkFactory, IMapper iMapper)
         {
             _userManager = userManager;
             _unitOfWorkFactory = unitOfWorkFactory;
+            _iMapper = iMapper;
         }
 
         public async Task EditCustomerProfile(CustomerDTO customerDTO)
@@ -26,12 +29,9 @@ namespace CarService.Api.Services
                 using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
                 {
                     IRepository<Customer> repository = unitOfWork.Repository<Customer>();
-                    var customer = repository.Get(user.EntityId);
-                    customer.FirstName = customerDTO.FirstName;
-                    customer.LastName = customerDTO.LastName;
-                    customer.PhoneNumber = customerDTO.PhoneNumber;
-                    customer.City = customerDTO.City;
-                    customer.CardNumber = customerDTO.CardNumber;
+                    var customer = repository.Get(user.Id);
+
+                    _iMapper.Map<CustomerDTO, Customer>(customerDTO, customer);
 
                     repository.Attach(customer);
                     unitOfWork.Save();
@@ -48,14 +48,9 @@ namespace CarService.Api.Services
                 using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
                 {
                     IRepository<Mechanic> repository = unitOfWork.Repository<Mechanic>();
-                    var mechanic = repository.Get(user.EntityId);
-                    mechanic.FirstName = mechanicDTO.FirstName;
-                    mechanic.LastName = mechanicDTO.LastName;
-                    mechanic.PhoneNumber = mechanicDTO.PhoneNumber;
-                    mechanic.City = mechanicDTO.City;
-                    mechanic.CardNumber = mechanicDTO.CardNumber;
-                    mechanic.WorkExperience = mechanicDTO.WorkExperience;
-                    mechanic.Specialization = mechanicDTO.Specialization;
+                    var mechanic = repository.Get(user.Id);
+
+                    _iMapper.Map<MechanicDTO, Mechanic>(mechanicDTO, mechanic);
 
                     repository.Attach(mechanic);
                     unitOfWork.Save();
@@ -71,45 +66,43 @@ namespace CarService.Api.Services
             {
                 if (user is Mechanic)
                 {
-                    MechanicDTO mechanicDTO;
                     using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
                     {
                         IRepository<Mechanic> repository = unitOfWork.Repository<Mechanic>();
-                        var mechanic = repository.Get(user.EntityId);
-                        mechanicDTO = new MechanicDTO
-                        {
-                            Email = mechanic.Email,
-                            FirstName = mechanic.FirstName,
-                            LastName = mechanic.LastName,
-                            PhoneNumber = mechanic.PhoneNumber,
-                            City = mechanic.City,
-                            CardNumber = mechanic.CardNumber,
-                            Specialization = mechanic.Specialization,
-                            WorkExperience = mechanic.WorkExperience,
-                            MechanicRate = mechanic.MechanicRate
-                        };
+                        var mechanic = repository.Get(user.Id);
+                        return _iMapper.Map<Mechanic, MechanicDTO>(mechanic);
                     }
-                    return mechanicDTO;
                 }
-                CustomerDTO customerDTO;
+
                 using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
                 {
                     IRepository<Customer> repository = unitOfWork.Repository<Customer>();
-                    var mechanic = repository.Get(user.EntityId);
-                    customerDTO = new CustomerDTO
-                    {
-                        Email = mechanic.Email,
-                        FirstName = mechanic.FirstName,
-                        LastName = mechanic.LastName,
-                        PhoneNumber = mechanic.PhoneNumber,
-                        City = mechanic.City,
-                        CardNumber = mechanic.CardNumber
-                    };
+                    var customer = repository.Get(user.Id);
+                    return _iMapper.Map<Customer, CustomerDTO>(customer);
                 }
-                return customerDTO;
             }
 
             return null;
+        }
+
+        public async Task AddCarToFavorites(string email, FavoritesDto body)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+                {
+                    IRepository<Auto> autos = unitOfWork.Repository<Auto>();
+                    var auto = new Auto {AutoRiaId = body.autoRiaId, Info = body.info};
+                    autos.Add(auto);
+
+                    IRepository<CustomerAuto> customerAutos = unitOfWork.Repository<CustomerAuto>();  
+                    customerAutos.Add(new CustomerAuto {CustomerId = user.Id, AutoId = auto.Id });
+
+                    unitOfWork.Save();
+                }
+            }
         }
     }
 }

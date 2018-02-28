@@ -5,8 +5,7 @@ namespace CarService.DbAccess.Entities
 {
     public class Comment : IEntity
     {
-        [Key]
-        public int EntityId { get; set; }
+        public int Id { get; set; }
         public DateTime Date { get; set; }
         public int Rate { get; set; }
         public string Text { get; set; }
