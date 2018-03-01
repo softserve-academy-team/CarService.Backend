@@ -109,7 +109,7 @@ namespace CarService.Api.Services
         public async Task<CustomerOrderInfo> GetCustomerOrderInfo(string email, int orderId)
         {
             var user = await _userManager.FindByEmailAsync(email);
-
+            
             if (user == null)
                 return null;
 
@@ -185,6 +185,7 @@ namespace CarService.Api.Services
                     MarkName = auto.MarkName,
                     ModelName = auto.ModelName,
                     Year = auto.Year,
+                    City = auto.City,
                     PhotoLink = auto.PhotoLink,
                     PropositionPrice = proposition.Price,
                     PropositionComment = proposition.Comment,

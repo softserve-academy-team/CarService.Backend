@@ -216,7 +216,8 @@ namespace CarService.Api.Services
                                  MarkName = a.MarkName,
                                  ModelName = a.ModelName,
                                  Year = a.Year,
-                                 PhotoLink = a.PhotoLink
+                                 PhotoLink = a.PhotoLink,
+                                 IsDoIt = (o.Status ==  0 || (o.Status > 0 && o.MechanicId == user.Id)) ? true : false
                              };
 
                 return orders.ToList();
