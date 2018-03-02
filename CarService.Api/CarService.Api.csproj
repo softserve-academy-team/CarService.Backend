@@ -1,33 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
-
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <DocumentationFile>bin\Debug\netcoreapp2.0\SwaggerCarService.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netcoreapp2.0\SwaggerCarService.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591</NoWarn>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="3.2.0" />
-    <PackageReference Include="MailKit" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.0.0-alpha2-final" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="3.2.0"/>
+    <PackageReference Include="MailKit" Version="2.0.1"/>
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5"/>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="2.2.0"/>
     <PackageReference Include="WindowsAzure.Storage" Version="9.1.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="2.2.0" />
+    
   </ItemGroup>
-
   <ItemGroup>
-    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2" />
-    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.1" />
+    <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2"/>
+    <DotNetCliToolReference Include="Microsoft.EntityFrameworkCore.Tools.DotNet" Version="2.0.1"/>
   </ItemGroup>
-
   <ItemGroup>
-    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\"/>
   </ItemGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\CarService.DbAccess\CarService.DbAccess.csproj" />
+    <ProjectReference Include="..\CarService.DbAccess\CarService.DbAccess.csproj"/>
   </ItemGroup>
-  
 </Project>
