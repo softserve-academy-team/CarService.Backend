@@ -55,20 +55,56 @@ namespace CarService.Api.Controllers
 
         [Authorize]
         [HttpPost]
-        [Route("add")]
-        public async Task<IActionResult> AddCarToFavourites()
+        [Route("favorites/add")]
+        public async Task<IActionResult> AddCarToFavorites()
         {
             string autoRiaId;
             using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
             {
                 autoRiaId = await reader.ReadToEndAsync();
             }
+
             string email = User.Identity.Name;
             if (email == null)
-                return BadRequest(); //TODO: authorization failed
+                return BadRequest();
 
             await _profileService.AddCarToFavorites(email, int.Parse(autoRiaId));
             return Ok();
+        }
+
+        [Authorize]
+        [HttpDelete]
+        [Route("favorites/delete")]
+        public async Task<IActionResult> DeleteCarFromFavorites()
+        {
+            string autoRiaId;
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                autoRiaId = await reader.ReadToEndAsync();
+            }
+
+            string email = User.Identity.Name;
+            if (email == null)
+                return BadRequest();
+
+            await _profileService.DeleteCarFromFavorites(email, int.Parse(autoRiaId));
+            return Ok();
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("favorites/get")]
+        public async Task<IActionResult> GetAllCarsFromFavorites()
+        {
+            string email = User.Identity.Name;
+            if (email == null)
+                return BadRequest();
+
+            var cars = await _profileService.GetAllCarsFromFavorites(email);
+            if (cars == null)
+                return BadRequest();
+
+            return Ok(cars);
         }
 
         [Authorize]
@@ -79,6 +115,7 @@ namespace CarService.Api.Controllers
             string email = User.Identity.Name;
             if (email == null)
                 return BadRequest();
+
             IEnumerable<ProfileOrderInfo> orderList = await _profileService.GetUserCreatedOrders(email);
             return Ok(orderList);
         }
@@ -91,8 +128,9 @@ namespace CarService.Api.Controllers
             string email = User.Identity.Name;
             if (email == null)
                 return BadRequest();
+
             IEnumerable<ProfileOrderInfo> orderList = await _profileService.GetUserAppliedOrders(email);
             return Ok(orderList);
         }
-    }   
+    }
 }

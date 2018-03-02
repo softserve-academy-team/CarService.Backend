@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
+using CarService.Api.Models;
 using CarService.Api.Models.DTO;
 using CarService.DbAccess.DAL;
 using CarService.DbAccess.Entities;
 using Microsoft.AspNetCore.Identity;
+using System.Linq;
 
 namespace CarService.Api.Services
 {
@@ -15,11 +17,14 @@ namespace CarService.Api.Services
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
         private readonly IMapper _iMapper;
 
-        public ProfileService(UserManager<User> userManager, IUnitOfWorkFactory unitOfWorkFactory, IMapper iMapper)
+        private readonly ICarService _autoRiaCarService;
+
+        public ProfileService(UserManager<User> userManager, IUnitOfWorkFactory unitOfWorkFactory, IMapper iMapper, ICarService autoRiaCarService)
         {
             _userManager = userManager;
             _unitOfWorkFactory = unitOfWorkFactory;
             _iMapper = iMapper;
+            _autoRiaCarService = autoRiaCarService;
         }
 
         public async Task EditCustomerProfile(CustomerDTO customerDTO)
@@ -60,7 +65,7 @@ namespace CarService.Api.Services
             }
         }
 
-        public async Task<UserDTO> GetUserDTO(string email)
+        public async Task<Models.DTO.UserDTO> GetUserDTO(string email)
         {
             User user = await _userManager.FindByEmailAsync(email);
 
@@ -102,6 +107,44 @@ namespace CarService.Api.Services
                 }
             }
         }
+
+        public async Task DeleteCarFromFavorites(string email, int autoRiaId)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+                {
+                    IRepository<Favorite> customerAutos = unitOfWork.Repository<Favorite>();  
+                    customerAutos.Delete(new Favorite {CustomerId = user.Id, AutoRiaId = autoRiaId });
+
+                    unitOfWork.Save();
+                }
+            }
+        }
+
+        public async Task<IEnumerable<BaseCarInfo>> GetAllCarsFromFavorites(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+                {
+                    IRepository<Favorite> favorites = unitOfWork.Repository<Favorite>();  
+                    
+                    var carIds = from f in favorites.Query()
+                                 where f.CustomerId == user.Id
+                                 select f.AutoRiaId;
+
+                    return await _autoRiaCarService.GetBaseInfoAboutCars(carIds);
+                }
+            }
+            else return null;
+        }
+
+
 
         public async Task<IEnumerable<ProfileOrderInfo>> GetUserCreatedOrders(string email)
         {
