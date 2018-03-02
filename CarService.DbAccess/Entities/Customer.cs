@@ -9,14 +9,14 @@ namespace CarService.DbAccess.Entities
         public string CardNumber { get; set; }
 
         public ICollection<Order> OrdersMade { get; set; }
-        public ICollection<CustomerAuto> CustomerAutoes { get; set; }
         public ICollection<Review> Reviews { get; set; }
         public ICollection<Dialog> Dialogs { get; set; }
+        public ICollection<Favorite> Favorites { get; set; }
 
         public Customer()
         {
             OrdersMade = new Collection<Order>();
-            CustomerAutoes = new Collection<CustomerAuto>();
+            Favorites = new Collection<Favorite>();
             Reviews = new Collection<Review>();
             Dialogs = new Collection<Dialog>();
         }

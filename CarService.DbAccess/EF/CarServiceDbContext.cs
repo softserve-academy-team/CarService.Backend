@@ -18,6 +18,7 @@ namespace CarService.DbAccess.EF
         public DbSet<Dialog> Dialogs { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Invitation> Invitations { get; set; }
+        public DbSet<Favorite> Favorites { get; set; }
 
         public CarServiceDbContext(DbContextOptions options) : base(options)
         {
@@ -35,16 +36,9 @@ namespace CarService.DbAccess.EF
                 .HasForeignKey<Review>(r => r.OrderId);
 
             // ManyToMany(Customer, Auto)
-            modelBuilder.Entity<CustomerAuto>()
-                .HasKey(ca => new { ca.CustomerId, ca.AutoId });
+            modelBuilder.Entity<Favorite>()
+                .HasKey(ca => new { ca.CustomerId, ca.AutoRiaId });
 
-            // // Configuring relationship PK(Customer.Id) - FK(CustomerAuto.CustomerId)
-            // modelBuilder.Entity<Customer>()
-            //     .HasMany(c => c.CustomerAutoes)
-            //     .WithOne(c => c.Customer)
-            //     .HasPrincipalKey(c => c.Id)
-            //     .HasForeignKey(c => c.CustomerId);
-            
             // Unique constraint for Auto.AutoRiaId
             modelBuilder.Entity<Auto>()
                 .HasAlternateKey(a => a.AutoRiaId)
@@ -62,20 +56,11 @@ namespace CarService.DbAccess.EF
                .WithMany(t => t.ReceiversTransactions)
                .HasForeignKey(t => t.ReceiverId);
 
-            // // Unique constraint for User.Id
-            // modelBuilder.Entity<User>()
-            //    .HasAlternateKey(u => u.Id)
-            //    .HasName("AlternateKey_Id");
+            //AutoIncrement for Favorite.Id
 
-            // // AutoIncrement for User.Id
-            // modelBuilder.Entity<User>()
-            //     .Property(u => u.Id)
-            //     .ValueGeneratedOnAdd();
-
-            // // AutoIncrement for CustomerAuto.Id
-            // modelBuilder.Entity<CustomerAuto>()
-            //     .Property(u => u.Id)
-            //     .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Favorite>()
+                .Property(f => f.Id)
+                .ValueGeneratedOnAdd();
         }
     }
 }
