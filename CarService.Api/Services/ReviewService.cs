@@ -116,7 +116,7 @@ namespace CarService.Api.Services
         }
 
 
-        public async Task<ReviewDto> GetReview(string email, int orderId)
+        public async Task<ReviewDto> GetReview(string email, int reviewId)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
@@ -128,14 +128,12 @@ namespace CarService.Api.Services
                 var orderRepository = unitOfWork.Repository<Order>();
                 var autoRepository = unitOfWork.Repository<Auto>();
 
-                var order = await orderRepository.GetAsync(orderId);
-
-                if (order == null || (order.CustomerId != user.Id && order.MechanicId != user.Id))
+                var review = await reviewRepository.GetAsync(reviewId);
+                if (review == null)
                     return null;
 
-                var review = await reviewRepository.GetAsync((int)order.ReviewId);
-
-                if (review == null)
+                var order = await orderRepository.GetAsync((int)review.OrderId);
+                if (order == null || (order.CustomerId != user.Id && order.MechanicId != user.Id))
                     return null;
 
                 var auto = await autoRepository.GetAsync((int)order.AutoId);

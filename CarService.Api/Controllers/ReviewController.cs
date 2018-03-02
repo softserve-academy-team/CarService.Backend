@@ -58,12 +58,12 @@ namespace CarService.Api.Controllers
         }
 
         [Authorize]
-        [HttpGet("review-info/{orderId}")]
-        public async Task<IActionResult> GetMechanicOrderInfo(int orderId)
+        [HttpGet("review-info/{reviewId}")]
+        public async Task<IActionResult> GetReviewInfo(int reviewId)
         {
             string email = User.Identity.Name;
 
-            var review = await _reviewService.GetReview(email, orderId);
+            var review = await _reviewService.GetReview(email, reviewId);
 
             if (review == null)
                 return NotFound();
