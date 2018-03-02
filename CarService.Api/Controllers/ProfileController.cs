@@ -253,18 +253,7 @@ namespace CarService.Api.Controllers
             if (email == null)
                 return Unauthorized();
 
-            // IEnumerable<ProfileReviewInfo> reviewList = await _profileService.GetUserBoughtReviews(email);
-            var reviewList = new List<ProfileReviewInfo>
-            {
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "http://volkswagen-polo.infocar.ua/img/colors/5405-bg.jpg", City = "Kyiv"},
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "http://volkswagen-polo.infocar.ua/img/colors/5405-bg.jpg", City = "Kyiv"},
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "http://volkswagen-polo.infocar.ua/img/colors/5405-bg.jpg", City = "Kyiv"},
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "http://volkswagen-polo.infocar.ua/img/colors/5405-bg.jpg", City = "Kyiv"},
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "http://volkswagen-polo.infocar.ua/img/colors/5405-bg.jpg", City = "Kyiv"},
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "http://volkswagen-polo.infocar.ua/img/colors/5405-bg.jpg", City = "Kyiv"},
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "http://volkswagen-polo.infocar.ua/img/colors/5405-bg.jpg", City = "Kyiv"}
-
-            };
+            IEnumerable<ProfileReviewInfo> reviewList = await _profileService.GetUserBoughtReviews(email);
 
             return Ok(reviewList);
         }
@@ -277,20 +266,7 @@ namespace CarService.Api.Controllers
             if (email == null)
                 return Unauthorized();
 
-            // IEnumerable<ProfileReviewInfo> reviewList = await _profileService.GetUserCreatedReviews(email);
-
-            var reviewList = new List<ProfileReviewInfo>
-            {
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "https://narscars.com.ua/content/rent/cars/189/polo-sedan-385x230-3758.jpg", City = "Kyiv"},
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "https://narscars.com.ua/content/rent/cars/189/polo-sedan-385x230-3758.jpg", City = "Kyiv"},
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "https://narscars.com.ua/content/rent/cars/189/polo-sedan-385x230-3758.jpg", City = "Kyiv"},
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "https://narscars.com.ua/content/rent/cars/189/polo-sedan-385x230-3758.jpg", City = "Kyiv"},
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "https://narscars.com.ua/content/rent/cars/189/polo-sedan-385x230-3758.jpg", City = "Kyiv"},
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "https://narscars.com.ua/content/rent/cars/189/polo-sedan-385x230-3758.jpg", City = "Kyiv"},
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "https://narscars.com.ua/content/rent/cars/189/polo-sedan-385x230-3758.jpg", City = "Kyiv"},
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "https://narscars.com.ua/content/rent/cars/189/polo-sedan-385x230-3758.jpg", City = "Kyiv"},
-                new ProfileReviewInfo { ReviewId = 1, Date = "14-03-2018", MarkName="Volkswagen", ModelName = "Polo", Year = 2012, PhotoLink = "https://narscars.com.ua/content/rent/cars/189/polo-sedan-385x230-3758.jpg", City = "Kyiv"},
-            };
+            IEnumerable<ProfileReviewInfo> reviewList = await _profileService.GetUserCreatedReviews(email);
             return Ok(reviewList);
         }
     }
