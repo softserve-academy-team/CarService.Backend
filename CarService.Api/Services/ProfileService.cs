@@ -87,7 +87,7 @@ namespace CarService.Api.Services
             return null;
         }
 
-        public async Task AddCarToFavorites(string email, FavoritesDto body)
+        public async Task AddCarToFavorites(string email, int autoRiaId)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
@@ -95,12 +95,8 @@ namespace CarService.Api.Services
             {
                 using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
                 {
-                    IRepository<Auto> autos = unitOfWork.Repository<Auto>();
-                    var auto = new Auto {AutoRiaId = body.autoRiaId, Info = body.info};
-                    autos.Add(auto);
-
-                    IRepository<CustomerAuto> customerAutos = unitOfWork.Repository<CustomerAuto>();  
-                    customerAutos.Add(new CustomerAuto {CustomerId = user.Id, AutoId = auto.Id });
+                    IRepository<Favorite> customerAutos = unitOfWork.Repository<Favorite>();  
+                    customerAutos.Add(new Favorite {CustomerId = user.Id, AutoRiaId = autoRiaId });
 
                     unitOfWork.Save();
                 }

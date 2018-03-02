@@ -9,8 +9,8 @@ namespace CarService.Api.Services
         Task EditCustomerProfile(CustomerDTO customerDTO);
         Task EditMechanicProfile(MechanicDTO mechanicDTO);
         Task<UserDTO> GetUserDTO(string email);
-        Task AddCarToFavorites(string email, FavoritesDto body);
         Task<IEnumerable<ProfileOrderInfo>> GetUserCreatedOrders(string email);
         Task<IEnumerable<ProfileOrderInfo>> GetUserAppliedOrders(string email);
+        Task AddCarToFavorites(string email, int autoRiaId);
     }
 }

@@ -56,13 +56,18 @@ namespace CarService.Api.Controllers
         [Authorize]
         [HttpPost]
         [Route("add")]
-        public async Task<IActionResult> AddCarToFavourites([FromBody] FavoritesDto body)
+        public async Task<IActionResult> AddCarToFavourites()
         {
+            string autoRiaId;
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                autoRiaId = await reader.ReadToEndAsync();
+            }
             string email = User.Identity.Name;
             if (email == null)
                 return BadRequest(); //TODO: authorization failed
 
-            await _profileService.AddCarToFavorites(email, body);
+            await _profileService.AddCarToFavorites(email, int.Parse(autoRiaId));
             return Ok();
         }
 
