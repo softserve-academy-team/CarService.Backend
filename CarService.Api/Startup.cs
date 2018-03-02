@@ -71,6 +71,7 @@ namespace CarService.Api
             services.AddScoped<IAccountService, AccountService>();
             services.AddTransient<IEmailService, EmailService>();
             services.AddScoped<IProfileService, ProfileService>();
+            services.AddScoped<IOrderService, OrderService>();
 
             services.AddScoped<IUnitOfWorkFactory>(provider => new SqlUnitOfWorkFactory(options =>
             {

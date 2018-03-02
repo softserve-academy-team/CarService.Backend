@@ -10,6 +10,7 @@ namespace CarService.DbAccess.Entities
         public int Id { get; set; }
         public DateTime Date { get; set; }
         public OrderStatus Status { get; set; }
+        public string Description { get; set; }
 
         public int? CustomerId { get; set; }
         public Customer Customer { get; set; }
