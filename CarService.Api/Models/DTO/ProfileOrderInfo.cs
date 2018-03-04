@@ -10,7 +10,7 @@ namespace CarService.Api.Models.DTO
         public string Status { get; set; }
         public string MarkName { get; set; }
         public string ModelName { get; set; }
-        public string Year { get; set; }
+        public int Year { get; set; }
         public string PhotoLink { get; set; }
     }
 }
