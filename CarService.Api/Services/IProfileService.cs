@@ -7,8 +7,8 @@ namespace CarService.Api.Services
 {
     public interface IProfileService
     {
-        Task EditCustomerProfile(CustomerDTO customerDTO);
-        Task EditMechanicProfile(MechanicDTO mechanicDTO);
+        Task EditCustomerProfile(string email, CustomerDTO customerDTO);
+        Task EditMechanicProfile(string email, MechanicDTO mechanicDTO);
         Task<Models.DTO.UserDTO> GetUserDTO(string email);
         Task<IEnumerable<ProfileOrderInfo>> GetUserCreatedOrders(string email);
         Task<IEnumerable<ProfileOrderInfo>> GetUserAppliedOrders(string email);

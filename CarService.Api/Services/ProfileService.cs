@@ -27,9 +27,9 @@ namespace CarService.Api.Services
             _autoRiaCarService = autoRiaCarService;
         }
 
-        public async Task EditCustomerProfile(CustomerDTO customerDTO)
+        public async Task EditCustomerProfile(string email, CustomerDTO customerDTO)
         {
-            var user = await _userManager.FindByEmailAsync(customerDTO.Email);
+            var user = await _userManager.FindByEmailAsync(email);
 
             if (user != null)
             {
@@ -41,14 +41,14 @@ namespace CarService.Api.Services
                     _iMapper.Map<CustomerDTO, Customer>(customerDTO, customer);
 
                     repository.Attach(customer);
-                    unitOfWork.Save();
+                    await unitOfWork.SaveAsync();
                 }
             }
         }
 
-        public async Task EditMechanicProfile(MechanicDTO mechanicDTO)
+        public async Task EditMechanicProfile(string email, MechanicDTO mechanicDTO)
         {
-            var user = await _userManager.FindByEmailAsync(mechanicDTO.Email);
+            var user = await _userManager.FindByEmailAsync(email);
 
             if (user != null)
             {
@@ -60,7 +60,7 @@ namespace CarService.Api.Services
                     _iMapper.Map<MechanicDTO, Mechanic>(mechanicDTO, mechanic);
 
                     repository.Attach(mechanic);
-                    unitOfWork.Save();
+                    await unitOfWork.SaveAsync();
                 }
             }
         }
@@ -103,7 +103,7 @@ namespace CarService.Api.Services
                     IRepository<Favorite> customerAutos = unitOfWork.Repository<Favorite>();
                     customerAutos.Add(new Favorite { CustomerId = user.Id, AutoRiaId = autoRiaId });
 
-                    unitOfWork.Save();
+                    await unitOfWork.SaveAsync();
                 }
             }
         }
@@ -119,7 +119,7 @@ namespace CarService.Api.Services
                     IRepository<Favorite> customerAutos = unitOfWork.Repository<Favorite>();
                     customerAutos.Delete(new Favorite { CustomerId = user.Id, AutoRiaId = autoRiaId });
 
-                    unitOfWork.Save();
+                    await unitOfWork.SaveAsync();
                 }
             }
         }
