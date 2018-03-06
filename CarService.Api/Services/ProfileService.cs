@@ -27,9 +27,9 @@ namespace CarService.Api.Services
             _autoRiaCarService = autoRiaCarService;
         }
 
-        public async Task EditCustomerProfile(CustomerDTO customerDTO)
+        public async Task EditCustomerProfile(string email, CustomerDTO customerDTO)
         {
-            var user = await _userManager.FindByEmailAsync(customerDTO.Email);
+            var user = await _userManager.FindByEmailAsync(email);
 
             if (user != null)
             {
@@ -41,14 +41,14 @@ namespace CarService.Api.Services
                     _iMapper.Map<CustomerDTO, Customer>(customerDTO, customer);
 
                     repository.Attach(customer);
-                    unitOfWork.Save();
+                    await unitOfWork.SaveAsync();
                 }
             }
         }
 
-        public async Task EditMechanicProfile(MechanicDTO mechanicDTO)
+        public async Task EditMechanicProfile(string email, MechanicDTO mechanicDTO)
         {
-            var user = await _userManager.FindByEmailAsync(mechanicDTO.Email);
+            var user = await _userManager.FindByEmailAsync(email);
 
             if (user != null)
             {
@@ -60,7 +60,7 @@ namespace CarService.Api.Services
                     _iMapper.Map<MechanicDTO, Mechanic>(mechanicDTO, mechanic);
 
                     repository.Attach(mechanic);
-                    unitOfWork.Save();
+                    await unitOfWork.SaveAsync();
                 }
             }
         }
@@ -103,7 +103,7 @@ namespace CarService.Api.Services
                     IRepository<Favorite> customerAutos = unitOfWork.Repository<Favorite>();
                     customerAutos.Add(new Favorite { CustomerId = user.Id, AutoRiaId = autoRiaId });
 
-                    unitOfWork.Save();
+                    await unitOfWork.SaveAsync();
                 }
             }
         }
@@ -119,7 +119,7 @@ namespace CarService.Api.Services
                     IRepository<Favorite> customerAutos = unitOfWork.Repository<Favorite>();
                     customerAutos.Delete(new Favorite { CustomerId = user.Id, AutoRiaId = autoRiaId });
 
-                    unitOfWork.Save();
+                    await unitOfWork.SaveAsync();
                 }
             }
         }
@@ -164,34 +164,76 @@ namespace CarService.Api.Services
 
         public async Task<IEnumerable<ProfileOrderInfo>> GetUserCreatedOrders(string email)
         {
-            return new List<ProfileOrderInfo>
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return null;
+
+            var createdOrders = new List<ProfileOrderInfo>();
+
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Canceled.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Active.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Pending.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2012", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2010", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"}
-            };
+                var orderRepository = unitOfWork.Repository<Order>();
+                var autoRepository = unitOfWork.Repository<Auto>();
+
+                var orders = from o in orderRepository.Query()
+                             where o.CustomerId == user.Id
+                             select o;
+
+                foreach (var order in orders)
+                {
+                    var auto = autoRepository.Get((int)order.AutoId);
+                    createdOrders.Add(new ProfileOrderInfo
+                    {
+                        OrderId = order.Id,
+                        Date = order.Date.ToString("dd-MM-yyyy"),
+                        Status = order.Status.ToString(),
+                        MarkName = auto?.MarkName ?? "Mark",
+                        ModelName = auto?.ModelName ?? "Model",
+                        Year = auto?.Year ?? 1970,
+                        PhotoLink = auto?.PhotoLink
+                    });
+                }
+            }
+
+            return createdOrders;
         }
 
         public async Task<IEnumerable<ProfileOrderInfo>> GetUserAppliedOrders(string email)
         {
-            return new List<ProfileOrderInfo>
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return null;
+
+            var appliedOrders = new List<ProfileOrderInfo>();
+
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Canceled.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Active.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Pending.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2008", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2012", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"},
-                new ProfileOrderInfo { OrderId = 12345, Date = DateTime.Now.ToString("dd-MM-yyyy"), Status = OrderStatus.Done.ToString(), MarkName = "Mercedes", ModelName = "G250", Year = "2010", PhotoLink = "https://img-c.drive.ru/models.photos/0000/000/000/000/de2/48d45147112b1286-large.jpg"}
-            };
+                var orderRepository = unitOfWork.Repository<Order>();
+                var autoRepository = unitOfWork.Repository<Auto>();
+
+                var orders = from o in orderRepository.Query()
+                             where o.MechanicId == user.Id
+                             select o;
+
+                foreach (var order in orders)
+                {
+                    var auto = autoRepository.Get((int)order.AutoId);
+                    appliedOrders.Add(new ProfileOrderInfo
+                    {
+                        OrderId = order.Id,
+                        Date = order.Date.ToString("dd-MM-yyyy"),
+                        Status = order.Status.ToString(),
+                        MarkName = auto?.MarkName ?? "Mark",
+                        ModelName = auto?.ModelName ?? "Model",
+                        Year = auto?.Year ?? 1970,
+                        PhotoLink = auto?.PhotoLink
+                    });
+                }
+            }
+
+            return appliedOrders;
         }
     }
 }

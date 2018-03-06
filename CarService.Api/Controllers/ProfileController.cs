@@ -39,8 +39,15 @@ namespace CarService.Api.Controllers
         [HttpPut]
         [Route("edit/customer")]
         public async Task<IActionResult> EditCustomerInfo([FromBody] CustomerDTO customerDTO)
-        {
-            await _profileService.EditCustomerProfile(customerDTO);
+        { 
+            if (!ModelState.IsValid)
+                return BadRequest();
+            
+            string email = User.Identity.Name;
+            if (email == null)
+                return BadRequest();
+
+            await _profileService.EditCustomerProfile(email, customerDTO);
             return Ok();
         }
 
@@ -49,7 +56,14 @@ namespace CarService.Api.Controllers
         [Route("edit/mechanic")]
         public async Task<IActionResult> EditMechanicInfo([FromBody] MechanicDTO mechanicDTO)
         {
-            await _profileService.EditMechanicProfile(mechanicDTO);
+            if(!ModelState.IsValid)
+                return BadRequest();
+
+            string email = User.Identity.Name;
+            if (email == null)
+                return BadRequest();
+
+            await _profileService.EditMechanicProfile(email, mechanicDTO);
             return Ok();
         }
 
