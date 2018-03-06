@@ -73,7 +73,7 @@ namespace CarService.Api.Controllers
         }
 
         [Authorize]
-        [HttpDelete]
+        [HttpPost]
         [Route("favorites/delete")]
         public async Task<IActionResult> DeleteCarFromFavorites()
         {
@@ -105,6 +105,26 @@ namespace CarService.Api.Controllers
                 return BadRequest();
 
             return Ok(cars);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("favorites/isCarInFavorites")]
+        public async Task<IActionResult> IsCarInFavorites()
+        {
+            string autoRiaId;
+            using (StreamReader reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                autoRiaId = await reader.ReadToEndAsync();
+            }
+
+            string email = User.Identity.Name;
+            if (email == null)
+                return BadRequest();
+
+            bool isCar = await _profileService.IsCarInFavorites(email, int.Parse(autoRiaId));
+
+            return Ok(isCar);
         }
 
         [Authorize]

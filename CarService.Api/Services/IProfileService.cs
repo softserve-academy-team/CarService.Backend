@@ -15,5 +15,6 @@ namespace CarService.Api.Services
         Task AddCarToFavorites(string email, int autoRiaId);
         Task DeleteCarFromFavorites(string email, int autoRiaId);
         Task<IEnumerable<BaseCarInfo>> GetAllCarsFromFavorites(string email);
+        Task<bool> IsCarInFavorites(string email, int autoRiaId);
     }
 }

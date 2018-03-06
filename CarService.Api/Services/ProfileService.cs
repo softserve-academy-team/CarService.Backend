@@ -100,8 +100,8 @@ namespace CarService.Api.Services
             {
                 using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
                 {
-                    IRepository<Favorite> customerAutos = unitOfWork.Repository<Favorite>();  
-                    customerAutos.Add(new Favorite {CustomerId = user.Id, AutoRiaId = autoRiaId });
+                    IRepository<Favorite> customerAutos = unitOfWork.Repository<Favorite>();
+                    customerAutos.Add(new Favorite { CustomerId = user.Id, AutoRiaId = autoRiaId });
 
                     unitOfWork.Save();
                 }
@@ -116,8 +116,8 @@ namespace CarService.Api.Services
             {
                 using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
                 {
-                    IRepository<Favorite> customerAutos = unitOfWork.Repository<Favorite>();  
-                    customerAutos.Delete(new Favorite {CustomerId = user.Id, AutoRiaId = autoRiaId });
+                    IRepository<Favorite> customerAutos = unitOfWork.Repository<Favorite>();
+                    customerAutos.Delete(new Favorite { CustomerId = user.Id, AutoRiaId = autoRiaId });
 
                     unitOfWork.Save();
                 }
@@ -132,8 +132,8 @@ namespace CarService.Api.Services
             {
                 using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
                 {
-                    IRepository<Favorite> favorites = unitOfWork.Repository<Favorite>();  
-                    
+                    IRepository<Favorite> favorites = unitOfWork.Repository<Favorite>();
+
                     var carIds = from f in favorites.Query()
                                  where f.CustomerId == user.Id
                                  select f.AutoRiaId;
@@ -144,7 +144,23 @@ namespace CarService.Api.Services
             else return null;
         }
 
+        public async Task<bool> IsCarInFavorites(string email, int autoRiaId)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
 
+            if (user != null)
+            {
+                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+                {
+                    IRepository<Favorite> favorites = unitOfWork.Repository<Favorite>();
+
+                    if (favorites.Find(f => f.CustomerId == user.Id && f.AutoRiaId == autoRiaId) != null)
+                        return true;
+                    else return false;
+                }
+            }
+            else return false;
+        }
 
         public async Task<IEnumerable<ProfileOrderInfo>> GetUserCreatedOrders(string email)
         {
