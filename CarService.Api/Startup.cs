@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using AutoMapper;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace CarService.Api
 {
@@ -122,6 +123,12 @@ namespace CarService.Api
 
             services.AddMvc();
             services.AddAutoMapper(x => x.AddProfile(new MappingProfile()));
+
+            services.AddSwaggerGen(swagger =>
+            {
+                swagger.SwaggerDoc("v1", new Info { Title = "Car Service Web API", Version = "v1" });
+                // swagger.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "SwaggerCarService.xml"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -142,6 +149,12 @@ namespace CarService.Api
                 app.UseRewriter(new RewriteOptions().AddRedirectToHttps(StatusCodes.Status302Found, httpsPort));
             }
             app.UseCors("AllowAllOrigin");
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Car Service Web API");
+            });
 
             app.UseMvc();
         }
