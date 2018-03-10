@@ -27,7 +27,7 @@ namespace CarService.Api.Services
             _autoRiaCarService = autoRiaCarService;
         }
 
-        public async Task EditCustomerProfile(string email, CustomerDTO customerDTO)
+        public async Task EditCustomerProfile(string email, CustomerDto customerDto)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
@@ -38,7 +38,7 @@ namespace CarService.Api.Services
                     IRepository<Customer> repository = unitOfWork.Repository<Customer>();
                     var customer = repository.Get(user.Id);
 
-                    _iMapper.Map<CustomerDTO, Customer>(customerDTO, customer);
+                    _iMapper.Map<CustomerDto, Customer>(customerDto, customer);
 
                     repository.Attach(customer);
                     await unitOfWork.SaveAsync();
@@ -46,7 +46,7 @@ namespace CarService.Api.Services
             }
         }
 
-        public async Task EditMechanicProfile(string email, MechanicDTO mechanicDTO)
+        public async Task EditMechanicProfile(string email, MechanicDto mechanicDto)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
@@ -57,7 +57,7 @@ namespace CarService.Api.Services
                     IRepository<Mechanic> repository = unitOfWork.Repository<Mechanic>();
                     var mechanic = repository.Get(user.Id);
 
-                    _iMapper.Map<MechanicDTO, Mechanic>(mechanicDTO, mechanic);
+                    _iMapper.Map<MechanicDto, Mechanic>(mechanicDto, mechanic);
 
                     repository.Attach(mechanic);
                     await unitOfWork.SaveAsync();
@@ -65,7 +65,7 @@ namespace CarService.Api.Services
             }
         }
 
-        public async Task<Models.DTO.UserDTO> GetUserDTO(string email)
+        public async Task<Models.DTO.UserDto> GetUserDTO(string email)
         {
             User user = await _userManager.FindByEmailAsync(email);
 
@@ -77,7 +77,7 @@ namespace CarService.Api.Services
                     {
                         IRepository<Mechanic> repository = unitOfWork.Repository<Mechanic>();
                         var mechanic = repository.Get(user.Id);
-                        return _iMapper.Map<Mechanic, MechanicDTO>(mechanic);
+                        return _iMapper.Map<Mechanic, MechanicDto>(mechanic);
                     }
                 }
 
@@ -85,7 +85,7 @@ namespace CarService.Api.Services
                 {
                     IRepository<Customer> repository = unitOfWork.Repository<Customer>();
                     var customer = repository.Get(user.Id);
-                    return _iMapper.Map<Customer, CustomerDTO>(customer);
+                    return _iMapper.Map<Customer, CustomerDto>(customer);
                 }
             }
 

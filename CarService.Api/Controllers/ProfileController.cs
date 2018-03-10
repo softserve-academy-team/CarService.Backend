@@ -38,7 +38,7 @@ namespace CarService.Api.Controllers
         [Authorize]
         [HttpPut]
         [Route("edit/customer")]
-        public async Task<IActionResult> EditCustomerInfo([FromBody] CustomerDTO customerDTO)
+        public async Task<IActionResult> EditCustomerInfo([FromBody] CustomerDto customerDto)
         { 
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -47,14 +47,14 @@ namespace CarService.Api.Controllers
             if (email == null)
                 return BadRequest();
 
-            await _profileService.EditCustomerProfile(email, customerDTO);
+            await _profileService.EditCustomerProfile(email, customerDto);
             return Ok();
         }
 
         [Authorize]
         [HttpPut]
         [Route("edit/mechanic")]
-        public async Task<IActionResult> EditMechanicInfo([FromBody] MechanicDTO mechanicDTO)
+        public async Task<IActionResult> EditMechanicInfo([FromBody] MechanicDto mechanicDto)
         {
             if(!ModelState.IsValid)
                 return BadRequest();
@@ -63,7 +63,7 @@ namespace CarService.Api.Controllers
             if (email == null)
                 return BadRequest();
 
-            await _profileService.EditMechanicProfile(email, mechanicDTO);
+            await _profileService.EditMechanicProfile(email, mechanicDto);
             return Ok();
         }
 
