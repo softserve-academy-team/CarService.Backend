@@ -8,6 +8,9 @@ namespace CarService.DbAccess.Entities
     {
         public int Id { get; set; }
         public int AutoRiaId { get; set; }
+        public int TypeId { get; set; }
+        public int MarkId { get; set; }
+        public int ModelId { get; set; }
         public string MarkName { get; set; }
         public string ModelName { get; set; }
         public int Year { get; set; }
