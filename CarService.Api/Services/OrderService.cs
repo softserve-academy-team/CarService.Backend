@@ -1,12 +1,14 @@
-
 using System;
 using System.Threading.Tasks;
-using AutoMapper;
-using CarService.Api.Models.DTO;
-using CarService.DbAccess.DAL;
-using CarService.DbAccess.Entities;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using CarService.DbAccess.Entities;
+using CarService.DbAccess.DAL;
+using CarService.Api.Models;
+using CarService.Api.Models.DTO;
 
 namespace CarService.Api.Services
 {
@@ -58,6 +60,49 @@ namespace CarService.Api.Services
 
                     unitOfWork.Save();
                 }
+            }
+        }
+
+        public async Task<IEnumerable<string>> GetCitiesAsync()
+        {
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            {
+                var orderRepository = unitOfWork.Repository<Order>();
+                var autoRepository = unitOfWork.Repository<Auto>();
+                return await orderRepository.Query().Join(autoRepository.Query(), x => x.AutoId, y => y.Id, (x, y) => y.City).Distinct().ToListAsync();
+            }
+        }
+
+        public async Task<IEnumerable<BaseOrderInfo>> GetOrdersAsync(OrderSearchModel orderSearchModel, int skip, int take)
+        {
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            {
+                var orders = unitOfWork.Repository<Order>().Query();
+                var autos = unitOfWork.Repository<Auto>().Query();
+                var customers = unitOfWork.Repository<Customer>().Query();
+
+                var query = from o in orders
+                            join a in autos on o.AutoId equals a.Id
+                            join c in customers on o.CustomerId equals c.Id
+                            where (orderSearchModel.TypeId > 0 ? a.TypeId == orderSearchModel.TypeId : true)
+                                && (orderSearchModel.MarkId > 0 ? a.MarkId == orderSearchModel.MarkId : true)
+                                && (orderSearchModel.ModelId > 0 ? a.ModelId == orderSearchModel.ModelId : true)
+                                && (!string.IsNullOrWhiteSpace(orderSearchModel.City) ? a.City == orderSearchModel.City : true)
+                                && (orderSearchModel.MinYear > 0 ? a.Year >= orderSearchModel.MinYear : true)
+                                && (orderSearchModel.MaxYear > 0 ? a.Year <= orderSearchModel.MaxYear : true)
+                            select new BaseOrderInfo
+                            {
+                                OrderId = o.Id,
+                                CustomerId = c.Id,
+                                CustomerFirstName = c.FirstName,
+                                CustomerLastName = c.LastName,
+                                AutoId = a.Id,
+                                MarkName = a.MarkName,
+                                ModelName = a.ModelName,
+                                CarPhotoUrl = a.PhotoLink
+                            };
+
+                return await query.Skip(skip).Take(take).ToListAsync();
             }
         }
     }
