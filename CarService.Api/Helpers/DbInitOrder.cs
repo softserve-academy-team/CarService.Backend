@@ -43,13 +43,16 @@ namespace CarService.Api.Helpers
                         ModelName = modelName[random.Next(0, modelName.Length)],
                         Year = random.Next(2000, 2019),
                         City = city[random.Next(0, city.Length)],
-                        PhotoLink = photoLink[random.Next(0, photoLink.Length)]
+                        PhotoLink = photoLink[random.Next(0, photoLink.Length)],
+                        TypeId = random.Next(1, 5),
+                        MarkId = random.Next(1, 50),
+                        ModelId = random.Next(1, 50),                        
                     };
                     context.Autos.Add(auto);
 
                     var order = new Order
                     {
-                        CustomerId = random.Next(5, 8),
+                        CustomerId = random.Next(1, 2),
                         AutoId = auto.Id,
                         Description = ABC.RandomString(random.Next(8, 20)),
                         Date = DateTime.Now.ToUniversalTime()
