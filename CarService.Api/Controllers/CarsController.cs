@@ -6,6 +6,7 @@ using CarService.Api.Services;
 
 namespace CarService.Api.Controllers
 {
+    [Produces("application/json")]
     [Route("api/[controller]")]
     public class CarsController : Controller
     {
@@ -16,7 +17,11 @@ namespace CarService.Api.Controllers
             _carService = carService;
         }
 
-        // GET api/cars/base-info/random
+        /// <summary>Get random cars from AutoRia</summary>
+        /// <returns>Return random cars from AutoRia</returns>
+        /// <remarks>TODO detail description</remarks>
+        /// <response code="200">Return list random cars</response>
+        /// <response code="404">Not found response</response> 
         [HttpGet]
         [Route("base-info/random")]
         public async Task<IActionResult> GetRandomCars()
@@ -33,7 +38,12 @@ namespace CarService.Api.Controllers
             }
         }
 
-        // GET api/cars/detailed-info/{autoId}
+        /// <summary>Get car from AutoRia by Id</summary>
+        /// <param name="autoId">Id auto on AutoRia</param> 
+        /// <returns>Return car detail information</returns>
+        /// <remarks>TODO detail description</remarks>
+        /// <response code="200">Return car by Id</response>
+        /// <response code="404">Not found response</response> 
         [HttpGet("detailed-info/{autoId}")]
         public async Task<IActionResult> GetDetailedCarInfo(int autoId)
         {
@@ -48,8 +58,15 @@ namespace CarService.Api.Controllers
             }
         }
 
-        // GET api/cars/detailed-info/{autoId}/photos
+        /// <summary>Get all car photos</summary>
+        /// <param name="autoId">Id auto on AutoRia</param> 
+        /// <returns>Return all car photos urls</returns>
+        /// <remarks>TODO detail description</remarks>
+        /// <response code="200">Return car photos by Id</response>
+        /// <response code="404">Not found response</response> 
         [HttpGet("detailed-info/{autoId}/photos")]
+        // [ProducesResponseType(typeof(CarsController), 200)]
+        // [ProducesResponseType(typeof(CarsController), 404)]
         public async Task<IActionResult> GetCarPhotos(int autoId)
         {
             try
@@ -63,7 +80,11 @@ namespace CarService.Api.Controllers
             }
         }
 
-        // GET api/cars/dropdown/types  
+        /// <summary>Get cars type</summary>
+        /// <returns>Return all cars type</returns>
+        /// <remarks>TODO detail description</remarks>
+        /// <response code="200">Return cars type</response>
+        /// <response code="404">Not found response</response> 
         [HttpGet("dropdown/types")]
         public async Task<IActionResult> GetCarTypes()
         {
@@ -77,6 +98,7 @@ namespace CarService.Api.Controllers
                 return NotFound();
             }
         }
+
         // GET api/cars/dropdown/makes/{categoryId} 
         [HttpGet("dropdown/makes/{categoryId}")]
         public async Task<IActionResult> GetMakes([FromRoute]int categoryId)
@@ -91,7 +113,7 @@ namespace CarService.Api.Controllers
                 return NotFound();
             }
         }
-       
+
         // GET api/cars/dropdown/models/{categoryId}/{makeId} 
         [HttpGet("dropdown/models/{categoryId}/{makeId}")]
         public async Task<IActionResult> GetModels([FromRoute]int categoryId, int makeId)
@@ -107,12 +129,12 @@ namespace CarService.Api.Controllers
             }
         }
 
- // GET api/cars/search
+        // GET api/cars/search
         [HttpGet]
         [Route("search")]
         public async Task<IActionResult> GetListOfCars([FromQuery] string categoryId, string makeId, string modelId)
         {
-          
+
             try
             {
                 var carParameters = new Dictionary<string, string>(){
