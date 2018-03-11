@@ -62,6 +62,22 @@ namespace CarService.Api.Controllers
         }
 
         [Authorize]
+        [HttpGet("mechanic-order-info/{orderId}")]
+        public async Task<IActionResult> GetMechanicOrderInfo(int orderId)
+        {
+            string email = User.Identity.Name;
+            if (email == null)
+                return BadRequest();
+
+            var orderInfo = await _orderService.GetMechanicOrderInfo(email, orderId);
+
+            if (orderInfo == null)
+                return NotFound();
+
+            return Ok(orderInfo);
+        }
+
+        [Authorize]
         [HttpPut("accept-proposition")]
         public async Task<IActionResult> AcceptReviewProposition([FromBody] AcceptReviewProposition acceptReviewProposition)
         {

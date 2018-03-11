@@ -13,6 +13,7 @@ namespace CarService.Api.Services
         Task<IEnumerable<string>> GetCitiesAsync();
         Task<IEnumerable<BaseOrderInfo>> GetOrdersAsync(OrderSearchModel orderSearchModel, int skip, int take);
         Task<CustomerOrderInfo> GetCustomerOrderInfo(string email, int orderId);
+        Task<MechanicOrderInfo> GetMechanicOrderInfo(string email, int orderId);
         Task AcceptReviewProposition(string email, AcceptReviewProposition acceptReviewProposition);
     }
 }

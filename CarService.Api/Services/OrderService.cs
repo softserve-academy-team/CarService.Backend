@@ -150,6 +150,55 @@ namespace CarService.Api.Services
             }
         }
 
+        public async Task<MechanicOrderInfo> GetMechanicOrderInfo(string email, int orderId)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return null;
+
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            {
+                var orderRepository = unitOfWork.Repository<Order>();
+                var propositionRepository = unitOfWork.Repository<ReviewProposition>();
+                var autoRepository = unitOfWork.Repository<Auto>();
+                var customerRepository = unitOfWork.Repository<Customer>();
+
+                var proposition = await propositionRepository.FindAsync(p => p.OrderId == orderId && p.MechanicId == user.Id);
+                
+                if (proposition == null)
+                    return null;
+
+                var order = await orderRepository.GetAsync(orderId);
+                var auto = await autoRepository.GetAsync((int)order.AutoId);
+                var customer = await customerRepository.GetAsync((int)order.CustomerId);
+
+                var orderInfo = new MechanicOrderInfo()
+                {
+                    OrderId = order.Id,
+                    Status = order.Status.ToString(),
+                    Date = order.Date.ToString("dd-MM-yyyy"),
+                    Description = order.Description,
+                    CustomerFirstName = customer.FirstName,
+                    CustomerLastName = customer.LastName,
+                    AutoRiaId = auto.AutoRiaId,
+                    MarkName = auto.MarkName,
+                    ModelName = auto.ModelName,
+                    Year = auto.Year,
+                    PhotoLink = auto.PhotoLink,
+                    PropositionPrice = proposition.Price,
+                    PropositionComment = proposition.Comment,
+                    PropositionDate = proposition.Date.ToString("dd-MM-yyyy"),
+                    IsDoIt = (order.Status ==  0 || (order.Status > 0 && order.MechanicId == user.Id)) ? true : false
+                };
+
+                if (order.Status == OrderStatus.Done)
+                    orderInfo.ReviewId = (int)order.ReviewId;
+
+                return orderInfo;
+            }
+        }
+
         public async Task AcceptReviewProposition(string email, AcceptReviewProposition acceptReviewProposition)
         {
             var user = await _userManager.FindByEmailAsync(email);
