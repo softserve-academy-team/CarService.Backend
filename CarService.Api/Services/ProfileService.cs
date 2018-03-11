@@ -40,7 +40,6 @@ namespace CarService.Api.Services
 
                     _iMapper.Map<CustomerDto, Customer>(customerDto, customer);
 
-                    repository.Attach(customer);
                     await unitOfWork.SaveAsync();
                 }
             }
@@ -59,7 +58,6 @@ namespace CarService.Api.Services
 
                     _iMapper.Map<MechanicDto, Mechanic>(mechanicDto, mechanic);
 
-                    repository.Attach(mechanic);
                     await unitOfWork.SaveAsync();
                 }
             }
@@ -67,25 +65,24 @@ namespace CarService.Api.Services
 
         public async Task<Models.DTO.UserDto> GetUserDTO(string email)
         {
-            User user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByEmailAsync(email);
 
             if (user != null)
             {
-                if (user is Mechanic)
+                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
                 {
-                    using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+                    if (user is Mechanic)
                     {
                         IRepository<Mechanic> repository = unitOfWork.Repository<Mechanic>();
                         var mechanic = repository.Get(user.Id);
                         return _iMapper.Map<Mechanic, MechanicDto>(mechanic);
                     }
-                }
-
-                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
-                {
-                    IRepository<Customer> repository = unitOfWork.Repository<Customer>();
-                    var customer = repository.Get(user.Id);
-                    return _iMapper.Map<Customer, CustomerDto>(customer);
+                    else
+                    {
+                        IRepository<Customer> repository = unitOfWork.Repository<Customer>();
+                        var customer = repository.Get(user.Id);
+                        return _iMapper.Map<Customer, CustomerDto>(customer);
+                    }
                 }
             }
 
@@ -169,8 +166,6 @@ namespace CarService.Api.Services
             if (user == null)
                 return null;
 
-            var createdOrders = new List<ProfileOrderInfo>();
-
             using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
                 var orderRepository = unitOfWork.Repository<Order>();
@@ -178,25 +173,21 @@ namespace CarService.Api.Services
 
                 var orders = from o in orderRepository.Query()
                              where o.CustomerId == user.Id
-                             select o;
+                             join a in autoRepository.Query() on o.AutoId equals a.Id
+                             orderby o.Status, o.Date descending
+                             select new ProfileOrderInfo
+                             {
+                                 OrderId = o.Id,
+                                 Date = o.Date.ToString("dd-MM-yyyy"),
+                                 Status = o.Status.ToString(),
+                                 MarkName = a.MarkName,
+                                 ModelName = a.ModelName,
+                                 Year = a.Year,
+                                 PhotoLink = a.PhotoLink
+                             };
 
-                foreach (var order in orders)
-                {
-                    var auto = autoRepository.Get((int)order.AutoId);
-                    createdOrders.Add(new ProfileOrderInfo
-                    {
-                        OrderId = order.Id,
-                        Date = order.Date.ToString("dd-MM-yyyy"),
-                        Status = order.Status.ToString(),
-                        MarkName = auto?.MarkName ?? "Mark",
-                        ModelName = auto?.ModelName ?? "Model",
-                        Year = auto?.Year ?? 1970,
-                        PhotoLink = auto?.PhotoLink
-                    });
-                }
+                return orders.ToList();
             }
-
-            return createdOrders;
         }
 
         public async Task<IEnumerable<ProfileOrderInfo>> GetUserAppliedOrders(string email)
@@ -206,34 +197,30 @@ namespace CarService.Api.Services
             if (user == null)
                 return null;
 
-            var appliedOrders = new List<ProfileOrderInfo>();
-
             using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
                 var orderRepository = unitOfWork.Repository<Order>();
                 var autoRepository = unitOfWork.Repository<Auto>();
+                var propositionRepository = unitOfWork.Repository<ReviewProposition>();
 
-                var orders = from o in orderRepository.Query()
-                             where o.MechanicId == user.Id
-                             select o;
+                var orders = from r in propositionRepository.Query()
+                             where r.MechanicId == user.Id
+                             join o in orderRepository.Query() on r.OrderId equals o.Id
+                             join a in autoRepository.Query() on o.AutoId equals a.Id
+                             orderby o.Status, o.Date descending
+                             select new ProfileOrderInfo
+                             {
+                                 OrderId = o.Id,
+                                 Date = o.Date.ToString("dd-MM-yyyy"),
+                                 Status = o.Status.ToString(),
+                                 MarkName = a.MarkName,
+                                 ModelName = a.ModelName,
+                                 Year = a.Year,
+                                 PhotoLink = a.PhotoLink
+                             };
 
-                foreach (var order in orders)
-                {
-                    var auto = autoRepository.Get((int)order.AutoId);
-                    appliedOrders.Add(new ProfileOrderInfo
-                    {
-                        OrderId = order.Id,
-                        Date = order.Date.ToString("dd-MM-yyyy"),
-                        Status = order.Status.ToString(),
-                        MarkName = auto?.MarkName ?? "Mark",
-                        ModelName = auto?.ModelName ?? "Model",
-                        Year = auto?.Year ?? 1970,
-                        PhotoLink = auto?.PhotoLink
-                    });
-                }
+                return orders.ToList();
             }
-
-            return appliedOrders;
         }
     }
 }

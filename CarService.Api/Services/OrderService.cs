@@ -105,7 +105,7 @@ namespace CarService.Api.Services
                 return await query.Skip(skip).Take(take).ToListAsync();
             }
         }
-        
+
         public async Task<CustomerOrderInfo> GetCustomerOrderInfo(string email, int orderId)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -134,12 +134,11 @@ namespace CarService.Api.Services
                     MarkName = auto.MarkName,
                     ModelName = auto.ModelName,
                     Year = auto.Year,
-                    PhotoLink = auto.PhotoLink,
-                    ReviewPropositions = await GetReviewPropositions(order.Id)
+                    PhotoLink = auto.PhotoLink
                 };
 
                 if (order.Status != OrderStatus.Canceled)
-                    orderInfo.ReviewPropositions = await GetReviewPropositions(order.Id);
+                    orderInfo.ReviewPropositions = GetReviewPropositions(order.Id);
 
                 if (order.Status == OrderStatus.Pending || order.Status == OrderStatus.Done)
                     orderInfo.MechanicId = (int)order.MechanicId;
@@ -172,12 +171,11 @@ namespace CarService.Api.Services
                 order.Status = OrderStatus.Pending;
                 order.MechanicId = proposition.MechanicId;
 
-                orderRepository.Attach(order);
                 await unitOfWork.SaveAsync();
             }
         }
 
-        private async Task<IEnumerable<ReviewPropositionDto>> GetReviewPropositions(int orderId)
+        private IEnumerable<ReviewPropositionDto> GetReviewPropositions(int orderId)
         {
             using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
@@ -186,27 +184,20 @@ namespace CarService.Api.Services
 
                 var propositions = from p in propositionRepository.Query()
                                    where p.OrderId == orderId
-                                   select p;
+                                   join m in mechanicRepository.Query() on p.MechanicId equals m.Id
+                                   select new ReviewPropositionDto
+                                   {
+                                       Id = p.Id,
+                                       MechanicId = (int)p.MechanicId,
+                                       FirstName = m.FirstName,
+                                       LastName = m.LastName,
+                                       MechanicRate = m.MechanicRate,
+                                       Price = p.Price,
+                                       Comment = p.Comment,
+                                       Date = p.Date.ToString("dd-MM-yyyy")
+                                   };
 
-                var propositionsList = new List<ReviewPropositionDto>();
-
-                foreach (var proposion in propositions)
-                {
-                    var mechnic = await mechanicRepository.GetAsync((int)proposion.MechanicId);
-                    propositionsList.Add(new ReviewPropositionDto
-                    {
-                        Id = proposion.Id,
-                        MechanicId = (int)proposion.MechanicId,
-                        FirstName = mechnic.FirstName,
-                        LastName = mechnic.LastName,
-                        MechanicRate = mechnic.MechanicRate,
-                        Price = proposion.Price,
-                        Comment = proposion.Comment,
-                        Date = proposion.Date.ToString("dd-MM-yyyy")
-                    });
-                }
-
-                return propositionsList;
+                return propositions.ToList();
             }
         }
     }
