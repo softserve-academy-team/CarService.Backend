@@ -99,7 +99,12 @@ namespace CarService.Api.Controllers
             }
         }
 
-        // GET api/cars/dropdown/makes/{categoryId} 
+        /// <summary>Get car mark from AutoRia by category Id</summary>
+        /// <param name="categoryId">Category Id auto on AutoRia</param> 
+        /// <returns>Return car mark information</returns>
+        /// <remarks>TODO detail description</remarks>
+        /// <response code="200">Return car mark by Category Id</response>
+        /// <response code="404">Not found response</response> 
         [HttpGet("dropdown/makes/{categoryId}")]
         public async Task<IActionResult> GetMakes([FromRoute]int categoryId)
         {
@@ -114,7 +119,13 @@ namespace CarService.Api.Controllers
             }
         }
 
-        // GET api/cars/dropdown/models/{categoryId}/{makeId} 
+        /// <summary>Get car model from AutoRia by category Id and mark Id</summary>
+        /// <param name="categoryId">Category Id auto on AutoRia</param> 
+        /// <param name="makeId">Mark Id auto on AutoRia</param> 
+        /// <returns>Return car models information</returns>
+        /// <remarks>TODO detail description</remarks>
+        /// <response code="200">Return car models by category Id and mark Id</response>
+        /// <response code="404">Not found response</response> 
         [HttpGet("dropdown/models/{categoryId}/{makeId}")]
         public async Task<IActionResult> GetModels([FromRoute]int categoryId, int makeId)
         {
@@ -129,7 +140,14 @@ namespace CarService.Api.Controllers
             }
         }
 
-        // GET api/cars/search
+        /// <summary>Get all cars from AutoRia by category Id, mark Id and model Id</summary>
+        /// <param name="categoryId">Category Id auto on AutoRia</param> 
+        /// <param name="makeId">Mark Id auto on AutoRia</param> 
+        /// <param name="modelId">Model Id auto on AutoRia</param>
+        /// <returns>Return list of cars information</returns>
+        /// <remarks>TODO detail description</remarks>
+        /// <response code="200">Return list of cars by category Id mark Id and model Id</response>
+        /// <response code="404">Not found response</response> 
         [HttpGet]
         [Route("search")]
         public async Task<IActionResult> GetListOfCars([FromQuery] string categoryId, string makeId, string modelId)
