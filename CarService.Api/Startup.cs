@@ -23,6 +23,9 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using AutoMapper;
+using Swashbuckle.AspNetCore.Swagger;
+using System.IO;
+using System.Collections.Generic;
 
 namespace CarService.Api
 {
@@ -122,6 +125,25 @@ namespace CarService.Api
 
             services.AddMvc();
             services.AddAutoMapper(x => x.AddProfile(new MappingProfile()));
+
+            services.AddSwaggerGen(swagger =>
+            {
+                swagger.SwaggerDoc("v1", new Info { Title = "Car Service Web API", Version = "v1", Description = "ASP.NET Core Web API" });
+                // swagger.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "SwaggerCarService.xml"));
+                swagger.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "SwaggerCarService.xml"));
+
+                swagger.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    Name = "Authorization",
+                    In = "header",
+                    Description = "Please insert JWT with Bearer into field. Example: Bearer {token}",
+                    Type = "apiKey"
+                });
+                swagger.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                {
+                     {"Bearer", new string[] {} }
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -142,6 +164,12 @@ namespace CarService.Api
                 app.UseRewriter(new RewriteOptions().AddRedirectToHttps(StatusCodes.Status302Found, httpsPort));
             }
             app.UseCors("AllowAllOrigin");
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Car Service Web API");
+            });
 
             app.UseMvc();
         }
