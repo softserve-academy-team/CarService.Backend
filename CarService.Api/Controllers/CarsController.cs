@@ -6,7 +6,6 @@ using CarService.Api.Services;
 
 namespace CarService.Api.Controllers
 {
-    [Produces("application/json")]
     [Route("api/[controller]")]
     public class CarsController : Controller
     {
