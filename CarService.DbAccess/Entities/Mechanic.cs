@@ -7,7 +7,7 @@ namespace CarService.DbAccess.Entities
     {
         public int WorkExperience { get; set; }
         public string Specialization { get; set; }
-        public int MechanicRate { get; set; }
+        public double MechanicRate { get; set; }
 
         public ICollection<ReviewProposition> ReviewPropositions { get; set; }
         public ICollection<Order> OrdersTaken { get; set; }

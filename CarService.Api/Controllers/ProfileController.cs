@@ -45,7 +45,7 @@ namespace CarService.Api.Controllers
         /// <summary>Edit customer</summary>
         /// <returns>an IActionResult</returns>
         /// <remarks>Edit information about customer in database</remarks> 
-        /// <param name="customerDTO">Customers' model</param> 
+        /// <param name="customerDto">Customers' model</param> 
         /// <response code="200">Successful</response>
         /// <response code="400">Customer not found</response> 
         /// <response code="401">Unauthorized user</response> 
@@ -53,8 +53,8 @@ namespace CarService.Api.Controllers
         [Authorize]
         [HttpPut]
         [Route("edit/customer")]
-        public async Task<IActionResult> EditCustomerInfo([FromBody] CustomerDTO customerDTO)
-        {
+        public async Task<IActionResult> EditCustomerInfo([FromBody] CustomerDto customerDto)
+        { 
             if (!ModelState.IsValid)
                 return BadRequest();
 
@@ -62,14 +62,14 @@ namespace CarService.Api.Controllers
             if (email == null)
                 return Unauthorized();
 
-            await _profileService.EditCustomerProfile(email, customerDTO);
+            await _profileService.EditCustomerProfile(email, customerDto);
             return Ok();
         }
 
         /// <summary>Edit mechanic</summary>
         /// <returns>an IActionResult</returns>
         /// <remarks>Edit information about mechanic in database</remarks> 
-        /// <param name="mechanicDTO">Mechanics' model</param> 
+        /// <param name="mechanicDto">Mechanics' model</param> 
         /// <response code="200">Successful</response>
         /// <response code="400">Mechanic not found</response> 
         /// <response code="401">Unauthorized user</response> 
@@ -77,7 +77,7 @@ namespace CarService.Api.Controllers
         [Authorize]
         [HttpPut]
         [Route("edit/mechanic")]
-        public async Task<IActionResult> EditMechanicInfo([FromBody] MechanicDTO mechanicDTO)
+        public async Task<IActionResult> EditMechanicInfo([FromBody] MechanicDto mechanicDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -86,7 +86,7 @@ namespace CarService.Api.Controllers
             if (email == null)
                 return Unauthorized();
 
-            await _profileService.EditMechanicProfile(email, mechanicDTO);
+            await _profileService.EditMechanicProfile(email, mechanicDto);
             return Ok();
         }
 

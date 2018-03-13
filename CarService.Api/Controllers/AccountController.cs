@@ -65,6 +65,9 @@ namespace CarService.Api.Controllers
         [HttpPost("registration/customer")]
         public async Task<IActionResult> RegisterCustomer([FromBody] RegisterCustomerCredentials registerCustomerCredentials)
         {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
             var result = await _accountService.RegisterCustomer(registerCustomerCredentials);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
@@ -81,6 +84,9 @@ namespace CarService.Api.Controllers
         [HttpPost("registration/mechanic")]
         public async Task<IActionResult> RegisterMechanic([FromBody] RegisterMechanicCredentials registerMechanicCredentials)
         {
+            if (!ModelState.IsValid)
+                return BadRequest();
+                
             var result = await _accountService.RegisterMechanic(registerMechanicCredentials);
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
