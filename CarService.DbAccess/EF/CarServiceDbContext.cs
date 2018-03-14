@@ -19,6 +19,8 @@ namespace CarService.DbAccess.EF
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Invitation> Invitations { get; set; }
         public DbSet<Favorite> Favorites { get; set; }
+        public DbSet<Photo> Photos { get; set; }
+        public DbSet<Video> Videos { get; set; }
 
         public CarServiceDbContext(DbContextOptions options) : base(options)
         {
@@ -57,7 +59,6 @@ namespace CarService.DbAccess.EF
                .HasForeignKey(t => t.ReceiverId);
 
             //AutoIncrement for Favorite.Id
-
             modelBuilder.Entity<Favorite>()
                 .Property(f => f.Id)
                 .ValueGeneratedOnAdd();

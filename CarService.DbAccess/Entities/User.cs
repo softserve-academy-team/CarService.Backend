@@ -11,6 +11,7 @@ namespace CarService.DbAccess.Entities
         public UserStatus Status { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string Avatar { get; set; }
         public DateTime RegisterDate { get; set; }
         public DateTime LastLoginDate { get; set; }
 
