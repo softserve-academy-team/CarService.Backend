@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CarService.Api.Models.DTO
 {
-    public class UserDTO
+    public class UserDto
     {
         public string Email { get; set; }
         [Required]
