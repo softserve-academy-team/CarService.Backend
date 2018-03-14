@@ -37,6 +37,25 @@ namespace CarService.Api.Controllers
             return Ok();
         }
 
+        /// <summary>Create mechanic review proposition</summary>
+        /// <returns>an IActionResult</returns>
+        /// <remarks>TODO detail description</remarks>
+        /// <param name="reviewPropositionDto">Orders' model</param> 
+        /// <response code="200">review proposition create successful</response>
+        /// <response code="401">Unauthorized user</response> 
+        /// <response code="500">Internal Server Error</response> 
+        [Authorize]
+        [HttpPost("create-review-proposition")]
+        public async Task<IActionResult> CreateReviewProposition([FromBody]ReviewPropositionCreationDto reviewPropositionDto)
+        {
+            string email = User.Identity.Name;
+            if (email == null)
+                return Unauthorized();
+
+            await _orderService.CreateReviewProposition(email, reviewPropositionDto);
+            return Ok();
+        }
+
         /// <summary>Get cityes with auto in stock</summary>
         /// <returns>an IEnumerable</returns>
         /// <remarks>Get cityes with auto in stock</remarks>

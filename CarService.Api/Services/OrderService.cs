@@ -44,7 +44,10 @@ namespace CarService.Api.Services
                             ModelName = orderDto.ModelName,
                             Year = orderDto.Year,
                             City = orderDto.City,
-                            PhotoLink = orderDto.PhotoLink
+                            PhotoLink = orderDto.PhotoLink,
+                            TypeId = orderDto.CategoryId,
+                            MarkId = orderDto.MarkId,
+                            ModelId = orderDto.ModelId
                         };
                         autos.Add(auto);
                     }
@@ -58,6 +61,28 @@ namespace CarService.Api.Services
                         Date = DateTime.Now.ToUniversalTime()
                     });
 
+                    unitOfWork.Save();
+                }
+            }
+        }
+
+        public async Task CreateReviewProposition(string email, ReviewPropositionCreationDto reviewPropositionDto)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user != null)
+            {
+                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+                {
+                    IRepository<ReviewProposition> reviewProposition = unitOfWork.Repository<ReviewProposition>();
+                    reviewProposition.Add(new ReviewProposition
+                    {
+                        MechanicId = user.Id,
+                        OrderId = reviewPropositionDto.OrderId,
+                        Comment = reviewPropositionDto.ReviewDescription,
+                        Price = reviewPropositionDto.ReviewPrice,
+                        Date = DateTime.Now.ToUniversalTime()
+                    });
                     unitOfWork.Save();
                 }
             }
