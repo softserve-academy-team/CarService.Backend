@@ -29,40 +29,37 @@ namespace CarService.Api.Services
         {
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user != null)
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
-                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+                IRepository<Auto> autos = unitOfWork.Repository<Auto>();
+                var auto = autos.Find(x => x.AutoRiaId == orderDto.AutoRiaId);
+                if (auto == null)
                 {
-                    IRepository<Auto> autos = unitOfWork.Repository<Auto>();
-                    var auto = autos.Find(x => x.AutoRiaId == orderDto.AutoRiaId);
-                    if (auto == null)
+                    auto = new Auto
                     {
-                        auto = new Auto
-                        {
-                            AutoRiaId = orderDto.AutoRiaId,
-                            MarkName = orderDto.MarkName,
-                            ModelName = orderDto.ModelName,
-                            Year = orderDto.Year,
-                            City = orderDto.City,
-                            PhotoLink = orderDto.PhotoLink,
-                            TypeId = orderDto.CategoryId,
-                            MarkId = orderDto.MarkId,
-                            ModelId = orderDto.ModelId
-                        };
-                        autos.Add(auto);
-                    }
-
-                    IRepository<Order> order = unitOfWork.Repository<Order>();
-                    order.Add(new Order
-                    {
-                        CustomerId = user.Id,
-                        AutoId = auto.Id,
-                        Description = orderDto.Description,
-                        Date = DateTime.Now.ToUniversalTime()
-                    });
-
-                    unitOfWork.Save();
+                        AutoRiaId = orderDto.AutoRiaId,
+                        MarkName = orderDto.MarkName,
+                        ModelName = orderDto.ModelName,
+                        Year = orderDto.Year,
+                        City = orderDto.City,
+                        PhotoLink = orderDto.PhotoLink,
+                        TypeId = orderDto.CategoryId,
+                        MarkId = orderDto.MarkId,
+                        ModelId = orderDto.ModelId
+                    };
+                    autos.Add(auto);
                 }
+
+                IRepository<Order> order = unitOfWork.Repository<Order>();
+                order.Add(new Order
+                {
+                    CustomerId = user.Id,
+                    AutoId = auto.Id,
+                    Description = orderDto.Description,
+                    Date = DateTime.Now.ToUniversalTime()
+                });
+
+                unitOfWork.Save();
             }
         }
 
@@ -70,21 +67,23 @@ namespace CarService.Api.Services
         {
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user != null)
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
-                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+                var reviewProposition = unitOfWork.Repository<ReviewProposition>();
+
+                var review = reviewProposition.Find(r => r.OrderId == reviewPropositionDto.OrderId && r.MechanicId == user.Id);
+                if (review != null)
+                    return;
+
+                reviewProposition.Add(new ReviewProposition
                 {
-                    IRepository<ReviewProposition> reviewProposition = unitOfWork.Repository<ReviewProposition>();
-                    reviewProposition.Add(new ReviewProposition
-                    {
-                        MechanicId = user.Id,
-                        OrderId = reviewPropositionDto.OrderId,
-                        Comment = reviewPropositionDto.ReviewDescription,
-                        Price = reviewPropositionDto.ReviewPrice,
-                        Date = DateTime.Now.ToUniversalTime()
-                    });
-                    unitOfWork.Save();
-                }
+                    MechanicId = user.Id,
+                    OrderId = reviewPropositionDto.OrderId,
+                    Comment = reviewPropositionDto.ReviewComment,
+                    Price = reviewPropositionDto.ReviewPrice,
+                    Date = DateTime.Now.ToUniversalTime()
+                });
+                unitOfWork.Save();
             }
         }
 
@@ -134,9 +133,6 @@ namespace CarService.Api.Services
         public async Task<CustomerOrderInfo> GetCustomerOrderInfo(string email, int orderId)
         {
             var user = await _userManager.FindByEmailAsync(email);
-            
-            if (user == null)
-                return null;
 
             using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
@@ -179,9 +175,6 @@ namespace CarService.Api.Services
         {
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user == null)
-                return null;
-
             using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
                 var orderRepository = unitOfWork.Repository<Order>();
@@ -190,7 +183,7 @@ namespace CarService.Api.Services
                 var customerRepository = unitOfWork.Repository<Customer>();
 
                 var proposition = await propositionRepository.FindAsync(p => p.OrderId == orderId && p.MechanicId == user.Id);
-                
+
                 if (proposition == null)
                     return null;
 
@@ -215,7 +208,7 @@ namespace CarService.Api.Services
                     PropositionPrice = proposition.Price,
                     PropositionComment = proposition.Comment,
                     PropositionDate = proposition.Date.ToString("dd-MM-yyyy"),
-                    IsDoIt = (order.Status ==  0 || (order.Status > 0 && order.MechanicId == user.Id)) ? true : false
+                    IsDoIt = (order.Status == 0 || (order.Status > 0 && order.MechanicId == user.Id)) ? true : false
                 };
 
                 if (order.Status == OrderStatus.Done)
@@ -228,9 +221,6 @@ namespace CarService.Api.Services
         public async Task AcceptReviewProposition(string email, AcceptReviewProposition acceptReviewProposition)
         {
             var user = await _userManager.FindByEmailAsync(email);
-
-            if (user == null)
-                return;
 
             using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {

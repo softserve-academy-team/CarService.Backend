@@ -44,16 +44,18 @@ namespace CarService.Api.Controllers
         /// <returns>an IActionResult</returns>
         /// <remarks>TODO detail description</remarks>
         /// <param name="reviewPropositionDto">Orders' model</param> 
-        /// <response code="200">review proposition create successful</response>
-        /// <response code="401">Unauthorized user</response> 
+        /// <response code="200">Review proposition create successful</response>
+        /// <response code="400">Not valid model</response>
+        /// <response code="401">Unauthorized user</response>
         /// <response code="500">Internal Server Error</response> 
         [Authorize]
         [HttpPost("create-review-proposition")]
         public async Task<IActionResult> CreateReviewProposition([FromBody]ReviewPropositionCreationDto reviewPropositionDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
             string email = User.Identity.Name;
-            if (email == null)
-                return Unauthorized();
 
             await _orderService.CreateReviewProposition(email, reviewPropositionDto);
             return Ok();
