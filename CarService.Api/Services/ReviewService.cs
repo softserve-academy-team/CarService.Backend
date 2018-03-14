@@ -70,7 +70,7 @@ namespace CarService.Api.Services
                     await photo.CopyToAsync(stream);
                     stream.Position = 0;
 
-                    string url = await _azureBlobStorage.UploadFile(stream, $"review_{reviewId}", photo.FileName);
+                    string url = await _azureBlobStorage.UploadFile(stream, $"review{reviewId}", photo.FileName);
 
                     photos.Add(new Photo { ReviewId = reviewId, Url = url });
                 }
@@ -100,7 +100,7 @@ namespace CarService.Api.Services
                     await video.CopyToAsync(stream);
                     stream.Position = 0;
 
-                    string url = await _azureBlobStorage.UploadFile(stream, $"review_{reviewId}", video.FileName);
+                    string url = await _azureBlobStorage.UploadFile(stream, $"review{reviewId}", video.FileName);
 
                     videos.Add(new Video { ReviewId = reviewId, Url = url });
                 }

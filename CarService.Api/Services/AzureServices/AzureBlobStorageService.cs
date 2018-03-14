@@ -23,11 +23,15 @@ namespace CarService.Api.Services.AzureServices
             var container = cloudBlobClient.GetContainerReference(containerName);
             await container.CreateIfNotExistsAsync();
 
+            BlobContainerPermissions permissions = await container.GetPermissionsAsync();
+            permissions.PublicAccess = BlobContainerPublicAccessType.Container;
+            
+            await container.SetPermissionsAsync(permissions);
+
             var newBlob = container.GetBlockBlobReference(fileName);
             await newBlob.UploadFromStreamAsync(stream);
 
             return newBlob.Uri.AbsoluteUri;
         }
-
     }
 }

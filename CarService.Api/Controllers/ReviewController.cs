@@ -34,7 +34,7 @@ namespace CarService.Api.Controllers
         }
 
         [Authorize]
-        [HttpPut]
+        [HttpPost]
         [Route("save_photo/{reviewId}")]
         public async Task<IActionResult> UploadPhoto(int reviewId, [FromForm] IFormFile file)
         {
@@ -46,7 +46,7 @@ namespace CarService.Api.Controllers
         }
 
         [Authorize]
-        [HttpPut]
+        [HttpPost]
         [Route("save_video/{reviewId}")]
         public async Task<IActionResult> UploadVideo(int reviewId, [FromForm] IFormFile file)
         {
