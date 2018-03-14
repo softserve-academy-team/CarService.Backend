@@ -9,10 +9,11 @@ namespace CarService.Api.Mappers
     {
         public MappingProfile()
         {
-            CreateMap<Customer, CustomerDTO>();
-            CreateMap<Mechanic, MechanicDTO>();
-            CreateMap<CustomerDTO, Customer>();
-            CreateMap<MechanicDTO, Mechanic>();
+            CreateMap<Customer, CustomerDto>();
+            CreateMap<Mechanic, MechanicDto>();
+            CreateMap<CustomerDto, Customer>();
+            CreateMap<MechanicDto, Mechanic>()
+                .ForMember("MechanicRate", opt => opt.Ignore());
             CreateMap<RegisterMechanicCredentials, Mechanic>()
                 .ForMember("WorkExperience", opt => opt.MapFrom(c => c.Experience))
                 .ForMember("UserName", opt => opt.MapFrom(c => c.Email))

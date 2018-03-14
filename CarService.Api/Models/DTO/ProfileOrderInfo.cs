@@ -12,5 +12,6 @@ namespace CarService.Api.Models.DTO
         public string ModelName { get; set; }
         public int Year { get; set; }
         public string PhotoLink { get; set; }
+        public bool IsDoIt { get; set; } = true;
     }
 }

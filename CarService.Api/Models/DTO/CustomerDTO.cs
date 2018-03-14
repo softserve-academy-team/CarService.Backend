@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CarService.Api.Models.DTO
 {
-    public class CustomerDTO : UserDTO
+    public class CustomerDto : UserDto
     {
         [Required]
         [MinLength(4)]

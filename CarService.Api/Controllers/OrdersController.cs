@@ -1,10 +1,13 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using CarService.Api.Models.DTO;
-using CarService.Api.Models;
-using CarService.Api.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
+using CarService.Api.Models;
+using CarService.Api.Models.DTO;
+using CarService.Api.Services;
+using CarService.DbAccess.DAL;
+using CarService.DbAccess.Entities;
 
 namespace CarService.Api.Controllers
 {
@@ -78,6 +81,51 @@ namespace CarService.Api.Controllers
         public async Task<IEnumerable<BaseOrderInfo>> GetOrders([FromBody]OrderSearchModel orderSearchModel, [FromQuery(Name = "skip")]int skip, [FromQuery(Name = "take")]int take)
         {
             return await this._orderService.GetOrdersAsync(orderSearchModel, skip, take);
+        }
+
+        [Authorize]
+        [HttpGet("order-info/{orderId}")]
+        public async Task<IActionResult> GetCustomerOrderInfo(int orderId)
+        {
+            string email = User.Identity.Name;
+            if (email == null)
+                return BadRequest();
+
+            var orderInfo = await _orderService.GetCustomerOrderInfo(email, orderId);
+
+            if (orderInfo == null)
+                return NotFound();
+
+            return Ok(orderInfo);
+        }
+
+        [Authorize]
+        [HttpGet("mechanic-order-info/{orderId}")]
+        public async Task<IActionResult> GetMechanicOrderInfo(int orderId)
+        {
+            string email = User.Identity.Name;
+            if (email == null)
+                return BadRequest();
+
+            var orderInfo = await _orderService.GetMechanicOrderInfo(email, orderId);
+
+            if (orderInfo == null)
+                return NotFound();
+
+            return Ok(orderInfo);
+        }
+
+        [Authorize]
+        [HttpPut("accept-proposition")]
+        public async Task<IActionResult> AcceptReviewProposition([FromBody] AcceptReviewProposition acceptReviewProposition)
+        {
+            string email = User.Identity.Name;
+            if (email == null)
+                return BadRequest();
+
+            await _orderService.AcceptReviewProposition(email, acceptReviewProposition);
+
+            return Ok();
         }
     }
 }
