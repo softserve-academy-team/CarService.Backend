@@ -239,5 +239,70 @@ namespace CarService.Api.Services
                 return customer.Avatar;
             }
         }
+        public async Task<IEnumerable<ProfileReviewInfo>> GetUserBoughtReviews(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return null;
+
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            {
+                var orderRepository = unitOfWork.Repository<Order>();
+                var reviewRepository = unitOfWork.Repository<Review>();
+                var autoRepository = unitOfWork.Repository<Auto>();
+
+                var reviews = from o in orderRepository.Query()
+                              where o.CustomerId == user.Id && o.Status == OrderStatus.Done
+                              join r in reviewRepository.Query() on o.ReviewId equals r.Id
+                              join a in autoRepository.Query() on o.AutoId equals a.Id
+                              orderby r.Date descending
+                              select new ProfileReviewInfo
+                              {
+                                  ReviewId = r.Id,
+                                  Date = r.Date.ToString("dd-MM-yyyy"),
+                                  MarkName = a.MarkName,
+                                  ModelName = a.ModelName,
+                                  Year = a.Year,
+                                  PhotoLink = a.PhotoLink,
+                                  City = a.City
+                              };
+
+                return reviews.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<ProfileReviewInfo>> GetUserCreatedReviews(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return null;
+
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            {
+                var reviewRepository = unitOfWork.Repository<Review>();
+                var orderRepository = unitOfWork.Repository<Order>();
+                var autoRepository = unitOfWork.Repository<Auto>();
+
+                var reviews = from r in reviewRepository.Query()
+                              where r.MechanicId == user.Id
+                              join o in orderRepository.Query() on r.OrderId equals o.Id
+                              join a in autoRepository.Query() on o.AutoId equals a.Id
+                              orderby r.Date descending
+                              select new ProfileReviewInfo
+                              {
+                                  ReviewId = r.Id,
+                                  Date = r.Date.ToString("dd-MM-yyyy"),
+                                  MarkName = a.MarkName,
+                                  ModelName = a.ModelName,
+                                  Year = a.Year,
+                                  PhotoLink = a.PhotoLink,
+                                  City = a.City
+                              };
+
+                return reviews.ToList();
+            }
+        }
     }
 }

@@ -13,6 +13,8 @@ namespace CarService.Api.Services
         Task<Models.DTO.UserDto> GetUserDTO(string email);
         Task<IEnumerable<ProfileOrderInfo>> GetUserCreatedOrders(string email);
         Task<IEnumerable<ProfileOrderInfo>> GetUserAppliedOrders(string email);
+        Task<IEnumerable<ProfileReviewInfo>> GetUserBoughtReviews(string email);
+        Task<IEnumerable<ProfileReviewInfo>> GetUserCreatedReviews(string email);
         Task AddCarToFavorites(string email, int autoRiaId);
         Task DeleteCarFromFavorites(string email, int autoRiaId);
         Task<IEnumerable<BaseCarInfo>> GetAllCarsFromFavorites(string email);

@@ -7,6 +7,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+using CarService.Api.Models;
 
 namespace CarService.Api.Controllers
 {
@@ -55,7 +56,7 @@ namespace CarService.Api.Controllers
         [HttpPut]
         [Route("edit/customer")]
         public async Task<IActionResult> EditCustomerInfo([FromBody] CustomerDto customerDto)
-        { 
+        {
             if (!ModelState.IsValid)
                 return BadRequest();
 
@@ -251,7 +252,31 @@ namespace CarService.Api.Controllers
         {
             string email = User.Identity.Name;
 
-            return Ok(await _profileService.GetAvatarUrl(email));
+                return Ok(await _profileService.GetAvatarUrl(email));
+        }
+        
+        [HttpGet("bought-reviews")]
+        public async Task<IActionResult> GetUserBoughtReviews()
+        {
+            string email = User.Identity.Name;
+            if (email == null)
+                return Unauthorized();
+
+            IEnumerable<ProfileReviewInfo> reviewList = await _profileService.GetUserBoughtReviews(email);
+
+            return Ok(reviewList);
+        }
+
+        [Authorize]
+        [HttpGet("created-reviews")]
+        public async Task<IActionResult> GetUserCreatedReviews()
+        {
+            string email = User.Identity.Name;
+            if (email == null)
+                return Unauthorized();
+
+            IEnumerable<ProfileReviewInfo> reviewList = await _profileService.GetUserCreatedReviews(email);
+            return Ok(reviewList);
         }
     }
 }

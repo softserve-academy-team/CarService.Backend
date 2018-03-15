@@ -91,8 +91,7 @@ namespace CarService.Api
             }));
 
             services.AddDbContext<CarServiceDbContext>(options =>
-                options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("CarService.Api")));
-
+                options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<User, IdentityRole<int>>(
                 options =>
