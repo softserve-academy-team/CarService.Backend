@@ -55,18 +55,18 @@ namespace CarService.Api
             services.Configure<EmailConfig>(_configuration.GetSection("Email"));
 
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAllOrigin", builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod());
-            });
+            // services.AddCors(options =>
+            // {
+            //     options.AddPolicy("AllowAllOrigin", builder => builder
+            //     .AllowAnyOrigin()
+            //     .AllowAnyHeader()
+            //     .AllowAnyMethod());
+            // });
 
-            services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
-            });
+            // services.Configure<MvcOptions>(options =>
+            // {
+            //     options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
+            // });
 
             services.AddSingleton<IConfiguration>(provider => _configuration);
             services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
@@ -78,13 +78,13 @@ namespace CarService.Api
 
             services.AddScoped<IUnitOfWorkFactory>(provider => new SqlUnitOfWorkFactory(options =>
             {
-                options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
-                // options.UseInMemoryDatabase("CarServiceDb");
+                //options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
+                options.UseInMemoryDatabase("CarServiceDb");
             }));
 
             services.AddDbContext<CarServiceDbContext>(options =>
-                options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("CarService.Api")));
-                // options.UseInMemoryDatabase("CarServiceDb"));
+                //options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("CarService.Api")));
+                options.UseInMemoryDatabase("CarServiceDb"));
 
 
             services.AddIdentity<User, IdentityRole<int>>(
