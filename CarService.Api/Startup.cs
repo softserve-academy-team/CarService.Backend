@@ -36,23 +36,23 @@ namespace CarService.Api
 
         public Startup(IConfiguration configuration, IHostingEnvironment env, IOptions<AuthOptions> optionsAccessor)
         {
-            var configurationBuilder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            _configuration = configurationBuilder.Build();
-            _configuration = configuration;
-            _options = optionsAccessor.Value;
+            // var configurationBuilder = new ConfigurationBuilder()
+            //     .SetBasePath(env.ContentRootPath)
+            //     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            //     .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+            //     .AddEnvironmentVariables();
+            // _configuration = configurationBuilder.Build();
+            // _configuration = configuration;
+            // _options = optionsAccessor.Value;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddOptions();
-            services.Configure<AuthOptions>(_configuration.GetSection("AuthOptions"));
-            services.Configure<EmailConfig>(_configuration.GetSection("Email"));
+            // services.AddOptions();
+            // services.Configure<AuthOptions>(_configuration.GetSection("AuthOptions"));
+            // services.Configure<EmailConfig>(_configuration.GetSection("Email"));
 
 
             // services.AddCors(options =>
@@ -68,90 +68,90 @@ namespace CarService.Api
             //     options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
             // });
 
-            services.AddSingleton<IConfiguration>(provider => _configuration);
-            services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
-            services.AddSingleton<ICarService, AutoRiaCarService>();
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddTransient<IEmailService, EmailService>();
-            services.AddScoped<IProfileService, ProfileService>();
-            services.AddScoped<IOrderService, OrderService>();
+            // services.AddSingleton<IConfiguration>(provider => _configuration);
+            // services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
+            // services.AddSingleton<ICarService, AutoRiaCarService>();
+            // services.AddScoped<IAccountService, AccountService>();
+            // services.AddTransient<IEmailService, EmailService>();
+            // services.AddScoped<IProfileService, ProfileService>();
+            // services.AddScoped<IOrderService, OrderService>();
 
-            services.AddScoped<IUnitOfWorkFactory>(provider => new SqlUnitOfWorkFactory(options =>
-            {
-                //options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
-                options.UseInMemoryDatabase("CarServiceDb");
-            }));
+            // services.AddScoped<IUnitOfWorkFactory>(provider => new SqlUnitOfWorkFactory(options =>
+            // {
+            //     //options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"));
+            //     options.UseInMemoryDatabase("CarServiceDb");
+            // }));
 
-            services.AddDbContext<CarServiceDbContext>(options =>
-                //options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("CarService.Api")));
-                options.UseInMemoryDatabase("CarServiceDb"));
+            // services.AddDbContext<CarServiceDbContext>(options =>
+            //     //options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection"), b => b.MigrationsAssembly("CarService.Api")));
+            //     options.UseInMemoryDatabase("CarServiceDb"));
 
 
-            services.AddIdentity<User, IdentityRole<int>>(
-                options =>
-                {
-                    // Password settings
-                    options.Password.RequireDigit = false;
-                    options.Password.RequiredLength = 4;
-                    options.Password.RequiredUniqueChars = 0;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                }
-            )
-                .AddEntityFrameworkStores<CarServiceDbContext>()
-                .AddDefaultTokenProviders();
+            // services.AddIdentity<User, IdentityRole<int>>(
+            //     options =>
+            //     {
+            //         // Password settings
+            //         options.Password.RequireDigit = false;
+            //         options.Password.RequiredLength = 4;
+            //         options.Password.RequiredUniqueChars = 0;
+            //         options.Password.RequireLowercase = false;
+            //         options.Password.RequireNonAlphanumeric = false;
+            //         options.Password.RequireUppercase = false;
+            //     }
+            // )
+            //     .AddEntityFrameworkStores<CarServiceDbContext>()
+            //     .AddDefaultTokenProviders();
 
             // JWT
-            services.AddAuthentication(cfg =>
-            {
-                cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            // services.AddAuthentication(cfg =>
+            // {
+            //     cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //     cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            //     cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
-            })
-                    .AddJwtBearer(options =>
-                    {
-                        options.RequireHttpsMetadata = false;
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateIssuer = true,
-                            ValidIssuer = _options.Issuer,
-                            ValidateAudience = true,
-                            ValidAudience = _options.Audience,
-                            ValidateLifetime = true,
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.Key)),
-                            ValidateIssuerSigningKey = true,
-                        };
-                    });
+            // })
+            //         .AddJwtBearer(options =>
+            //         {
+            //             options.RequireHttpsMetadata = false;
+            //             options.TokenValidationParameters = new TokenValidationParameters
+            //             {
+            //                 ValidateIssuer = true,
+            //                 ValidIssuer = _options.Issuer,
+            //                 ValidateAudience = true,
+            //                 ValidAudience = _options.Audience,
+            //                 ValidateLifetime = true,
+            //                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.Key)),
+            //                 ValidateIssuerSigningKey = true,
+            //             };
+            //         });
 
             services.AddMvc();
-            services.AddAutoMapper(x => x.AddProfile(new MappingProfile()));
+            //services.AddAutoMapper(x => x.AddProfile(new MappingProfile()));
 
-            services.AddSwaggerGen(swagger =>
-            {
-                swagger.SwaggerDoc("v1", new Info { Title = "Car Service Web API", Version = "v1", Description = "ASP.NET Core Web API" });
-                // swagger.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "SwaggerCarService.xml"));
-                swagger.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "SwaggerCarService.xml"));
+            // services.AddSwaggerGen(swagger =>
+            // {
+            //     swagger.SwaggerDoc("v1", new Info { Title = "Car Service Web API", Version = "v1", Description = "ASP.NET Core Web API" });
+            //     // swagger.IncludeXmlComments(Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "SwaggerCarService.xml"));
+            //     swagger.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "SwaggerCarService.xml"));
 
-                swagger.AddSecurityDefinition("Bearer", new ApiKeyScheme
-                {
-                    Name = "Authorization",
-                    In = "header",
-                    Description = "Please insert JWT with Bearer into field. Example: Bearer {token}",
-                    Type = "apiKey"
-                });
-                swagger.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
-                {
-                     {"Bearer", new string[] {} }
-                });
-            });
+            //     swagger.AddSecurityDefinition("Bearer", new ApiKeyScheme
+            //     {
+            //         Name = "Authorization",
+            //         In = "header",
+            //         Description = "Please insert JWT with Bearer into field. Example: Bearer {token}",
+            //         Type = "apiKey"
+            //     });
+            //     swagger.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+            //     {
+            //          {"Bearer", new string[] {} }
+            //     });
+            // });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseAuthentication();
+            //app.UseAuthentication();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -167,11 +167,11 @@ namespace CarService.Api
             }
             //app.UseCors("AllowAllOrigin");
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Car Service Web API");
-            });
+            // app.UseSwagger();
+            // app.UseSwaggerUI(c =>
+            // {
+            //     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Car Service Web API");
+            // });
 
             app.UseMvc();
         }
