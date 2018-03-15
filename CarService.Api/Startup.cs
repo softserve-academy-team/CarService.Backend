@@ -155,17 +155,17 @@ namespace CarService.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                int? httpsPort = null;
-                IConfigurationSection httpsSection = _configuration.GetSection("HttpServer:Endpoints:Https");
-                if (httpsSection.Exists())
-                {
-                    var httpsEndpoint = new EndpointConfiguration();
-                    httpsSection.Bind(httpsEndpoint);
-                    httpsPort = httpsEndpoint.Port;
-                }
-                app.UseRewriter(new RewriteOptions().AddRedirectToHttps(StatusCodes.Status302Found, httpsPort));
+                // int? httpsPort = null;
+                // IConfigurationSection httpsSection = _configuration.GetSection("HttpServer:Endpoints:Https");
+                // if (httpsSection.Exists())
+                // {
+                //     var httpsEndpoint = new EndpointConfiguration();
+                //     httpsSection.Bind(httpsEndpoint);
+                //     httpsPort = httpsEndpoint.Port;
+                // }
+                // app.UseRewriter(new RewriteOptions().AddRedirectToHttps(StatusCodes.Status302Found, httpsPort));
             }
-            app.UseCors("AllowAllOrigin");
+            //app.UseCors("AllowAllOrigin");
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>

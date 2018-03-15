@@ -38,12 +38,12 @@ namespace CarService.Api
             IWebHostBuilder webHostBuilder = WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();
 
-            string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            // string environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-            if (environment == EnvironmentName.Development)
-            {
-              webHostBuilder.UseKestrel(options => options.ConfigureEndpoints());
-            }
+            // if (environment == EnvironmentName.Development)
+            // {
+            //   webHostBuilder.UseKestrel(options => options.ConfigureEndpoints());
+            // }
 
             return webHostBuilder.Build();
         }
