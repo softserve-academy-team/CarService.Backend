@@ -56,5 +56,19 @@ namespace CarService.Api.Controllers
 
             return Ok();
         }
+
+        [Authorize]
+        [HttpGet("review-info/{orderId}")]
+        public async Task<IActionResult> GetMechanicOrderInfo(int orderId)
+        {
+            string email = User.Identity.Name;
+
+            var review = await _reviewService.GetReview(email, orderId);
+
+            if (review == null)
+                return NotFound();
+
+            return Ok(review);
+        }
     }
 }

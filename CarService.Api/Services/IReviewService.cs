@@ -9,5 +9,6 @@ namespace CarService.Api.Services
         Task<int> CreateReview(ReviewCreationDto reviewCreationDto, string email);
         Task UploadPhoto(IFormFile photo, int reviewId, string email);
         Task UploadVideo(IFormFile video, int reviewId, string email);
+        Task<ReviewDto> GetReview(string email, int orderId);
     }
 }

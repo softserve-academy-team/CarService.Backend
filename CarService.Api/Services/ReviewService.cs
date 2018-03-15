@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Linq;
 using CarService.Api.Models.DTO;
 using CarService.Api.Services.AzureServices;
 using CarService.DbAccess.DAL;
@@ -45,6 +46,11 @@ namespace CarService.Api.Services
 
                 await unitOfWork.SaveAsync();
 
+                order.ReviewId = review.Id;
+                order.Status = OrderStatus.Done;
+
+                await unitOfWork.SaveAsync();
+                
                 return review.Id;
             }
         }
@@ -106,6 +112,58 @@ namespace CarService.Api.Services
                 }
 
                 await unitOfWork.SaveAsync();
+            }
+        }
+
+
+        public async Task<ReviewDto> GetReview(string email, int orderId)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            {
+                var reviewRepository = unitOfWork.Repository<Review>();
+                var photoRepository = unitOfWork.Repository<Photo>();
+                var videoRepository = unitOfWork.Repository<Video>();
+                var orderRepository = unitOfWork.Repository<Order>();
+                var autoRepository = unitOfWork.Repository<Auto>();
+
+                var order = await orderRepository.GetAsync(orderId);
+
+                if (order == null || (order.CustomerId != user.Id && order.MechanicId != user.Id))
+                    return null;
+
+                var review = await reviewRepository.GetAsync((int)order.ReviewId);
+
+                if (review == null)
+                    return null;
+
+                var auto = await autoRepository.GetAsync((int)order.AutoId);
+
+                var photos = from p in photoRepository.Query()
+                             where p.ReviewId == review.Id
+                             select p.Url;
+
+                var videos = from v in videoRepository.Query()
+                             where v.ReviewId == review.Id
+                             select v.Url;
+
+                var reviewDto = new ReviewDto
+                {
+                    ReviewId = review.Id,
+                    Description = review.Description,
+                    Date = review.Date.ToString("dd-MM-yyyy"),
+                    Photos = photos.ToList(),
+                    Videos = videos.ToList(),
+                    AutoRiaId = auto.AutoRiaId,
+                    MarkName = auto.MarkName,
+                    ModelName = auto.ModelName,
+                    Year = auto.Year,
+                    City = auto.City,
+                    PhotoLink = auto.PhotoLink
+                };
+
+                return reviewDto;
             }
         }
     }

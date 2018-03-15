@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 
 namespace CarService.Api.Controllers
 {
@@ -230,6 +231,18 @@ namespace CarService.Api.Controllers
 
             IEnumerable<ProfileOrderInfo> orderList = await _profileService.GetUserAppliedOrders(email);
             return Ok(orderList);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("set-avatar")]
+        public async Task<IActionResult> UploadPhoto([FromForm] IFormFile file)
+        {
+            string email = User.Identity.Name;
+
+            await _profileService.UploadAvatar(file, email);
+
+            return Ok();
         }
     }
 }

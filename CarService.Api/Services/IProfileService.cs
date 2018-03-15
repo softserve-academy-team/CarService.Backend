@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CarService.Api.Models;
 using CarService.Api.Models.DTO;
+using Microsoft.AspNetCore.Http;
 
 namespace CarService.Api.Services
 {
@@ -16,5 +17,6 @@ namespace CarService.Api.Services
         Task DeleteCarFromFavorites(string email, int autoRiaId);
         Task<IEnumerable<BaseCarInfo>> GetAllCarsFromFavorites(string email);
         Task<bool> IsCarInFavorites(string email, int autoRiaId);
+        Task UploadAvatar(IFormFile photo, string email);
     }
 }

@@ -8,6 +8,9 @@ using CarService.DbAccess.DAL;
 using CarService.DbAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
+using CarService.Api.Services.AzureServices;
+using System.IO;
 
 namespace CarService.Api.Services
 {
@@ -16,15 +19,21 @@ namespace CarService.Api.Services
         private readonly UserManager<User> _userManager;
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
         private readonly IMapper _iMapper;
-
         private readonly ICarService _autoRiaCarService;
+        private readonly IAzureBlobStorageService _azureBlobStorage;
 
-        public ProfileService(UserManager<User> userManager, IUnitOfWorkFactory unitOfWorkFactory, IMapper iMapper, ICarService autoRiaCarService)
+        public ProfileService(
+            UserManager<User> userManager, 
+            IUnitOfWorkFactory unitOfWorkFactory, 
+            IMapper iMapper, 
+            ICarService autoRiaCarService,
+            IAzureBlobStorageService azureBlobStorage)
         {
             _userManager = userManager;
             _unitOfWorkFactory = unitOfWorkFactory;
             _iMapper = iMapper;
             _autoRiaCarService = autoRiaCarService;
+            _azureBlobStorage = azureBlobStorage;
         }
 
         public async Task EditCustomerProfile(string email, CustomerDto customerDto)
@@ -221,6 +230,30 @@ namespace CarService.Api.Services
                              };
 
                 return orders.ToList();
+            }
+        }
+
+        public async Task UploadAvatar(IFormFile photo, string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            {
+                var photosRepository = unitOfWork.Repository<Photo>();
+                var customerRepository = unitOfWork.Repository<Customer>();
+                var customer = await customerRepository.GetAsync(user.Id);
+
+                using (var stream = new MemoryStream())
+                {
+                    await photo.CopyToAsync(stream);
+                    stream.Position = 0;
+
+                    string url = await _azureBlobStorage.UploadFile(stream, "avatars", customer.UserName);
+
+                    customer.Avatar = url;
+                }
+
+                await unitOfWork.SaveAsync();
             }
         }
     }

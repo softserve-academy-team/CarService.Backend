@@ -11,5 +11,6 @@ namespace CarService.Api.Models.DTO
         [RegularExpression(@"[0-9]{16}")]
         [MaxLength(16)]
         public string CardNumber { get; set; }
+        public string Avatar { get; set; }
     }
 }
