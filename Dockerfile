@@ -18,5 +18,4 @@ WORKDIR /app
 ENTRYPOINT ["dotnet", "CarService.Api.dll"]  
 COPY --from=builder /sln/dist .  
 
-EXPOSE 1433
 
