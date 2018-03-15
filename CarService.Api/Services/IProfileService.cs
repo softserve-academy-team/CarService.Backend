@@ -18,5 +18,6 @@ namespace CarService.Api.Services
         Task<IEnumerable<BaseCarInfo>> GetAllCarsFromFavorites(string email);
         Task<bool> IsCarInFavorites(string email, int autoRiaId);
         Task UploadAvatar(IFormFile photo, string email);
+        Task<string> GetAvatarUrl(string email);
     }
 }

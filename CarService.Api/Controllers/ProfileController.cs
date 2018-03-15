@@ -244,5 +244,14 @@ namespace CarService.Api.Controllers
 
             return Ok();
         }
+
+        [Authorize]
+        [HttpGet("get-avatar")]
+        public async Task<IActionResult> GetAvatarUrl()
+        {
+            string email = User.Identity.Name;
+
+            return Ok(await _profileService.GetAvatarUrl(email));
+        }
     }
 }

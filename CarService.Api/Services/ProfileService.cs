@@ -208,7 +208,6 @@ namespace CarService.Api.Services
 
             using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
-                var photosRepository = unitOfWork.Repository<Photo>();
                 var customerRepository = unitOfWork.Repository<Customer>();
                 var customer = await customerRepository.GetAsync(user.Id);
 
@@ -217,12 +216,27 @@ namespace CarService.Api.Services
                     await photo.CopyToAsync(stream);
                     stream.Position = 0;
 
-                    string url = await _azureBlobStorage.UploadFile(stream, "avatars", customer.UserName);
+                    string url = await _azureBlobStorage.UploadFile(stream, "avatars", customer.UserName + DateTime.UtcNow);
 
                     customer.Avatar = url;
                 }
 
                 await unitOfWork.SaveAsync();
+            }
+        }
+
+        public async Task<string> GetAvatarUrl(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            {
+                var photosRepository = unitOfWork.Repository<Photo>();
+                var customerRepository = unitOfWork.Repository<Customer>();
+
+                var customer = await customerRepository.GetAsync(user.Id);
+                
+                return customer.Avatar;
             }
         }
     }
