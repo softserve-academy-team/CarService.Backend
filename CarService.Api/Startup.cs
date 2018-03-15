@@ -32,27 +32,27 @@ namespace CarService.Api
     public class Startup
     {
         private readonly IConfiguration _configuration;
-        private readonly AuthOptions _options;
+        //private readonly AuthOptions _options;
 
         public Startup(IConfiguration configuration, IHostingEnvironment env, IOptions<AuthOptions> optionsAccessor)
         {
-            var configurationBuilder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-                //.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
-                .AddEnvironmentVariables();
-            _configuration = configurationBuilder.Build();
+            // var configurationBuilder = new ConfigurationBuilder()
+            //     .SetBasePath(env.ContentRootPath)
+            //     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+            //     .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+            //     .AddEnvironmentVariables();
+            // _configuration = configurationBuilder.Build();
             _configuration = configuration;
-            _options = optionsAccessor.Value;
+            // _options = optionsAccessor.Value;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddOptions();
-            services.Configure<AuthOptions>(_configuration.GetSection("AuthOptions"));
-            services.Configure<EmailConfig>(_configuration.GetSection("Email"));
+            // services.AddOptions();
+            // services.Configure<AuthOptions>(_configuration.GetSection("AuthOptions"));
+            // services.Configure<EmailConfig>(_configuration.GetSection("Email"));
 
 
             services.AddCors(options =>
@@ -116,11 +116,14 @@ namespace CarService.Api
                         options.TokenValidationParameters = new TokenValidationParameters
                         {
                             ValidateIssuer = true,
-                            ValidIssuer = _options.Issuer,
+                            //ValidIssuer = _options.Issuer,
+                            ValidIssuer = _configuration.GetSection("AuthOptions:Issuer").Value,                 
                             ValidateAudience = true,
-                            ValidAudience = _options.Audience,
+                            //ValidAudience = _options.Audience,
+                            ValidAudience = _configuration.GetSection("AuthOptions:Audience").Value,                 
                             ValidateLifetime = true,
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.Key)),
+                            //IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.Key)),
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration.GetSection("AuthOptions:Key").Value)),                            
                             ValidateIssuerSigningKey = true,
                         };
                     });
