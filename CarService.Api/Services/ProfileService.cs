@@ -31,17 +31,14 @@ namespace CarService.Api.Services
         {
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user != null)
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
-                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
-                {
-                    IRepository<Customer> repository = unitOfWork.Repository<Customer>();
-                    var customer = repository.Get(user.Id);
+                IRepository<Customer> repository = unitOfWork.Repository<Customer>();
+                var customer = repository.Get(user.Id);
 
-                    _iMapper.Map<CustomerDto, Customer>(customerDto, customer);
+                _iMapper.Map<CustomerDto, Customer>(customerDto, customer);
 
-                    await unitOfWork.SaveAsync();
-                }
+                await unitOfWork.SaveAsync();
             }
         }
 
@@ -49,17 +46,14 @@ namespace CarService.Api.Services
         {
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user != null)
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
-                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
-                {
-                    IRepository<Mechanic> repository = unitOfWork.Repository<Mechanic>();
-                    var mechanic = repository.Get(user.Id);
+                IRepository<Mechanic> repository = unitOfWork.Repository<Mechanic>();
+                var mechanic = repository.Get(user.Id);
 
-                    _iMapper.Map<MechanicDto, Mechanic>(mechanicDto, mechanic);
+                _iMapper.Map<MechanicDto, Mechanic>(mechanicDto, mechanic);
 
-                    await unitOfWork.SaveAsync();
-                }
+                await unitOfWork.SaveAsync();
             }
         }
 
@@ -67,41 +61,33 @@ namespace CarService.Api.Services
         {
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user != null)
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
-                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+                if (user is Mechanic)
                 {
-                    if (user is Mechanic)
-                    {
-                        IRepository<Mechanic> repository = unitOfWork.Repository<Mechanic>();
-                        var mechanic = repository.Get(user.Id);
-                        return _iMapper.Map<Mechanic, MechanicDto>(mechanic);
-                    }
-                    else
-                    {
-                        IRepository<Customer> repository = unitOfWork.Repository<Customer>();
-                        var customer = repository.Get(user.Id);
-                        return _iMapper.Map<Customer, CustomerDto>(customer);
-                    }
+                    IRepository<Mechanic> repository = unitOfWork.Repository<Mechanic>();
+                    var mechanic = repository.Get(user.Id);
+                    return _iMapper.Map<Mechanic, MechanicDto>(mechanic);
+                }
+                else
+                {
+                    IRepository<Customer> repository = unitOfWork.Repository<Customer>();
+                    var customer = repository.Get(user.Id);
+                    return _iMapper.Map<Customer, CustomerDto>(customer);
                 }
             }
-
-            return null;
         }
 
         public async Task AddCarToFavorites(string email, int autoRiaId)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user != null)
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
-                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
-                {
-                    IRepository<Favorite> customerAutos = unitOfWork.Repository<Favorite>();
-                    customerAutos.Add(new Favorite { CustomerId = user.Id, AutoRiaId = autoRiaId });
+                IRepository<Favorite> customerAutos = unitOfWork.Repository<Favorite>();
+                customerAutos.Add(new Favorite { CustomerId = user.Id, AutoRiaId = autoRiaId });
 
-                    await unitOfWork.SaveAsync();
-                }
+                await unitOfWork.SaveAsync();
             }
         }
 
@@ -109,15 +95,12 @@ namespace CarService.Api.Services
         {
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user != null)
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
-                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
-                {
-                    IRepository<Favorite> customerAutos = unitOfWork.Repository<Favorite>();
-                    customerAutos.Delete(new Favorite { CustomerId = user.Id, AutoRiaId = autoRiaId });
+                IRepository<Favorite> customerAutos = unitOfWork.Repository<Favorite>();
+                customerAutos.Delete(new Favorite { CustomerId = user.Id, AutoRiaId = autoRiaId });
 
-                    await unitOfWork.SaveAsync();
-                }
+                await unitOfWork.SaveAsync();
             }
         }
 
@@ -125,46 +108,35 @@ namespace CarService.Api.Services
         {
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user != null)
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
-                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
-                {
-                    IRepository<Favorite> favorites = unitOfWork.Repository<Favorite>();
+                IRepository<Favorite> favorites = unitOfWork.Repository<Favorite>();
 
-                    var carIds = from f in favorites.Query()
-                                 where f.CustomerId == user.Id
-                                 select f.AutoRiaId;
+                var carIds = from f in favorites.Query()
+                             where f.CustomerId == user.Id
+                             select f.AutoRiaId;
 
-                    return await _autoRiaCarService.GetBaseInfoAboutCars(carIds);
-                }
+                return await _autoRiaCarService.GetBaseInfoAboutCars(carIds);
             }
-            else return null;
         }
 
         public async Task<bool> IsCarInFavorites(string email, int autoRiaId)
         {
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user != null)
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
-                using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
-                {
-                    IRepository<Favorite> favorites = unitOfWork.Repository<Favorite>();
+                IRepository<Favorite> favorites = unitOfWork.Repository<Favorite>();
 
-                    if (favorites.Find(f => f.CustomerId == user.Id && f.AutoRiaId == autoRiaId) != null)
-                        return true;
-                    else return false;
-                }
+                if (favorites.Find(f => f.CustomerId == user.Id && f.AutoRiaId == autoRiaId) != null)
+                    return true;
+                else return false;
             }
-            else return false;
         }
 
         public async Task<IEnumerable<ProfileOrderInfo>> GetUserCreatedOrders(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
-
-            if (user == null)
-                return null;
 
             using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
@@ -194,9 +166,6 @@ namespace CarService.Api.Services
         {
             var user = await _userManager.FindByEmailAsync(email);
 
-            if (user == null)
-                return null;
-
             using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
             {
                 var orderRepository = unitOfWork.Repository<Order>();
@@ -217,7 +186,7 @@ namespace CarService.Api.Services
                                  ModelName = a.ModelName,
                                  Year = a.Year,
                                  PhotoLink = a.PhotoLink,
-                                 IsDoIt = (o.Status ==  0 || (o.Status > 0 && o.MechanicId == user.Id)) ? true : false
+                                 IsDoIt = (o.Status == 0 || (o.Status > 0 && o.MechanicId == user.Id)) ? true : false
                              };
 
                 return orders.ToList();

@@ -53,7 +53,10 @@ namespace CarService.Api.Mappers
                 City = jObject.SelectToken("stateData.name").Value<string>(),
                 FuelName = jObject.SelectToken("autoData.fuelName").Value<string>(),
                 GearBoxName = jObject.SelectToken("autoData.gearboxName").Value<string>(),
-                Description = jObject.SelectToken("autoData.description").Value<string>()
+                Description = jObject.SelectToken("autoData.description").Value<string>(),
+                CategoryId = jObject.SelectToken("autoData.categoryId").Value<int>(),
+                MarkId = jObject.SelectToken("markId").Value<int>(),
+                ModelId = jObject.SelectToken("modelId").Value<int>()
             };
             return detailedCarInfo;
         }

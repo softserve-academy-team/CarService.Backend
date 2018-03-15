@@ -97,7 +97,7 @@ namespace CarService.Api.Services
             return allCarInfo;
         }
 
- public async Task<string> GetInitialTypesDropdownInfo()
+        public async Task<string> GetInitialTypesDropdownInfo()
         {
             var carsParameters = new Dictionary<string, string>();
             carsParameters.Add("api_key", _configuration["AutoRiaApi:ApiKey"]);
@@ -111,6 +111,7 @@ namespace CarService.Api.Services
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
         }
+
         public async Task<string> GetMakesDropdownInfo(int categoryId)
         {
             var carsParameters = new Dictionary<string, string>();
@@ -118,15 +119,15 @@ namespace CarService.Api.Services
 
             var uriBuilder = new UriBuilder(_configuration["AutoRiaApi:Scheme"], _configuration["AutoRiaApi:Host"]);
             uriBuilder.Path = $"{_configuration["AutoRiaApi:AutoTypesPath"]}/{categoryId}/marks";
-            
+
             var stringBuilder = new StringBuilder();
             uriBuilder.Query = stringBuilder.AppendJoin("&", carsParameters.Select(p => $"{p.Key}={p.Value}")).ToString();
 
             var response = await _httpClient.GetAsync(uriBuilder.Uri);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
-            
         }
+
         public async Task<string> GetModelsDropdownInfo(int categoryId, int makeId)
         {
             var carsParameters = new Dictionary<string, string>();
@@ -134,17 +135,13 @@ namespace CarService.Api.Services
 
             var uriBuilder = new UriBuilder(_configuration["AutoRiaApi:Scheme"], _configuration["AutoRiaApi:Host"]);
             uriBuilder.Path = $"{_configuration["AutoRiaApi:AutoTypesPath"]}/{categoryId}/marks/{makeId}/models";
-            
+
             var stringBuilder = new StringBuilder();
             uriBuilder.Query = stringBuilder.AppendJoin("&", carsParameters.Select(p => $"{p.Key}={p.Value}")).ToString();
 
             var response = await _httpClient.GetAsync(uriBuilder.Uri);
             response.EnsureSuccessStatusCode();
             return await response.Content.ReadAsStringAsync();
-          
         }
-
-        
-
     }
 }
