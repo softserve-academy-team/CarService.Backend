@@ -55,18 +55,18 @@ namespace CarService.Api
             // services.Configure<EmailConfig>(_configuration.GetSection("Email"));
 
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAllOrigin", builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyHeader()
-                .AllowAnyMethod());
-            });
+            // services.AddCors(options =>
+            // {
+            //     options.AddPolicy("AllowAllOrigin", builder => builder
+            //     .AllowAnyOrigin()
+            //     .AllowAnyHeader()
+            //     .AllowAnyMethod());
+            // });
 
-            services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
-            });
+            // services.Configure<MvcOptions>(options =>
+            // {
+            //     options.Filters.Add(new CorsAuthorizationFilterFactory("AllowAllOrigin"));
+            // });
 
             services.AddSingleton<IConfiguration>(provider => _configuration);
             services.AddSingleton<ICarMapper, AutoRiaCarMapper>();
@@ -103,30 +103,30 @@ namespace CarService.Api
                 .AddDefaultTokenProviders();
 
             // JWT
-            services.AddAuthentication(cfg =>
-            {
-                cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            // services.AddAuthentication(cfg =>
+            // {
+            //     cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //     cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            //     cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
-            })
-                    .AddJwtBearer(options =>
-                    {
-                        options.RequireHttpsMetadata = false;
-                        options.TokenValidationParameters = new TokenValidationParameters
-                        {
-                            ValidateIssuer = true,
-                            //ValidIssuer = _options.Issuer,
-                            ValidIssuer = _configuration.GetSection("AuthOptions:Issuer").Value,                 
-                            ValidateAudience = true,
-                            //ValidAudience = _options.Audience,
-                            ValidAudience = _configuration.GetSection("AuthOptions:Audience").Value,                 
-                            ValidateLifetime = true,
-                            //IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.Key)),
-                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration.GetSection("AuthOptions:Key").Value)),                            
-                            ValidateIssuerSigningKey = true,
-                        };
-                    });
+            // })
+            //         .AddJwtBearer(options =>
+            //         {
+            //             options.RequireHttpsMetadata = false;
+            //             options.TokenValidationParameters = new TokenValidationParameters
+            //             {
+            //                 ValidateIssuer = true,
+            //                 //ValidIssuer = _options.Issuer,
+            //                 ValidIssuer = _configuration.GetSection("AuthOptions:Issuer").Value,                 
+            //                 ValidateAudience = true,
+            //                 //ValidAudience = _options.Audience,
+            //                 ValidAudience = _configuration.GetSection("AuthOptions:Audience").Value,                 
+            //                 ValidateLifetime = true,
+            //                 //IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_options.Key)),
+            //                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration.GetSection("AuthOptions:Key").Value)),                            
+            //                 ValidateIssuerSigningKey = true,
+            //             };
+            //         });
 
             services.AddMvc();
             services.AddAutoMapper(x => x.AddProfile(new MappingProfile()));
@@ -154,7 +154,7 @@ namespace CarService.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.UseAuthentication();
+            // app.UseAuthentication();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -168,7 +168,7 @@ namespace CarService.Api
                 }
                 app.UseRewriter(new RewriteOptions().AddRedirectToHttps(StatusCodes.Status302Found, httpsPort));
             }
-            app.UseCors("AllowAllOrigin");
+           // app.UseCors("AllowAllOrigin");
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
