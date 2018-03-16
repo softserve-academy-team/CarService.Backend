@@ -11,7 +11,8 @@ namespace CarService.Api.Mappers
         {
             CreateMap<Customer, CustomerDto>();
             CreateMap<Mechanic, MechanicDto>();
-            CreateMap<CustomerDto, Customer>();
+            CreateMap<CustomerDto, Customer>()
+                .ForMember("Avatar",opt => opt.Ignore());
             CreateMap<MechanicDto, Mechanic>()
                 .ForMember("MechanicRate", opt => opt.Ignore());
             CreateMap<RegisterMechanicCredentials, Mechanic>()

@@ -11,6 +11,8 @@
     <PackageReference Include="MailKit" Version="2.0.1"/>
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5"/>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="2.2.0"/>
+    <PackageReference Include="WindowsAzure.Storage" Version="9.1.0" />
+    
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.2"/>

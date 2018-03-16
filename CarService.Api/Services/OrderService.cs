@@ -120,6 +120,7 @@ namespace CarService.Api.Services
                                 CustomerId = c.Id,
                                 CustomerFirstName = c.FirstName,
                                 CustomerLastName = c.LastName,
+                                CustomerPhotoUrl = c.Avatar,
                                 AutoId = a.Id,
                                 MarkName = a.MarkName,
                                 ModelName = a.ModelName,

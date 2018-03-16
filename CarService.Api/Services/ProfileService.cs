@@ -8,6 +8,9 @@ using CarService.DbAccess.DAL;
 using CarService.DbAccess.Entities;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
+using CarService.Api.Services.AzureServices;
+using System.IO;
 
 namespace CarService.Api.Services
 {
@@ -16,15 +19,21 @@ namespace CarService.Api.Services
         private readonly UserManager<User> _userManager;
         private readonly IUnitOfWorkFactory _unitOfWorkFactory;
         private readonly IMapper _iMapper;
-
         private readonly ICarService _autoRiaCarService;
+        private readonly IAzureBlobStorageService _azureBlobStorage;
 
-        public ProfileService(UserManager<User> userManager, IUnitOfWorkFactory unitOfWorkFactory, IMapper iMapper, ICarService autoRiaCarService)
+        public ProfileService(
+            UserManager<User> userManager, 
+            IUnitOfWorkFactory unitOfWorkFactory, 
+            IMapper iMapper, 
+            ICarService autoRiaCarService,
+            IAzureBlobStorageService azureBlobStorage)
         {
             _userManager = userManager;
             _unitOfWorkFactory = unitOfWorkFactory;
             _iMapper = iMapper;
             _autoRiaCarService = autoRiaCarService;
+            _azureBlobStorage = azureBlobStorage;
         }
 
         public async Task EditCustomerProfile(string email, CustomerDto customerDto)
@@ -190,6 +199,109 @@ namespace CarService.Api.Services
                              };
 
                 return orders.ToList();
+            }
+        }
+
+        public async Task UploadAvatar(IFormFile photo, string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            {
+                var customerRepository = unitOfWork.Repository<Customer>();
+                var customer = await customerRepository.GetAsync(user.Id);
+
+                using (var stream = new MemoryStream())
+                {
+                    await photo.CopyToAsync(stream);
+                    stream.Position = 0;
+
+                    string url = await _azureBlobStorage.UploadFile(stream, "avatars", customer.UserName + DateTime.UtcNow);
+
+                    customer.Avatar = url;
+                }
+
+                await unitOfWork.SaveAsync();
+            }
+        }
+
+        public async Task<string> GetAvatarUrl(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            {
+                var photosRepository = unitOfWork.Repository<Photo>();
+                var customerRepository = unitOfWork.Repository<Customer>();
+
+                var customer = await customerRepository.GetAsync(user.Id);
+                
+                return customer.Avatar;
+            }
+        }
+        public async Task<IEnumerable<ProfileReviewInfo>> GetUserBoughtReviews(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return null;
+
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            {
+                var orderRepository = unitOfWork.Repository<Order>();
+                var reviewRepository = unitOfWork.Repository<Review>();
+                var autoRepository = unitOfWork.Repository<Auto>();
+
+                var reviews = from o in orderRepository.Query()
+                              where o.CustomerId == user.Id && o.Status == OrderStatus.Done
+                              join r in reviewRepository.Query() on o.ReviewId equals r.Id
+                              join a in autoRepository.Query() on o.AutoId equals a.Id
+                              orderby r.Date descending
+                              select new ProfileReviewInfo
+                              {
+                                  ReviewId = r.Id,
+                                  Date = r.Date.ToString("dd-MM-yyyy"),
+                                  MarkName = a.MarkName,
+                                  ModelName = a.ModelName,
+                                  Year = a.Year,
+                                  PhotoLink = a.PhotoLink,
+                                  City = a.City
+                              };
+
+                return reviews.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<ProfileReviewInfo>> GetUserCreatedReviews(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+                return null;
+
+            using (IUnitOfWork unitOfWork = _unitOfWorkFactory.Create())
+            {
+                var reviewRepository = unitOfWork.Repository<Review>();
+                var orderRepository = unitOfWork.Repository<Order>();
+                var autoRepository = unitOfWork.Repository<Auto>();
+
+                var reviews = from r in reviewRepository.Query()
+                              where r.MechanicId == user.Id
+                              join o in orderRepository.Query() on r.OrderId equals o.Id
+                              join a in autoRepository.Query() on o.AutoId equals a.Id
+                              orderby r.Date descending
+                              select new ProfileReviewInfo
+                              {
+                                  ReviewId = r.Id,
+                                  Date = r.Date.ToString("dd-MM-yyyy"),
+                                  MarkName = a.MarkName,
+                                  ModelName = a.ModelName,
+                                  Year = a.Year,
+                                  PhotoLink = a.PhotoLink,
+                                  City = a.City
+                              };
+
+                return reviews.ToList();
             }
         }
     }

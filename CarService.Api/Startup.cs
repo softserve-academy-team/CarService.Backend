@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using AutoMapper;
+using CarService.Api.Services.AzureServices;
 using Swashbuckle.AspNetCore.Swagger;
 using System.IO;
 using System.Collections.Generic;
@@ -60,7 +61,8 @@ namespace CarService.Api
                 options.AddPolicy("AllowAllOrigin", builder => builder
                 .AllowAnyOrigin()
                 .AllowAnyHeader()
-                .AllowAnyMethod());
+                .AllowAnyMethod()
+                .AllowCredentials());
             });
 
             services.Configure<MvcOptions>(options =>
@@ -75,6 +77,13 @@ namespace CarService.Api
             services.AddTransient<IEmailService, EmailService>();
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IOrderService, OrderService>();
+            services.AddScoped<IReviewService, ReviewService>();
+            services.AddScoped<IAzureBlobStorageService>(factory =>
+            {
+                return new AzureBlobStorageService(new AzureBlobStorageSettings(
+                    storageAccount: "carservicestorag",
+                    storageKey:"asza4bvdWTEXTUJiT+SyHH7r9UXx14pYbErHsHlzdKX4W6GrAecvkhsgWf7WWkPJ0jch/wvPwrhYtos+xC4byQ=="));
+            });
 
             services.AddScoped<IUnitOfWorkFactory>(provider => new SqlUnitOfWorkFactory(options =>
             {
